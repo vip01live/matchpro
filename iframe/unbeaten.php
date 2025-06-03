@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Permissions-Policy" content="interest-cohort=()"/>
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<style>
+html {height: 100%; overflow: hidden;} 
+body {height: 100%; margin: 0; padding: 0; overflow: hidden;} 
+</style>
+</head>
+<body>
+<iframe width=100% height=100% frameborder=0 src="https://anym3u8player.com/ultimate-player-generator/player.php?player=mediaelement&url=https%3A%2F%2Funbeaten-tcl.amagi.tv%2Fplaylist.m3u8&autoplay=1&controls=auto&theme=default&buffer=30&quality=1&speed=1&pip=1&fullscreen=1&no_download=1&width=responsive&aspect=16%3A9&domain_restrict=1&domains=https%3A%2F%2Fp2plstream4%2Funbeaten%2Fplaylist.m3u8%3Ftoken%3Dmatchvip%2Chttps%3A%2F%2Fmatchvip.rf.gd%2F%2Chttps%3A%2F%2Fmatchpro.rf.gd%2F%2Chttps%3A%2F%2Fsport365live.infy.uk%2F%2C%2Canym3u8player.com" webkitallowfullscreen="" allowfullscreen="1" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe> 
+</body>
+</html>

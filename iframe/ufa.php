@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Permissions-Policy" content="interest-cohort=()"/>
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<style>
+html {height: 100%; overflow: hidden;} 
+body {height: 100%; margin: 0; padding: 0; overflow: hidden;} 
+</style>
+</head>
+<body>
+<iframe width=100% height=100% frameborder=0 src="https://anym3u8player.com/p2p-player-generator-jwplayer/mplay.php?data=nCLCQmLtFml/wHRSNI+EmeWTWnWC/R4IlxkVmUMFZHCVe10Xpfjzis6bkGw90jxNEVYiWphvW+WGhT3OrZxuipIKVw2LmMCC8Eun3QtB7aD6qtKvz+7UMHXHVjL/uEk/GwH/K3FGHTYGMGpZFveKkGIU6OA1IAnU73iR4cNUPfMJF3FmdjyBNadZhCWIEj57w2ymY6CrxqC29oZiFpwC5NwrCSIm0tPIxFKUZsujhlaWi3273hKuChxDittj3awrp3nkGDIQuTsTlsFJjZdbkQ==" webkitallowfullscreen="" allowfullscreen="1" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe> 
+</body>
+</html>
