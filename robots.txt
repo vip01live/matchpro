@@ -3,4 +3,4 @@ Disallow: /admin/
 Disallow: /private/
 Allow: /
 
-Sitemap: https://matchpro.rf gd/sitemap.xml
+Sitemap: https://matchprotv.vercel.app/sitemap.xml
