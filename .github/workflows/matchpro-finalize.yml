@@ -1,16 +1,13 @@
 name: MatchPro final normalization
 
 on:
-  workflow_run:
-    workflows: ["MatchPro upgrade"]
-    types: [completed]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   finalize:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,17 +16,5 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Final normalization
-        run: python3 tools/finalize_matchpro_v2.py
-
-      - name: Commit final changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet; then
-            echo "Already normalized."
-            exit 0
-          fi
-          git add .
-          git commit -m "Finalize MatchPro ID-only pages footer and shared ads [skip ci]"
-          git push
+      - name: Final normalization disabled
+        run: echo "Disabled to preserve the original MatchPro page design."
