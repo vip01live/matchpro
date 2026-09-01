@@ -1,4 +1,4 @@
-/* MatchPro responsive/accessibility additions. Existing design remains the base. */
+/* MatchPro shared responsive and unified styling. Existing design remains the base. */
 
 html, body { max-width: 100%; overflow-x: hidden; }
 img, iframe, video { max-width: 100%; }
@@ -68,6 +68,58 @@ img, iframe, video { max-width: 100%; }
 
 .matchpro-language button.active { color: #31ff91; }
 
+/* Identical footer typography and spacing on every page. */
+footer {
+  box-sizing: border-box;
+  text-align: center;
+  color: #ccc;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+footer p,
+footer a,
+footer span,
+footer .matchpro-copyright,
+footer .matchpro-powered,
+footer .matchpro-year {
+  font-family: Arial, sans-serif;
+  font-size: 13px !important;
+  line-height: 1.5;
+  font-weight: normal;
+}
+
+footer p { margin: 0; }
+footer .matchpro-copyright,
+footer .matchpro-powered { color: #ccc; }
+footer .matchpro-copyright { display: block; margin: 10px auto 0; text-decoration: none; }
+footer .matchpro-powered { margin: 6px 0 0; }
+footer .matchpro-powered a { color: inherit; text-decoration: none; }
+footer .matchpro-year { color: #ccc; }
+
+/* Keep the share icon as real SVG, never an emoji glyph. */
+.share-button,
+.share-button * {
+  font-family: Arial, sans-serif;
+}
+.share-button .circle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 0;
+}
+.share-button .circle-icon svg {
+  display: block;
+  width: 10px;
+  height: 10px;
+  fill: #000;
+  stroke: none;
+}
+
 .matchpro-legal {
   max-width: 900px;
   margin: 12px auto 0;
@@ -75,9 +127,6 @@ img, iframe, video { max-width: 100%; }
   font-size: 11px;
   line-height: 1.5;
 }
-
-.matchpro-powered { margin: 10px 0 0; }
-.matchpro-powered a { color: inherit; text-decoration: none; }
 
 @media (min-width: 700px) {
   .channel-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
