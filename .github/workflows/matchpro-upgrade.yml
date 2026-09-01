@@ -18,7 +18,9 @@ jobs:
           fetch-depth: 0
 
       - name: Upgrade MatchPro pages
-        run: python3 tools/upgrade_matchpro.py
+        run: |
+          python3 tools/upgrade_matchpro.py
+          python3 tools/finalize_matchpro.py
 
       - name: Commit generated changes
         run: |
@@ -29,5 +31,5 @@ jobs:
             exit 0
           fi
           git add .
-          git commit -m "Apply MatchPro SEO responsive and shared-page updates [skip ci]"
+          git commit -m "Normalize MatchPro IDs footer and site-wide ads [skip ci]"
           git push
