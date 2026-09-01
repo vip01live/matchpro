@@ -1,0 +1,33 @@
+name: MatchPro upgrade
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Upgrade MatchPro pages
+        run: python3 tools/upgrade_matchpro.py
+
+      - name: Commit generated changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No generated changes."
+            exit 0
+          fi
+          git add .
+          git commit -m "Apply MatchPro SEO responsive and shared-page updates [skip ci]"
+          git push
