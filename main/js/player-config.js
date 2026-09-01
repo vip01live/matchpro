@@ -1,5 +1,5 @@
 window.MATCHPRO_PLAYER_CONFIG = {
-  redirectUrl: "",
+  redirectUrl: "https://t.me/skyxcoding",
   oncePerDay: true,
   openInNewTab: true
 };
