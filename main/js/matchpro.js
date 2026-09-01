@@ -15,98 +15,24 @@
     en: { intro:'The best matches — live', share:'Share', copied:'Copied', watch:'Watch online – ', related:'Other sports channels', copyright:'Copyright', home:'Home', language:'Language' }
   };
   const t = k => translations[lang][k] || translations.ru[k] || k;
-  function ensureMeta(name, content) {
-    if (!content) return;
-    let el = document.head.querySelector('meta[name="' + name + '"]');
-    if (!el) { el = document.createElement('meta'); el.setAttribute('name', name); document.head.appendChild(el); }
-    el.setAttribute('content', content);
-  }
-  function ensureProperty(property, content) {
-    if (!content) return;
-    let el = document.head.querySelector('meta[property="' + property + '"]');
-    if (!el) { el = document.createElement('meta'); el.setAttribute('property', property); document.head.appendChild(el); }
-    el.setAttribute('content', content);
-  }
-  function setCanonical(url) {
-    let el = document.head.querySelector('link[rel="canonical"]');
-    if (!el) { el = document.createElement('link'); el.rel = 'canonical'; document.head.appendChild(el); }
-    el.href = url;
-  }
-  function setAlternate(langCode) {
-    let el = document.head.querySelector('link[rel="alternate"][hreflang="' + langCode + '"]');
-    if (!el) { el = document.createElement('link'); el.rel = 'alternate'; el.hreflang = langCode; document.head.appendChild(el); }
-    const u = new URL(window.location.href);
-    u.searchParams.set('lang', langCode);
-    if (channel) { u.searchParams.set('id', channel.id); u.pathname = '/' + channel.file; }
-    el.href = u.href;
-  }
-  function applySeo() {
-    const item = channel;
-    if (item) {
-      const title = lang === 'en' ? item.titleEn : item.titleRu;
-      const description = lang === 'en' ? item.descriptionEn : item.descriptionRu;
-      const keywords = lang === 'en' ? item.keywordsEn : item.keywordsRu;
-      document.title = title;
-      ensureMeta('description', description); ensureMeta('keywords', keywords);
-      ensureMeta('robots', 'index, follow, max-image-preview:large'); ensureMeta('googlebot', 'index, follow');
-      ensureProperty('og:title', title); ensureProperty('og:description', description); ensureProperty('og:type', 'website'); ensureProperty('og:url', window.location.href);
-      if (item.logo) ensureProperty('og:image', new URL(item.logo, origin).href);
-      ensureMeta('twitter:card', 'summary_large_image'); ensureMeta('twitter:title', title); ensureMeta('twitter:description', description);
-      if (item.logo) ensureMeta('twitter:image', new URL(item.logo, origin).href);
-      setCanonical(window.location.href);
-    } else {
-      document.title = lang === 'en' ? 'Sports channels live online' : 'Спортивные каналы онлайн в прямом эфире';
-      ensureMeta('description', lang === 'en' ? 'Watch sports channels and live broadcasts online on different devices.' : 'Смотрите спортивные каналы и прямые трансляции онлайн на разных устройствах.');
-      ensureMeta('robots', 'index, follow, max-image-preview:large'); setCanonical(origin + '/');
-    }
-    setAlternate('ru'); setAlternate('en');
-    const ld = document.getElementById('matchpro-jsonld') || document.createElement('script');
-    ld.id='matchpro-jsonld'; ld.type='application/ld+json';
-    ld.textContent = JSON.stringify({'@context':'https://schema.org','@type':'WebPage',name:item ? (lang==='en'?item.titleEn:item.titleRu):document.title,description:item ? (lang==='en'?item.descriptionEn:item.descriptionRu):document.querySelector('meta[name="description"]')?.content,url:window.location.href,isPartOf:{'@type':'WebSite',url:origin+'/'}});
-    if (!ld.parentNode) document.head.appendChild(ld);
-  }
-  function addLanguageSwitcher() {
-    let box = document.querySelector('[data-matchpro-language]');
-    if (!box) { box=document.createElement('div'); box.dataset.matchproLanguage='1'; box.style.cssText='position:fixed;right:10px;bottom:10px;z-index:99999;display:flex;gap:4px;background:rgba(15,15,15,.88);padding:5px 7px;border-radius:18px;font:12px Arial,sans-serif;'; document.body.appendChild(box); }
-    box.innerHTML='';
-    ['ru','en'].forEach(code => {
-      const b=document.createElement('button'); b.type='button'; b.textContent=code.toUpperCase(); b.style.cssText='border:0;background:transparent;color:'+(lang===code?'#31ff91':'#fff')+';cursor:pointer;font-weight:700;padding:3px 5px;';
-      b.onclick=()=>{ localStorage.setItem(langKey,code); const u=new URL(window.location.href); u.searchParams.set('lang',code); if(channel){u.searchParams.set('id',channel.id);u.pathname='/'+channel.file;} window.location.href=u.href; };
-      box.appendChild(b);
-    });
-  }
-  function renderHomepage() {
-    if (pageFile !== 'index.html' && pageFile !== '') return;
-    const grid=document.querySelector('.channel-grid'); if(!grid)return; grid.innerHTML='';
-    channels.forEach(item=>{const a=document.createElement('a');a.className='channel';a.href='./'+item.file+'?id='+encodeURIComponent(item.id)+'&lang='+lang;a.dataset.channelId=item.id;const img=document.createElement('img');img.src=item.logo;img.alt=lang==='en'?item.nameEn:item.nameRu;a.appendChild(img);grid.appendChild(a);});
-  }
-  function renderRelated() {
-    document.querySelectorAll('.related-grid').forEach(grid=>{grid.innerHTML='';channels.forEach(item=>{if(channel&&String(item.id)===String(channel.id))return;const a=document.createElement('a');a.className='channel';a.href='./'+item.file+'?id='+encodeURIComponent(item.id)+'&lang='+lang;a.dataset.channelId=item.id;const img=document.createElement('img');img.src=item.logo;img.alt=lang==='en'?item.nameEn:item.nameRu;a.appendChild(img);grid.appendChild(a);});});
-  }
-  function updateText() {
-    const intro=document.querySelector('.intro-text'); if(intro)intro.textContent=t('intro');
-    const share=document.querySelector('.share-button');
-    if(share&&!share.dataset.matchproShareBound){share.dataset.matchproShareBound='1';share.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(window.location.href);}catch(_){}share.textContent=t('copied');setTimeout(()=>share.textContent=t('share'),1500);});}
-    if(share)share.setAttribute('aria-label',t('share'));
-    const name=document.querySelector('.channel-name'); if(name&&channel)name.innerHTML=t('watch')+'<span>'+(lang==='en'?channel.nameEn:channel.nameRu)+'</span>';
-    document.querySelectorAll('footer').forEach(footer=>{
-      let copyright=footer.querySelector('.matchpro-copyright');
-      if(!copyright){copyright=document.createElement('a');copyright.className='matchpro-copyright';copyright.style.cssText='display:block;margin:12px auto 0;color:inherit;text-decoration:none;cursor:pointer;';footer.appendChild(copyright);}
-      copyright.textContent=t('copyright'); copyright.href=lang==='en'?'./copyright-en.html?lang=en':'./copyright-ru.html?lang=ru'; copyright.setAttribute('aria-label',t('copyright'));
-      const oldLegal=footer.querySelector('.matchpro-legal'); if(oldLegal)oldLegal.remove();
-      let powered=footer.querySelector('.matchpro-powered'); if(!powered){powered=document.createElement('p');powered.className='matchpro-powered';powered.style.cssText='margin:10px 0 0;';footer.appendChild(powered);}
-      powered.innerHTML='Powered by <a href="https://t.me/skyxcoding" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">SkyXCode</a>';
-      let year=footer.querySelector('#year, [data-year]'); if(year)year.textContent=new Date().getFullYear(); else if(!footer.querySelector('.matchpro-year')){const y=document.createElement('span');y.className='matchpro-year';y.textContent=new Date().getFullYear();footer.prepend(y);}
-    });
-  }
-  function installPlayerGate() {
-    const iframe=document.querySelector('.player-container iframe, iframe'); if(!iframe||!config.redirectUrl||iframe.dataset.matchproGate)return; iframe.dataset.matchproGate='1';
-    const parent=iframe.parentElement;if(!parent)return;parent.style.position=parent.style.position||'relative';
-    const overlay=document.createElement('button');overlay.type='button';overlay.setAttribute('aria-label','Open player');overlay.style.cssText='position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:pointer;z-index:20;';parent.appendChild(overlay);
-    const key='matchpro-player-redirect:'+(channel?channel.id:pageFile)+':'+new Date().toISOString().slice(0,10);
-    if(config.oncePerDay&&localStorage.getItem(key)==='1')overlay.style.pointerEvents='none';
-    overlay.addEventListener('click',()=>{if(config.oncePerDay&&localStorage.getItem(key)==='1'){overlay.style.pointerEvents='none';return;}if(config.oncePerDay)localStorage.setItem(key,'1');overlay.style.pointerEvents='none';if(config.openInNewTab)window.open(config.redirectUrl,'_blank','noopener,noreferrer');else window.location.href=config.redirectUrl;});
-  }
+  function ensureMeta(name, content) { if (!content) return; let el=document.head.querySelector('meta[name="'+name+'"]'); if(!el){el=document.createElement('meta');el.setAttribute('name',name);document.head.appendChild(el);} el.setAttribute('content',content); }
+  function ensureProperty(property, content) { if(!content)return;let el=document.head.querySelector('meta[property="'+property+'"]');if(!el){el=document.createElement('meta');el.setAttribute('property',property);document.head.appendChild(el);}el.setAttribute('content',content); }
+  function setCanonical(url){let el=document.head.querySelector('link[rel="canonical"]');if(!el){el=document.createElement('link');el.rel='canonical';document.head.appendChild(el);}el.href=url;}
+  function setAlternate(langCode){let el=document.head.querySelector('link[rel="alternate"][hreflang="'+langCode+'"]');if(!el){el=document.createElement('link');el.rel='alternate';el.hreflang=langCode;document.head.appendChild(el);}const u=new URL(window.location.href);u.searchParams.set('lang',langCode);if(channel){u.searchParams.set('id',channel.id);u.pathname='/'+channel.file;}el.href=u.href;}
+  function applySeo(){const item=channel;if(item){const title=lang==='en'?item.titleEn:item.titleRu;const description=lang==='en'?item.descriptionEn:item.descriptionRu;const keywords=lang==='en'?item.keywordsEn:item.keywordsRu;document.title=title;ensureMeta('description',description);ensureMeta('keywords',keywords);ensureMeta('robots','index, follow, max-image-preview:large');ensureMeta('googlebot','index, follow');ensureProperty('og:title',title);ensureProperty('og:description',description);ensureProperty('og:type','website');ensureProperty('og:url',window.location.href);if(item.logo)ensureProperty('og:image',new URL(item.logo,origin).href);ensureMeta('twitter:card','summary_large_image');ensureMeta('twitter:title',title);ensureMeta('twitter:description',description);if(item.logo)ensureMeta('twitter:image',new URL(item.logo,origin).href);setCanonical(window.location.href);}else{document.title=lang==='en'?'Sports channels live online':'Спортивные каналы онлайн в прямом эфире';ensureMeta('description',lang==='en'?'Watch sports channels and live broadcasts online on different devices.':'Смотрите спортивные каналы и прямые трансляции онлайн на разных устройствах.');ensureMeta('robots','index, follow, max-image-preview:large');setCanonical(origin+'/');}setAlternate('ru');setAlternate('en');const ld=document.getElementById('matchpro-jsonld')||document.createElement('script');ld.id='matchpro-jsonld';ld.type='application/ld+json';ld.textContent=JSON.stringify({'@context':'https://schema.org','@type':'WebPage',name:item?(lang==='en'?item.titleEn:item.titleRu):document.title,description:item?(lang==='en'?item.descriptionEn:item.descriptionRu):document.querySelector('meta[name="description"]')?.content,url:window.location.href,isPartOf:{'@type':'WebSite',url:origin+'/'}});if(!ld.parentNode)document.head.appendChild(ld);}
+  function addLanguageSwitcher(){let box=document.querySelector('[data-matchpro-language]');if(!box){box=document.createElement('div');box.dataset.matchproLanguage='1';box.style.cssText='position:fixed;right:10px;bottom:10px;z-index:99999;display:flex;gap:4px;background:rgba(15,15,15,.88);padding:5px 7px;border-radius:18px;font:12px Arial,sans-serif;';document.body.appendChild(box);}box.innerHTML='';['ru','en'].forEach(code=>{const b=document.createElement('button');b.type='button';b.textContent=code.toUpperCase();b.style.cssText='border:0;background:transparent;color:'+(lang===code?'#31ff91':'#fff')+';cursor:pointer;font-weight:700;padding:3px 5px;';b.onclick=()=>{localStorage.setItem(langKey,code);const u=new URL(window.location.href);u.searchParams.set('lang',code);if(channel){u.searchParams.set('id',channel.id);u.pathname='/'+channel.file;}window.location.href=u.href;};box.appendChild(b);});}
+  function renderHomepage(){if(pageFile!=='index.html'&&pageFile!=='')return;const grid=document.querySelector('.channel-grid');if(!grid)return;grid.innerHTML='';channels.forEach(item=>{const a=document.createElement('a');a.className='channel';a.href='./'+item.file+'?id='+encodeURIComponent(item.id)+'&lang='+lang;a.dataset.channelId=item.id;const img=document.createElement('img');img.src=item.logo;img.alt=lang==='en'?item.nameEn:item.nameRu;a.appendChild(img);grid.appendChild(a);});}
+  function renderRelated(){document.querySelectorAll('.related-grid').forEach(grid=>{grid.innerHTML='';channels.forEach(item=>{if(channel&&String(item.id)===String(channel.id))return;const a=document.createElement('a');a.className='channel';a.href='./'+item.file+'?id='+encodeURIComponent(item.id)+'&lang='+lang;a.dataset.channelId=item.id;const img=document.createElement('img');img.src=item.logo;img.alt=lang==='en'?item.nameEn:item.nameRu;a.appendChild(img);grid.appendChild(a);});});}
+  function updateText(){const intro=document.querySelector('.intro-text');if(intro)intro.textContent=t('intro');const share=document.querySelector('.share-button');if(share&&!share.dataset.matchproShareBound){share.dataset.matchproShareBound='1';share.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(window.location.href);}catch(_){}share.textContent=t('copied');setTimeout(()=>share.textContent=t('share'),1500);});}if(share)share.setAttribute('aria-label',t('share'));const name=document.querySelector('.channel-name');if(name&&channel)name.innerHTML=t('watch')+'<span>'+(lang==='en'?channel.nameEn:channel.nameRu)+'</span>';document.querySelectorAll('footer').forEach(footer=>{
+      // Clean old/generated duplicates first, so only one SkyXCode credit remains.
+      footer.querySelectorAll('.matchpro-powered').forEach(el=>el.remove());
+      footer.querySelectorAll('a[href*="t.me/skyxcoding"]').forEach(el=>{const p=el.parentElement;if(p&&/Powered by/i.test(p.textContent||''))p.remove();});
+      footer.querySelectorAll('.matchpro-copyright,.matchpro-legal').forEach(el=>el.remove());
+      const copyright=document.createElement('a');copyright.className='matchpro-copyright';copyright.textContent=t('copyright');copyright.href=lang==='en'?'./main/copyright-en.html?lang=en':'./main/copyright-ru.html?lang=ru';copyright.style.cssText='display:block;margin:12px auto 0;color:inherit;text-decoration:none;cursor:pointer;';copyright.setAttribute('aria-label',t('copyright'));footer.appendChild(copyright);
+      const powered=document.createElement('p');powered.className='matchpro-powered';powered.style.cssText='margin:10px 0 0;';powered.innerHTML='Powered by <a href="https://t.me/skyxcoding" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">SkyXCode</a>';footer.appendChild(powered);
+      let year=footer.querySelector('#year,[data-year]');if(year)year.textContent=new Date().getFullYear();else if(!footer.querySelector('.matchpro-year')){const y=document.createElement('span');y.className='matchpro-year';y.textContent=new Date().getFullYear();footer.prepend(y);}
+    });}
+  function installPlayerGate(){const iframe=document.querySelector('.player-container iframe, iframe');if(!iframe||!config.redirectUrl||iframe.dataset.matchproGate)return;iframe.dataset.matchproGate='1';const parent=iframe.parentElement;if(!parent)return;parent.style.position=parent.style.position||'relative';const overlay=document.createElement('button');overlay.type='button';overlay.setAttribute('aria-label','Open player');overlay.style.cssText='position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:pointer;z-index:20;';parent.appendChild(overlay);const key='matchpro-player-redirect:'+(channel?channel.id:pageFile)+':'+new Date().toISOString().slice(0,10);if(config.oncePerDay&&localStorage.getItem(key)==='1')overlay.style.pointerEvents='none';overlay.addEventListener('click',()=>{if(config.oncePerDay&&localStorage.getItem(key)==='1'){overlay.style.pointerEvents='none';return;}if(config.oncePerDay)localStorage.setItem(key,'1');overlay.style.pointerEvents='none';if(config.openInNewTab)window.open(config.redirectUrl,'_blank','noopener,noreferrer');else window.location.href=config.redirectUrl;});}
   function preventCopyAndZoom(){['copy','cut','paste','contextmenu','selectstart','dragstart'].forEach(evt=>document.addEventListener(evt,e=>e.preventDefault(),{passive:false}));document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['c','x','v','u','a','s','p'].includes(e.key.toLowerCase()))e.preventDefault();},{passive:false});document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault();},{passive:false});document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});}
   function bootstrap(){applySeo();renderHomepage();renderRelated();addLanguageSwitcher();updateText();installPlayerGate();preventCopyAndZoom();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootstrap);else bootstrap();
