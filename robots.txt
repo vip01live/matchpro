@@ -1,6 +1,4 @@
 User-agent: *
-Disallow: /admin/
-Disallow: /private/
 Allow: /
 
-Sitemap: https://matchprotv.vercel.app/sitemap.xml
+Sitemap: https://matchpro.xo.je/sitemap.xml
