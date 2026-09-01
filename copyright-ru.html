@@ -10,9 +10,15 @@
     <link rel="canonical" href="./">
     <link rel="alternate" href="./?lang=ru" hreflang="ru">
     <link rel="alternate" href="./?lang=en" hreflang="en">
+    
+    
+    
+    
+    
     <link rel="stylesheet" href="/main/900-css/matchpro.css">
     <script src="/main/js/player-config.js" defer></script>
     <script src="/main/js/channels.js" defer></script>
+    <script src="/main/js/ads-loader.js" defer></script>
     <script src="/main/js/matchpro.js" defer></script>
     <script src="/main/js/matchpro-enhance.js" defer></script>
 </head>
@@ -28,6 +34,8 @@
 <p>MatchPro не контролирует сторонние сайты, их содержание, доступность, рекламу или условия использования и не несёт ответственности за материалы, размещённые на внешних ресурсах.</p>
 <p><a href="./?lang=ru">← Вернуться на MatchPro</a></p>
 </main>
-<footer><p class="matchpro-year-line">© <span id="footer-year"></span></p><p class="matchpro-powered">Powered by <a href="https://t.me/skyxcoding" target="_blank" rel="noopener noreferrer">SkyXCode</a></p></footer>
+<footer class="matchpro-footer">
+  <p>© <span id="year"></span></p>
+</footer>
 <script>document.getElementById('year').textContent=new Date().getFullYear();document.getElementById('footer-year').textContent=new Date().getFullYear();</script>
 </body></html>
