@@ -20,6 +20,35 @@
   localStorage.setItem('matchpro-language', lang);
   document.documentElement.lang = lang;
 
+  function loadStylesheets(doc){
+    /* A channel page must use its own original CSS, not the homepage CSS. */
+    Array.prototype.forEach.call(document.head.querySelectorAll('link[rel="stylesheet"]'), function(link){
+      link.parentNode.removeChild(link);
+    });
+
+    Array.prototype.forEach.call(doc.head.querySelectorAll('link[rel="stylesheet"]'), function(link){
+      var href = link.getAttribute('href');
+      if (!href) return;
+      var style = document.createElement('link');
+      style.rel = 'stylesheet';
+      style.href = new URL(href, location.href).href;
+      document.head.appendChild(style);
+    });
+  }
+
+  function runBodyScripts(sourceBody){
+    /* innerHTML does not execute scripts, so explicitly recreate the channel's
+       original body scripts after the body has been inserted. */
+    Array.prototype.forEach.call(sourceBody.querySelectorAll('script'), function(oldScript){
+      var script = document.createElement('script');
+      Array.prototype.forEach.call(oldScript.attributes, function(attr){
+        script.setAttribute(attr.name, attr.value);
+      });
+      script.text = oldScript.text || oldScript.textContent || '';
+      oldScript.parentNode.replaceChild(script, oldScript);
+    });
+  }
+
   function loadChannel(item){
     fetch('./' + item.file, { credentials: 'same-origin', cache: 'no-store' })
       .then(function(response){
@@ -28,28 +57,17 @@
       })
       .then(function(html){
         var doc = new DOMParser().parseFromString(html, 'text/html');
-
-        /* Keep the channel's original stylesheet/design when rendering through ?id=. */
-        Array.prototype.forEach.call(doc.head.querySelectorAll('link[rel="stylesheet"]'), function(link){
-          var href = link.getAttribute('href');
-          if (!href) return;
-          var absolute = new URL(href, location.href).href;
-          if (document.head.querySelector('link[data-matchpro-channel-style="' + CSS.escape(absolute) + '"]')) return;
-          var style = document.createElement('link');
-          style.rel = 'stylesheet';
-          style.href = absolute;
-          style.dataset.matchproChannelStyle = absolute;
-          document.head.appendChild(style);
-        });
-
         var sourceBody = doc.body;
         if (!sourceBody) throw new Error('Invalid channel page');
+
+        loadStylesheets(doc);
 
         document.body.innerHTML = sourceBody.innerHTML;
         document.body.setAttribute('data-matchpro-channel-id', String(item.id));
         document.documentElement.lang = lang;
         document.title = lang === 'en' ? (item.titleEn || item.nameEn) : (item.titleRu || item.nameRu);
 
+        runBodyScripts(document.body);
         window.dispatchEvent(new CustomEvent('matchpro-content-loaded'));
       })
       .catch(function(){ location.replace('./'); });
