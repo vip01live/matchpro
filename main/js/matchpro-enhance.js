@@ -1,11 +1,8 @@
 (function(){
   'use strict';
   var params=new URLSearchParams(location.search);
-  var path=location.pathname.replace(/\/+$/,'');
-  var pathMatch=path.match(/\/([0-9]{4})(?:&lang=(ru|en))?$/i);
-  var id=params.get('id')||(pathMatch&&pathMatch[1]);
-  var pathLang=(pathMatch&&pathMatch[2]||'').toLowerCase();
-  var explicit=(params.get('lang')||pathLang||'').toLowerCase();
+  var id=params.get('id');
+  var explicit=(params.get('lang')||'').toLowerCase();
   var channels=window.MATCHPRO_CHANNELS||[];
   function getLang(){
     if(explicit==='ru'||explicit==='en')return explicit;
@@ -19,10 +16,11 @@
   document.documentElement.lang=lang;
   function currentChannel(){return channels.find(function(x){return String(x.id)===String(id)})}
   function channelUrl(channelId,next){return location.origin+'/?id='+encodeURIComponent(channelId)+'&lang='+next}
+  function homeUrl(next){return location.origin+'/?lang='+next}
   function switchLanguage(next){
     try{localStorage.setItem('matchpro-language',next)}catch(_){}
     var current=currentChannel();
-    if(current){location.href=channelUrl(current.id,next)}else{location.href=location.origin+'/?lang='+next}
+    location.href=current?channelUrl(current.id,next):homeUrl(next);
   }
   function localizeFooter(){
     document.querySelectorAll('footer').forEach(function(f){
@@ -31,18 +29,20 @@
     });
   }
   function addFooterSwitcher(){
-    var footer=document.querySelector('footer');
-    if(!footer||footer.querySelector('.matchpro-language-switcher')){localizeFooter();return}
-    var box=document.createElement('div');
-    box.className='matchpro-language-switcher';
-    box.setAttribute('role','group');
-    box.setAttribute('aria-label',lang==='ru'?'Язык':'Language');
-    box.innerHTML='<span class="matchpro-language-label">'+(lang==='ru'?'Язык':'Language')+'</span><button type="button" data-lang="ru">RU</button><span class="matchpro-language-sep">|</span><button type="button" data-lang="en">EN</button>';
-    box.querySelectorAll('button').forEach(function(btn){
-      if(btn.dataset.lang===lang)btn.classList.add('active');
-      btn.addEventListener('click',function(){if(btn.dataset.lang!==lang)switchLanguage(btn.dataset.lang)})
+    document.querySelectorAll('footer').forEach(function(footer){
+      var old=footer.querySelector('.matchpro-language-switcher');
+      if(old)old.remove();
+      var box=document.createElement('div');
+      box.className='matchpro-language-switcher';
+      box.setAttribute('role','group');
+      box.setAttribute('aria-label',lang==='ru'?'Язык':'Language');
+      box.innerHTML='<span class="matchpro-language-label">'+(lang==='ru'?'Язык':'Language')+'</span><button type="button" data-lang="ru">RU</button><span class="matchpro-language-sep">|</span><button type="button" data-lang="en">EN</button>';
+      box.querySelectorAll('button').forEach(function(btn){
+        if(btn.dataset.lang===lang)btn.classList.add('active');
+        btn.addEventListener('click',function(){if(btn.dataset.lang!==lang)switchLanguage(btn.dataset.lang)})
+      });
+      footer.insertBefore(box,footer.firstChild);
     });
-    footer.insertBefore(box,footer.firstChild);
     localizeFooter();
   }
   function addStylesheets(doc){
@@ -54,9 +54,16 @@
       }
     });
   }
+  function copyScripts(doc){
+    doc.querySelectorAll('script[src]').forEach(function(script){
+      var src=new URL(script.getAttribute('src'),location.origin+'/'+(currentChannel()?currentChannel().file:'' )).href;
+      if(document.querySelector('script[data-matchpro-dynamic="'+src+'"]'))return;
+      var s=document.createElement('script');s.src=src;s.dataset.matchproDynamic=src;s.defer=false;document.body.appendChild(s);
+    });
+  }
   async function loadChannelFromQuery(){
     var current=currentChannel();
-    if(!current||!params.get('id'))return;
+    if(!current||!params.has('id'))return;
     try{
       document.documentElement.classList.add('matchpro-channel-loading');
       var response=await fetch('/'+current.file,{cache:'no-store'});
@@ -67,12 +74,13 @@
       document.body.innerHTML=parsed.body.innerHTML;
       document.body.dataset.matchproChannelId=String(current.id);
       document.documentElement.lang=lang;
+      copyScripts(parsed);
       if(window.MATCHPRO_BOOT)window.MATCHPRO_BOOT();
       addFooterSwitcher();
       document.documentElement.classList.remove('matchpro-channel-loading');
     }catch(error){
       document.documentElement.classList.remove('matchpro-channel-loading');
-      document.body.innerHTML='<main style="max-width:900px;margin:80px auto;padding:24px;text-align:center;font-family:Arial,sans-serif"><h1>'+ (lang==='ru'?'Не удалось загрузить канал':'Unable to load channel') +'</h1><p>'+ (lang==='ru'?'Попробуйте ещё раз.':'Please try again.') +'</p><p><a href="/?lang='+lang+'">'+(lang==='ru'?'К каналам':'Back to channels')+'</a></p></main>';
+      document.body.innerHTML='<main style="max-width:900px;margin:80px auto;padding:24px;text-align:center;font-family:Arial,sans-serif"><h1>'+(lang==='ru'?'Не удалось загрузить канал':'Unable to load channel')+'</h1><p>'+(lang==='ru'?'Попробуйте ещё раз.':'Please try again.')+'</p><p><a href="/?lang='+lang+'">'+(lang==='ru'?'К каналам':'Back to channels')+'</a></p></main>';
     }
   }
   window.copyLink=function(){
