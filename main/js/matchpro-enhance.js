@@ -20,11 +20,17 @@
   localStorage.setItem('matchpro-language', lang);
   document.documentElement.lang = lang;
 
-  function loadStylesheets(doc){
-    /* A channel page must use its own original CSS, not the homepage CSS. */
+  function removeStylesheetPart(part){
     Array.prototype.forEach.call(document.head.querySelectorAll('link[rel="stylesheet"]'), function(link){
-      link.parentNode.removeChild(link);
+      var href = link.getAttribute('href') || '';
+      if (href.indexOf(part) !== -1) link.remove();
     });
+  }
+
+  function loadChannelStyles(doc){
+    removeStylesheetPart('/main/720-css/main.css');
+    removeStylesheetPart('/main/900-css/matchpro.css');
+    Array.prototype.forEach.call(document.head.querySelectorAll('link[data-matchpro-channel-style]'), function(link){ link.remove(); });
 
     Array.prototype.forEach.call(doc.head.querySelectorAll('link[rel="stylesheet"]'), function(link){
       var href = link.getAttribute('href');
@@ -32,20 +38,20 @@
       var style = document.createElement('link');
       style.rel = 'stylesheet';
       style.href = new URL(href, location.href).href;
+      style.dataset.matchproChannelStyle = '1';
       document.head.appendChild(style);
     });
   }
 
-  function runBodyScripts(sourceBody){
-    /* innerHTML does not execute scripts, so explicitly recreate the channel's
-       original body scripts after the body has been inserted. */
+  function runInlineBodyScripts(sourceBody){
     Array.prototype.forEach.call(sourceBody.querySelectorAll('script'), function(oldScript){
+      /* Do not execute global external MatchPro scripts again. They are already
+         loaded by the index shell and would cause the selected channel to load
+         recursively and mix pages. Only the channel's inline scripts run. */
+      if (oldScript.src) return;
       var script = document.createElement('script');
-      Array.prototype.forEach.call(oldScript.attributes, function(attr){
-        script.setAttribute(attr.name, attr.value);
-      });
       script.text = oldScript.text || oldScript.textContent || '';
-      oldScript.parentNode.replaceChild(script, oldScript);
+      document.body.appendChild(script);
     });
   }
 
@@ -60,14 +66,13 @@
         var sourceBody = doc.body;
         if (!sourceBody) throw new Error('Invalid channel page');
 
-        loadStylesheets(doc);
-
+        loadChannelStyles(doc);
         document.body.innerHTML = sourceBody.innerHTML;
         document.body.setAttribute('data-matchpro-channel-id', String(item.id));
         document.documentElement.lang = lang;
         document.title = lang === 'en' ? (item.titleEn || item.nameEn) : (item.titleRu || item.nameRu);
 
-        runBodyScripts(document.body);
+        runInlineBodyScripts(sourceBody);
         window.dispatchEvent(new CustomEvent('matchpro-content-loaded'));
       })
       .catch(function(){ location.replace('./'); });
