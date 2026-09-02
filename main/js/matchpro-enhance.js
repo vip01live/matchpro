@@ -24,19 +24,26 @@
     var current=currentChannel();
     if(current){location.href=channelUrl(current.id,next)}else{location.href=location.origin+'/?lang='+next}
   }
+  function localizeFooter(){
+    document.querySelectorAll('footer').forEach(function(f){
+      var powered=f.querySelector('.matchpro-powered');
+      if(powered){var link=powered.querySelector('a');powered.textContent=lang==='ru'?'Работает на ':'Powered by ';if(link)powered.appendChild(link)}
+    });
+  }
   function addFooterSwitcher(){
     var footer=document.querySelector('footer');
-    if(!footer||footer.querySelector('.matchpro-language-switcher'))return;
+    if(!footer||footer.querySelector('.matchpro-language-switcher')){localizeFooter();return}
     var box=document.createElement('div');
     box.className='matchpro-language-switcher';
     box.setAttribute('role','group');
-    box.setAttribute('aria-label','Language');
-    box.innerHTML='<span class="matchpro-language-label">Language</span><button type="button" data-lang="ru">RU</button><span class="matchpro-language-sep">|</span><button type="button" data-lang="en">EN</button>';
+    box.setAttribute('aria-label',lang==='ru'?'Язык':'Language');
+    box.innerHTML='<span class="matchpro-language-label">'+(lang==='ru'?'Язык':'Language')+'</span><button type="button" data-lang="ru">RU</button><span class="matchpro-language-sep">|</span><button type="button" data-lang="en">EN</button>';
     box.querySelectorAll('button').forEach(function(btn){
       if(btn.dataset.lang===lang)btn.classList.add('active');
       btn.addEventListener('click',function(){if(btn.dataset.lang!==lang)switchLanguage(btn.dataset.lang)})
     });
     footer.insertBefore(box,footer.firstChild);
+    localizeFooter();
   }
   function addStylesheets(doc){
     doc.querySelectorAll('link[rel="stylesheet"]').forEach(function(link){
@@ -62,11 +69,10 @@
       document.documentElement.lang=lang;
       if(window.MATCHPRO_BOOT)window.MATCHPRO_BOOT();
       addFooterSwitcher();
-      if(window.copyLink){};
       document.documentElement.classList.remove('matchpro-channel-loading');
     }catch(error){
       document.documentElement.classList.remove('matchpro-channel-loading');
-      document.body.innerHTML='<main style="max-width:900px;margin:80px auto;padding:24px;text-align:center;font-family:Arial,sans-serif"><h1>Unable to load channel</h1><p>Please try again.</p><p><a href="/?lang='+lang+'">Back to channels</a></p></main>';
+      document.body.innerHTML='<main style="max-width:900px;margin:80px auto;padding:24px;text-align:center;font-family:Arial,sans-serif"><h1>'+ (lang==='ru'?'Не удалось загрузить канал':'Unable to load channel') +'</h1><p>'+ (lang==='ru'?'Попробуйте ещё раз.':'Please try again.') +'</p><p><a href="/?lang='+lang+'">'+(lang==='ru'?'К каналам':'Back to channels')+'</a></p></main>';
     }
   }
   window.copyLink=function(){
