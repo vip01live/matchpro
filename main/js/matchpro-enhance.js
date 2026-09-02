@@ -1,8 +1,11 @@
 (function(){
   'use strict';
+  var path=location.pathname.replace(/\/+$/,'');
   var params=new URLSearchParams(location.search);
-  var id=params.get('id');
-  var explicit=(params.get('lang')||'').toLowerCase();
+  var pathMatch=path.match(/\/([0-9]{4})(?:&lang=(ru|en))?$/i);
+  var id=params.get('id')||(pathMatch&&pathMatch[1]);
+  var pathLang=(pathMatch&&pathMatch[2]||'').toLowerCase();
+  var explicit=(params.get('lang')||pathLang||'').toLowerCase();
   var channels=window.MATCHPRO_CHANNELS||[];
   function getLang(){
     if(explicit==='ru'||explicit==='en') return explicit;
@@ -15,21 +18,17 @@
   try{localStorage.setItem('matchpro-language',lang);}catch(_){}
   document.documentElement.lang=lang;
   var isHome=location.pathname==='/'||/\/index\.html$/i.test(location.pathname);
-  if(isHome&&id){
-    var item=channels.find(function(x){return String(x.id)===String(id);});
-    if(item&&item.file){
-      location.replace('./'+item.file+'?id='+encodeURIComponent(item.id));
-      return;
-    }
-    location.replace('./404.html?error=invalid-id');
-    return;
+  if(isHome&&params.get('id')){
+    var item=channels.find(function(x){return String(x.id)===String(params.get('id'));});
+    if(item&&item.file){location.replace('./'+item.file+'?id='+encodeURIComponent(item.id)+'&lang='+lang);return;}
+    location.replace('./404.html?error=invalid-id&lang='+lang);return;
   }
+  function cleanUrl(channelId,next){return location.origin+'/'+channelId+'&lang='+next;}
   function switchLanguage(next){
     try{localStorage.setItem('matchpro-language',next);}catch(_){}
-    var u=new URL(location.href);
-    u.searchParams.delete('lang');
-    if(id) u.searchParams.set('id',id);
-    location.href=u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash;
+    var current=channels.find(function(x){return String(x.id)===String(id);});
+    if(current){location.href=cleanUrl(current.id,next);return;}
+    location.href=location.origin+'/';
   }
   function addFooterSwitcher(){
     var footer=document.querySelector('footer');
