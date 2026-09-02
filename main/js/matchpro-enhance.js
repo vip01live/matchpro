@@ -17,7 +17,7 @@
   }
 
   var lang = detectLanguage();
-  localStorage.setItem('matchpro-language', lang);
+  try { localStorage.setItem('matchpro-language', lang); } catch (_) {}
   document.documentElement.lang = lang;
 
   function removeStylesheetPart(part){
@@ -43,11 +43,23 @@
     });
   }
 
+  function normalizeChannelFragment(root){
+    if (!root) return;
+    Array.prototype.forEach.call(root.querySelectorAll('iframe[src]'), function(frame){
+      var src = frame.getAttribute('src') || '';
+      if (src === '/iframe/upl1.php' || src === 'iframe/upl1.php') frame.setAttribute('src', '/iframe/upl1.html');
+      if (src === '/iframe/upl2.php' || src === 'iframe/upl2.php') frame.setAttribute('src', '/iframe/upl2.html');
+    });
+  }
+
+  function appendNodes(target, nodes){
+    nodes.forEach(function(node){
+      target.appendChild(document.importNode(node, true));
+    });
+  }
+
   function runInlineBodyScripts(sourceBody){
     Array.prototype.forEach.call(sourceBody.querySelectorAll('script'), function(oldScript){
-      /* Do not execute global external MatchPro scripts again. They are already
-         loaded by the index shell and would cause the selected channel to load
-         recursively and mix pages. Only the channel's inline scripts run. */
       if (oldScript.src) return;
       var script = document.createElement('script');
       script.text = oldScript.text || oldScript.textContent || '';
@@ -56,26 +68,51 @@
   }
 
   function loadChannel(item){
-    fetch('./' + item.file, { credentials: 'same-origin', cache: 'no-store' })
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = controller ? setTimeout(function(){ controller.abort(); }, 15000) : null;
+
+    fetch('./' + item.file, {
+      credentials: 'same-origin',
+      cache: 'default',
+      signal: controller ? controller.signal : undefined
+    })
       .then(function(response){
         if (!response.ok) throw new Error('Channel page not found');
         return response.text();
       })
       .then(function(html){
+        if (timer) clearTimeout(timer);
+
         var doc = new DOMParser().parseFromString(html, 'text/html');
         var sourceBody = doc.body;
         if (!sourceBody) throw new Error('Invalid channel page');
 
         loadChannelStyles(doc);
-        document.body.innerHTML = sourceBody.innerHTML;
+
+        var header = doc.querySelector('header');
+        var main = doc.querySelector('main');
+        var footer = doc.querySelector('footer');
+        var fragmentRoot = doc.createElement('div');
+
+        if (header) fragmentRoot.appendChild(header.cloneNode(true));
+        if (main) fragmentRoot.appendChild(main.cloneNode(true));
+        if (footer) fragmentRoot.appendChild(footer.cloneNode(true));
+        if (!main) fragmentRoot.innerHTML = sourceBody.innerHTML;
+
+        normalizeChannelFragment(fragmentRoot);
+        document.body.innerHTML = '';
+        appendNodes(document.body, Array.prototype.slice.call(fragmentRoot.children));
         document.body.setAttribute('data-matchpro-channel-id', String(item.id));
         document.documentElement.lang = lang;
         document.title = lang === 'en' ? (item.titleEn || item.nameEn) : (item.titleRu || item.nameRu);
 
-        runInlineBodyScripts(sourceBody);
+        runInlineBodyScripts(document.body);
         window.dispatchEvent(new CustomEvent('matchpro-content-loaded'));
       })
-      .catch(function(){ location.replace('./'); });
+      .catch(function(){
+        if (timer) clearTimeout(timer);
+        location.replace('./');
+      });
   }
 
   if ((location.pathname === '/' || /\/index\.html$/i.test(location.pathname)) && id) {
