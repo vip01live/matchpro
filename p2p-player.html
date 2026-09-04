@@ -3,37 +3,38 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#05070d">
+<meta name="theme-color" content="#000000">
 <title>Stream Player Generator</title>
 <style>
 :root{--bg:#070a12;--card:#111728;--line:#26314a;--text:#f5f7fb;--muted:#94a0b8;--accent:#6c63ff;--accent2:#8d7dff;--ok:#31d69a;--warn:#ffca6a;--shadow:0 24px 70px rgba(0,0,0,.35)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 20% 0%,#172148 0,#070a12 42%),var(--bg);color:var(--text)}
 body{padding:28px 16px}.wrap{max-width:1080px;margin:auto}.brand{display:flex;align-items:center;gap:12px;margin:4px 0 26px}.brand-mark{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#32c8ff);box-shadow:0 10px 30px rgba(108,99,255,.3);font-size:22px}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:linear-gradient(180deg,rgba(21,28,46,.96),rgba(13,18,31,.96));border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow);backdrop-filter:blur(12px)}.wide{grid-column:1/-1}.title{font-size:15px;font-weight:750;margin:0 0 18px}.field{margin:0 0 15px}.label{display:block;color:#dce2ee;font-size:12px;font-weight:650;margin:0 0 8px}.input,.select{width:100%;border:1px solid #2b3650;background:#0b1020;color:var(--text);border-radius:13px;padding:13px 14px;outline:0;transition:.18s;font-size:14px}.input:focus,.select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,.13)}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hint{font-size:11px;color:var(--muted);line-height:1.5}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:13px;padding:12px 17px;font-weight:750;cursor:pointer;color:white;background:#202a40}.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 12px 30px rgba(108,99,255,.25)}.btn:disabled{opacity:.6;cursor:wait}.toggle{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted)}.toggle input{accent-color:var(--accent)}
-.preview{min-height:360px;background:#03050a;border-radius:17px;overflow:hidden;border:1px solid #222b40;display:grid;place-items:center}.empty{text-align:center;color:var(--muted);padding:40px}.empty .ico{font-size:42px;margin-bottom:10px}.result{display:none;margin-top:18px;padding:14px;border:1px solid #29445a;background:#0b1820;border-radius:14px}.result.show{display:block}.result strong{font-size:12px}.linkbox{display:flex;gap:8px;margin-top:9px}.linkbox input{flex:1}.status{font-size:12px;color:var(--ok);margin-top:9px;min-height:17px}.warn{color:var(--warn)}.footer{color:#69748b;font-size:11px;text-align:center;margin:20px 0 5px}
-#solo-player{display:none}.solo-body{padding:0!important;background:#000!important;overflow:hidden}.solo-body #app-generator{display:none!important}.solo-body #solo-player{display:block!important;position:fixed;inset:0;width:100vw;height:100vh;background:#000;z-index:99999}.solo-stage{position:relative;width:100%;height:100%;background:#000}.solo-stage #solo-jw{width:100%;height:100%;min-height:100%}.solo-watermark{position:absolute;top:16px;right:16px;z-index:100000;pointer-events:none;display:none}.solo-watermark img{display:block;max-width:130px;max-height:52px;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}.solo-loading{position:absolute;inset:0;display:grid;place-items:center;color:#b5bed0;font-size:13px;background:#000;z-index:2}.solo-error{position:absolute;inset:0;display:none;place-items:center;padding:30px;text-align:center;color:#ffb7c2;background:#000;z-index:3}
+.preview{min-height:360px;background:#000;border-radius:17px;overflow:hidden;border:1px solid #222b40;display:grid;place-items:center}.empty{text-align:center;color:var(--muted);padding:40px}.empty .ico{font-size:42px;margin-bottom:10px}.result{display:none;margin-top:18px;padding:14px;border:1px solid #29445a;background:#0b1820;border-radius:14px}.result.show{display:block}.result strong{font-size:12px}.linkbox{display:flex;gap:8px;margin-top:9px}.linkbox input{flex:1}.status{font-size:12px;color:var(--ok);margin-top:9px;min-height:17px}.warn{color:var(--warn)}.footer{color:#69748b;font-size:11px;text-align:center;margin:20px 0 5px}
+#solo-player{display:none}.solo-body{padding:0!important;background:#000!important;overflow:hidden}.solo-body #app-generator{display:none!important}.solo-body #solo-player{display:block!important;position:fixed;inset:0;width:100vw;height:100vh;background:#000;z-index:99999}.solo-stage{position:relative;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center}.solo-media{width:100%;height:100%;display:block;background:#000;object-fit:contain}.solo-watermark{position:absolute;top:16px;right:16px;z-index:20;pointer-events:none;display:none}.solo-watermark img{display:block;max-width:130px;max-height:52px;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}.solo-loading{position:absolute;inset:0;display:grid;place-items:center;color:#b5bed0;font-size:13px;background:#000;z-index:10}.solo-error{position:absolute;inset:0;display:none;place-items:center;padding:30px;text-align:center;color:#ffb7c2;background:#000;z-index:11}.solo-error span{display:block;color:#8e98ad;margin-top:8px;font-size:12px}
+.sponsor-badge{position:absolute;left:16px;top:16px;z-index:20;padding:6px 9px;border-radius:8px;background:rgba(0,0,0,.45);color:#cbd3e2;font-size:10px;backdrop-filter:blur(6px)}
 @media(max-width:760px){body{padding:16px 10px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.card{padding:17px;border-radius:18px}.row{grid-template-columns:1fr}.preview{min-height:235px}.brand{margin-bottom:17px}}
 </style>
 </head>
 <body>
 <div id="app-generator" class="wrap">
-<header class="brand"><div class="brand-mark">▶</div><div><h1>Stream Player Generator</h1><p>P2P HLS · M3U8 · DASH · MP4 · JW Player</p></div></header>
+<header class="brand"><div class="brand-mark">▶</div><div><h1>Stream Player Generator</h1><p>HLS · M3U8 · DASH · MP4 · WebM · Player</p></div></header>
 <main class="grid">
 <section class="card">
 <h2 class="title">Վիդեո</h2>
 <div class="field"><label class="label">Video URL *</label><input id="video" class="input" placeholder="https://example.com/live/stream.m3u8" autocomplete="off" spellcheck="false"></div>
-<div class="row"><div class="field"><label class="label">Տեսակ</label><select id="type" class="select"><option value="auto">Auto detect</option><option value="hls">HLS / M3U8</option><option value="dash">DASH / MPD</option><option value="mp4">MP4</option></select></div><div class="field"><label class="label">Վերնագիր</label><input id="title" class="input" placeholder="Live Stream"></div></div>
+<div class="row"><div class="field"><label class="label">Տեսակ</label><select id="type" class="select"><option value="auto">Auto detect</option><option value="hls">HLS / M3U8</option><option value="dash">DASH / MPD</option><option value="mp4">MP4</option><option value="webm">WebM</option><option value="native">Native / Other</option></select></div><div class="field"><label class="label">Վերնագիր</label><input id="title" class="input" placeholder="Live Stream"></div></div>
 <div class="field"><label class="label">Subtitle URL (optional)</label><input id="subtitle" class="input" placeholder="https://example.com/subtitles.vtt" autocomplete="off"></div>
 <div class="row"><div class="field"><label class="label">Subtitle language</label><input id="subLang" class="input" value="hy" placeholder="hy"></div><div class="field"><label class="label">Poster URL (optional)</label><input id="poster" class="input" placeholder="https://example.com/poster.jpg" autocomplete="off"></div></div>
 </section>
 <section class="card">
-<h2 class="title">Logo & Player</h2>
+<h2 class="title">Logo & Playback</h2>
 <div class="field"><label class="label">Logo URL (optional)</label><input id="logo" class="input" placeholder="Auto: current site's favicon" autocomplete="off"></div>
 <div class="field"><label class="label">Logo link (optional)</label><input id="logoLink" class="input" placeholder="https://your-site.com" autocomplete="off"></div>
-<div class="hint">JW Player-ը ինքն է բեռնվում հանրային player build-ից․ առանձին Library URL պետք չէ մուտքագրել։</div>
+<div class="hint">Player-ը օգտագործում է browser-compatible HLS.js / DASH.js playback, իսկ MP4/WebM-ը՝ native HTML5։ Սա չի պահանջում քո JW license key-ը։</div>
 <div style="height:10px"></div>
 <label class="toggle"><input id="p2p" type="checkbox" checked> P2P HLS mode</label>
-<div class="hint">HLS/M3U8-ի համար կփորձի օգտագործել P2P HLS provider։</div>
+<div class="hint">P2P-ը փորձարկվում է միայն HLS-ի դեպքում, եթե provider-ը հասանելի է։ Սովորական HLS playback-ը միշտ fallback է։</div>
 <div class="actions"><button id="generate" class="btn primary">⚡ Գեներացնել հղումը</button><button id="previewBtn" class="btn">▶ Նախադիտել</button></div>
 </section>
 <section class="card wide">
@@ -45,39 +46,59 @@ body{padding:28px 16px}.wrap{max-width:1080px;margin:auto}.brand{display:flex;al
 <div class="footer">Գեներացված հղումը բացելիս ցուցադրվում է միայն player-ը՝ ամբողջ էկրանով։</div>
 </div>
 
-<div id="solo-player" aria-label="Player only mode"><div class="solo-stage"><div id="solo-jw"></div><div id="solo-loading" class="solo-loading">Player-ը բեռնվում է…</div><div id="solo-error" class="solo-error"></div><div id="solo-watermark" class="solo-watermark"><img id="solo-logo" alt=""></div></div></div>
+<div id="solo-player" aria-label="Player only mode"><div class="solo-stage"><div class="sponsor-badge">STREAM PLAYER</div><video id="solo-media" class="solo-media" controls playsinline webkit-playsinline preload="metadata"></video><div id="solo-watermark" class="solo-watermark"><img id="solo-logo" alt=""></div><div id="solo-loading" class="solo-loading">Player-ը բեռնվում է…</div><div id="solo-error" class="solo-error"><div><b id="solo-error-title">Չհաջողվեց բացել վիդեոն</b><span id="solo-error-detail"></span></div></div></div></div>
 
 <script>
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
-const JW_SRC='https://ssl.p.jwpcdn.com/player/v/8.0.11/jwplayer.js';
-const P2P_SRC='https://cdn.jsdelivr.net/npm/cdnbye@latest/dist/jwplayer.hlsjs.provider.min.js';
-const PUBLIC_JW_KEY='uoW6qHjBL3KNudxKVnwa3rt5LlTakbko9e6aQ6VUyKQ=';
-const currentOrigin=location.origin;
+const HLS_SRC='https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js';
+const DASH_SRC='https://cdn.jsdelivr.net/npm/dashjs@latest/dist/dash.all.min.js';
+const P2P_SRC='https://cdn.jsdelivr.net/npm/cdnbye@latest/dist/hlsjs-p2p-engine.min.js';
+let activeHls=null,activeDash=null;
 
-function autoLogo(){return currentOrigin&&currentOrigin!=='null'?currentOrigin+'/favicon.ico':''}
+function autoLogo(){return location.origin&&location.origin!=='null'?location.origin+'/favicon.ico':''}
 function getConfig(){return{v:$('video').value.trim(),t:$('type').value,title:$('title').value.trim()||'Live Stream',sub:$('subtitle').value.trim(),lang:$('subLang').value.trim()||'hy',poster:$('poster').value.trim(),logo:$('logo').value.trim()||autoLogo(),logoLink:$('logoLink').value.trim(),p2p:$('p2p').checked}}
 function encode(obj){return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 function decode(str){try{let s=str.replace(/-/g,'+').replace(/_/g,'/');s+='='.repeat((4-s.length%4)%4);return JSON.parse(decodeURIComponent(escape(atob(s))))}catch(e){return null}}
-function detect(url){const u=(url||'').toLowerCase();if(/\.mpd(?:\?|$)/.test(u))return'dash';if(/\.mp4(?:\?|$)/.test(u))return'mp4';return'hls'}
+function detect(url){const u=(url||'').toLowerCase().split('?')[0].split('#')[0];if(/\.mpd$/.test(u))return'dash';if(/\.(mp4|m4v)$/.test(u))return'mp4';if(/\.webm$/.test(u))return'webm';if(/\.(m3u8|m3u)$/.test(u)||/\/hls(?:[/?]|$)/.test(u))return'hls';return'native'}
 function applyConfig(c){$('video').value=c.v||'';$('type').value=c.t||'auto';$('title').value=c.title||'';$('subtitle').value=c.sub||'';$('subLang').value=c.lang||'hy';$('poster').value=c.poster||'';$('logo').value=c.logo||'';$('logoLink').value=c.logoLink||'';$('p2p').checked=c.p2p!==false}
-function loadScript(src){return new Promise((resolve,reject)=>{const old=document.querySelector('script[data-player-src="'+src+'"]');if(old){if(old.dataset.loaded==='1')return resolve();old.addEventListener('load',resolve,{once:true});old.addEventListener('error',reject,{once:true});return}const s=document.createElement('script');s.src=src;s.async=true;s.dataset.playerSrc=src;s.onload=()=>{s.dataset.loaded='1';resolve()};s.onerror=()=>reject(new Error('Script load failed'));document.head.appendChild(s)})}
-function removeExisting(){try{if(window.__JW&&typeof window.__JW.remove==='function')window.__JW.remove()}catch(e){}window.__JW=null}
-function playerConfig(c){const type=c.t==='auto'?detect(c.v):c.t;const cfg={file:c.v,title:c.title,autostart:false,preload:'metadata',controls:true,displaytitle:true,aspectratio:'16:9'};if(c.poster)cfg.image=c.poster;if(c.sub)cfg.tracks=[{file:c.sub,kind:'captions',label:c.lang||'hy',default:true}];if(c.logo)cfg.logo={file:c.logo,position:'top-right',link:c.logoLink||undefined,hide:false};if(type==='hls'&&c.p2p)cfg.hlsjsConfig={debug:false,p2pConfig:{logLevel:false,live:true}};return{cfg,type}}
-
-async function mountPlayer(targetId,c,{solo=false}){
-removeExisting();await loadScript(JW_SRC);if(!window.jwplayer)throw new Error('JW Player unavailable');window.jwplayer.key=PUBLIC_JW_KEY;const pc=playerConfig(c);if(pc.type==='hls'&&c.p2p){try{await loadScript(P2P_SRC)}catch(e){console.warn('P2P provider unavailable')}}
-const p=window.jwplayer(targetId).setup(pc.cfg);window.__JW=p;p.on('ready',()=>{if(solo)$('solo-loading').style.display='none'});p.on('error',e=>{if(solo){$('solo-loading').style.display='none';$('solo-error').style.display='grid';$('solo-error').textContent='Player-ի սխալ․ '+((e&&e.message)||'Unable to play stream')}});return p}
-
-async function preview(){const c=getConfig();$('result').classList.add('show');if(!c.v){$('status').textContent='Մուտքագրիր Video URL-ը։';$('status').className='status warn';return}try{$('status').textContent='Player-ը բեռնվում է…';$('status').className='status';$('preview').innerHTML='<div id="jw-root" style="width:100%;min-height:360px"></div>';await mountPlayer('jw-root',c);$('status').textContent='✓ Player-ը պատրաստ է։'}catch(e){console.error(e);$('status').textContent='❌ '+(e.message||'Player error');$('status').className='status warn'}}
-
+function loadScript(src){return new Promise((resolve,reject)=>{const old=document.querySelector('script[data-player-src="'+src+'"]');if(old){if(old.dataset.loaded==='1')return resolve();old.addEventListener('load',resolve,{once:true});old.addEventListener('error',reject,{once:true});return}const s=document.createElement('script');s.src=src;s.async=true;s.dataset.playerSrc=src;s.onload=()=>{s.dataset.loaded='1';resolve()};s.onerror=()=>reject(new Error('CDN library failed to load'));document.head.appendChild(s)})}
+function cleanup(){try{if(activeHls){activeHls.destroy();activeHls=null}}catch(e){}try{if(activeDash){activeDash.reset();activeDash=null}}catch(e){}const v=$('solo-media');try{v.pause()}catch(e){}v.removeAttribute('src');v.load()}
+function showLogo(c){const box=$('solo-watermark'),img=$('solo-logo');if(c.logo){img.src=c.logo;img.onload=()=>box.style.display='block';img.onerror=()=>box.style.display='none'}else box.style.display='none'}
+function applyNativeExtras(v,c){if(c.poster)v.poster=c.poster;v.title=c.title||'Live Stream';if(c.sub){v.querySelectorAll('track').forEach(x=>x.remove());const tr=document.createElement('track');tr.kind='subtitles';tr.src=c.sub;tr.srclang=c.lang||'hy';tr.label=c.lang||'hy';tr.default=true;v.appendChild(tr)}}
+async function loadUniversal(targetId,c,{solo=false}={}){
+const v=$(targetId);cleanup();if(c.poster)v.poster=c.poster;else v.removeAttribute('poster');v.controls=true;v.preload='metadata';v.playsInline=true;applyNativeExtras(v,c);
+const type=c.t==='auto'?detect(c.v):c.t;
+if(type==='hls'){
+  if(v.canPlayType('application/vnd.apple.mpegurl')){v.src=c.v;return v}
+  await loadScript(HLS_SRC);
+  if(!window.Hls||!Hls.isSupported())throw new Error('Այս browser-ը HLS չի աջակցում։');
+  let hls;
+  try{
+    if(c.p2p){
+      try{await loadScript(P2P_SRC)}catch(e){console.warn(e)}
+    }
+    hls=new Hls({enableWorker:true,lowLatencyMode:true,backBufferLength:90,liveSyncDurationCount:3,capLevelToPlayerSize:true});
+    activeHls=hls;hls.attachMedia(v);hls.once(Hls.Events.MEDIA_ATTACHED,()=>hls.loadSource(c.v));
+    hls.on(Hls.Events.ERROR,(event,data)=>{if(data&&data.fatal){if(data.type===Hls.ErrorTypes.NETWORK_ERROR){try{hls.startLoad()}catch(e){}}else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){try{hls.recoverMediaError()}catch(e){}}else{throwPlayerError('HLS fatal error')}}});
+    return v;
+  }catch(e){if(hls)hls.destroy();activeHls=null;throw e}
+}
+if(type==='dash'){
+  await loadScript(DASH_SRC);if(!window.dashjs)throw new Error('DASH library չի բեռնվել։');
+  activeDash=dashjs.MediaPlayer().create();activeDash.initialize(v,c.v,false);try{activeDash.updateSettings({streaming:{lowLatencyEnabled:true}})}catch(e){}return v;
+}
+v.src=c.v;return v;
+}
+function throwPlayerError(msg){const e=new Error(msg);console.warn(e);if(document.body.classList.contains('solo-body')){showSoloError(msg)}}
+function showSoloError(msg){$('solo-loading').style.display='none';$('solo-error').style.display='grid';$('solo-error-detail').textContent=msg||'Ստուգիր stream URL-ը, CORS-ը կամ URL-ի հասանելիությունը։'}
+async function preview(){const c=getConfig();$('result').classList.add('show');if(!c.v){$('status').textContent='Մուտքագրիր Video URL-ը։';$('status').className='status warn';return}try{$('status').textContent='Player-ը բեռնվում է…';$('status').className='status';$('preview').innerHTML='<video id="preview-video" controls playsinline style="width:100%;height:100%;min-height:360px;background:#000;object-fit:contain"></video>';const v=await loadUniversal('preview-video',c);v.addEventListener('error',()=>{$('status').textContent='❌ Video playback error։';$('status').className='status warn'},{once:true});$('status').textContent='✓ Player-ը պատրաստ է։'+(c.p2p&&((c.t==='hls')||(c.t==='auto'&&detect(c.v)==='hls'))?' HLS fallback-ը ակտիվ է։':'')}catch(e){console.error(e);$('status').textContent='❌ '+(e.message||'Player error');$('status').className='status warn'}}
 async function makeShortUrl(longUrl){const api='https://is.gd/create.php?format=json&url='+encodeURIComponent(longUrl);const r=await fetch(api,{mode:'cors',cache:'no-store'});if(!r.ok)throw new Error('Shortener HTTP '+r.status);const data=await r.json();if(!data.shorturl)throw new Error(data.errormessage||'Shortener error');return data.shorturl}
-async function generate(){const c=getConfig();$('result').classList.add('show');if(!c.v){$('status').textContent='❌ Video URL-ը պարտադիր է։';$('status').className='status warn';return}$('generate').disabled=true;$('status').textContent='Հղումը ստեղծվում է…';$('status').className='status';try{const longUrl=location.origin+location.pathname+'#p='+encode(c);const short=await makeShortUrl(longUrl);$('generated').value=short;$('status').textContent='✓ Պատրաստ է։ Բացելու դեպքում կցուցադրվի միայն player-ը։';history.replaceState(null,'',location.origin+location.pathname)}catch(e){$('generated').value=location.origin+location.pathname+'#p='+encode(c);$('status').textContent='✓ Կարճացման ծառայությունը չհասանելի եղավ, դրա համար ստեղծվեց fallback հղում։';$('status').className='status warn'}finally{$('generate').disabled=false}}
+async function generate(){const c=getConfig();$('result').classList.add('show');if(!c.v){$('status').textContent='❌ Video URL-ը պարտադիր է։';$('status').className='status warn';return}$('generate').disabled=true;$('status').textContent='Հղումը ստեղծվում է…';$('status').className='status';try{const longUrl=location.origin+location.pathname+'#p='+encode(c);const short=await makeShortUrl(longUrl);$('generated').value=short;$('status').textContent='✓ Պատրաստ է։ Բացելիս կլինի միայն player-ը։';history.replaceState(null,'',location.origin+location.pathname)}catch(e){const fallback=location.origin+location.pathname+'#p='+encode(c);$('generated').value=fallback;$('status').textContent='✓ Կարճ հղումը չստացվեց, fallback հղումը պատրաստ է։';$('status').className='status warn'}finally{$('generate').disabled=false}}
 $('generate').onclick=generate;$('previewBtn').onclick=preview;$('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('generated').value)}catch(e){$('generated').select();document.execCommand('copy')}$('status').textContent='✓ Հղումը պատճենվեց։'};
 
-async function bootSolo(c){document.body.classList.add('solo-body');$('solo-player').style.display='block';if(c.logo){$('solo-logo').src=c.logo;$('solo-watermark').style.display='block'}try{await mountPlayer('solo-jw',c,{solo:true})}catch(e){$('solo-loading').style.display='none';$('solo-error').style.display='grid';$('solo-error').textContent='Player-ը չկարողացավ բեռնվել։ '+(e.message||'Unknown error')}}
-
+async function bootSolo(c){document.body.classList.add('solo-body');$('solo-player').style.display='block';showLogo(c);$('solo-loading').style.display='grid';$('solo-error').style.display='none';try{const v=await loadUniversal('solo-media',c,{solo:true});v.addEventListener('loadedmetadata',()=>{$('solo-loading').style.display='none'},{once:true});v.addEventListener('canplay',()=>{$('solo-loading').style.display='none'},{once:true});v.addEventListener('error',()=>showSoloError('Browser-ը չկարողացավ նվագարկել այս stream-ը։ Հնարավոր պատճառ՝ CORS, codec կամ source-ի հասանելիություն.'),{once:true});}catch(e){console.error(e);showSoloError(e.message||'Unknown player error')}}
 const hash=new URLSearchParams(location.hash.slice(1));const state=hash.get('p');if(state){const cfg=decode(state);if(cfg)bootSolo(cfg)}
 })();
 </script>
