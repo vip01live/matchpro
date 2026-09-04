@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="hy">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <title>Stream Player Generator</title>
+  <style>
+    :root{--bg:#080b14;--card:#101625;--card2:#151c2e;--line:#26314a;--text:#f5f7fb;--muted:#96a0b5;--accent:#6c63ff;--accent2:#8c7cff;--ok:#29d391;--danger:#ff647c;--shadow:0 24px 70px rgba(0,0,0,.35)}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 20% 0%,#18214a 0,#080b14 42%),var(--bg);color:var(--text)}
+    body{padding:28px 16px}.wrap{max-width:1080px;margin:auto}.brand{display:flex;align-items:center;gap:12px;margin:4px 0 26px}.brand-mark{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#31c8ff);box-shadow:0 10px 30px rgba(108,99,255,.3);font-size:22px}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:linear-gradient(180deg,rgba(21,28,46,.96),rgba(13,18,31,.96));border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow);backdrop-filter:blur(12px)}.wide{grid-column:1/-1}.title{font-size:15px;font-weight:750;margin:0 0 18px}.field{margin:0 0 15px}.label{display:block;color:#dce2ee;font-size:12px;font-weight:650;margin:0 0 8px}.input,.select{width:100%;border:1px solid #2b3650;background:#0b1020;color:var(--text);border-radius:13px;padding:13px 14px;outline:0;transition:.18s;font-size:14px}.input:focus,.select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,.13)}.hint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:13px;padding:12px 17px;font-weight:750;cursor:pointer;color:white;background:#202a40}.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 12px 30px rgba(108,99,255,.25)}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn:active{transform:translateY(0)}
+    .preview{min-height:360px;background:#03050a;border-radius:17px;overflow:hidden;border:1px solid #222b40;display:grid;place-items:center}.empty{text-align:center;color:var(--muted);padding:40px}.empty .ico{font-size:42px;margin-bottom:10px}.result{display:none;margin-top:18px;padding:14px;border:1px solid #29445a;background:#0b1820;border-radius:14px}.result.show{display:block}.result strong{font-size:12px}.linkbox{display:flex;gap:8px;margin-top:9px}.linkbox input{flex:1}.status{font-size:12px;color:var(--ok);margin-top:9px;min-height:17px}.warn{color:#ffcc70}.footer{color:#69748b;font-size:11px;text-align:center;margin:20px 0 5px}.toggle{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted)}.toggle input{accent-color:var(--accent)}
+    @media(max-width:760px){body{padding:16px 10px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.card{padding:17px;border-radius:18px}.row{grid-template-columns:1fr}.preview{min-height:235px}.brand{margin-bottom:17px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand">
+    <div class="brand-mark">▶</div><div><h1>Stream Player Generator</h1><p>P2P HLS · M3U8 · DASH · MP4 · JW Player</p></div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <h2 class="title">Վիդեո</h2>
+      <div class="field"><label class="label">Video URL *</label><input id="video" class="input" placeholder="https://example.com/live/stream.m3u8" autocomplete="off" spellcheck="false"></div>
+      <div class="row">
+        <div class="field"><label class="label">Տեսակ</label><select id="type" class="select"><option value="auto">Auto detect</option><option value="hls">HLS / M3U8</option><option value="dash">DASH / MPD</option><option value="mp4">MP4</option></select></div>
+        <div class="field"><label class="label">Վերնագիր</label><input id="title" class="input" placeholder="Live Stream"></div>
+      </div>
+      <div class="field"><label class="label">Subtitle URL (optional)</label><input id="subtitle" class="input" placeholder="https://example.com/subtitles.vtt" autocomplete="off"></div>
+      <div class="row">
+        <div class="field"><label class="label">Subtitle language</label><input id="subLang" class="input" value="hy" placeholder="hy"></div>
+        <div class="field"><label class="label">Poster URL (optional)</label><input id="poster" class="input" placeholder="https://example.com/poster.jpg" autocomplete="off"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="title">Logo & Player</h2>
+      <div class="field"><label class="label">Logo URL (optional)</label><input id="logo" class="input" placeholder="Auto: current site's favicon" autocomplete="off"></div>
+      <div class="field"><label class="label">Logo link (optional)</label><input id="logoLink" class="input" placeholder="https://your-site.com" autocomplete="off"></div>
+      <div class="field"><label class="label">JW Player Library URL *</label><input id="jwlib" class="input" placeholder="https://cdn.jwplayer.com/libraries/YOUR_ID.js" autocomplete="off"></div>
+      <div class="hint">JW Player-ի պաշտոնական library URL-ը պետք է քո JW Player հաշվից։ Առանց library ID-ի JW Player-ը չի կարող բեռնվել։</div>
+      <div style="height:10px"></div>
+      <label class="toggle"><input id="p2p" type="checkbox" checked> P2P HLS mode (երբ browser/library-ը թույլ է տալիս)</label>
+      <div class="hint">P2P-ը վերաբերում է HLS-ին։ DASH/MP4-ը աշխատում են սովորական JW playback-ով։</div>
+      <div class="actions"><button id="generate" class="btn primary">⚡ Գեներացնել հղումը</button><button id="previewBtn" class="btn">▶ Նախադիտել</button></div>
+    </section>
+
+    <section class="card wide">
+      <h2 class="title">Player Preview</h2>
+      <div id="preview" class="preview"><div class="empty"><div class="ico">🎬</div><div>Տեղադրիր video URL-ը և սեղմիր «Նախադիտել»</div></div></div>
+      <div id="result" class="result">
+        <strong>Գեներացված player հղում</strong>
+        <div class="linkbox"><input id="generated" class="input" readonly><button id="copy" class="btn">Պատճենել</button></div>
+        <div id="status" class="status"></div>
+      </div>
+    </section>
+  </main>
+  <div class="footer">URLs are encoded in the generated player state. This is obfuscation, not cryptographic protection.</div>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const els=['video','type','title','subtitle','subLang','poster','logo','logoLink','jwlib','p2p'];
+  const currentOrigin=location.origin;
+  function autoLogo(){return currentOrigin && currentOrigin!=='null' ? currentOrigin+'/favicon.ico' : ''}
+  function getConfig(){
+    return {v:$('video').value.trim(),t:$('type').value,title:$('title').value.trim()||'Live Stream',sub:$('subtitle').value.trim(),lang:$('subLang').value.trim()||'hy',poster:$('poster').value.trim(),logo:$('logo').value.trim()||autoLogo(),logoLink:$('logoLink').value.trim(),jw:$('jwlib').value.trim(),p2p:$('p2p').checked};
+  }
+  function encode(obj){return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+  function decode(str){try{let s=str.replace(/-/g,'+').replace(/_/g,'/');s+='='.repeat((4-s.length%4)%4);return JSON.parse(decodeURIComponent(escape(atob(s))))}catch(e){return null}}
+  function detect(url){let u=(url||'').toLowerCase();if(/\.mpd(?:\?|$)/.test(u))return'dash';if(/\.mp4(?:\?|$)/.test(u))return'mp4';return'hls'}
+  function applyConfig(c){if(!c)return; $('video').value=c.v||'';$('type').value=c.t||'auto';$('title').value=c.title||'';$('subtitle').value=c.sub||'';$('subLang').value=c.lang||'hy';$('poster').value=c.poster||'';$('logo').value=c.logo||'';$('logoLink').value=c.logoLink||'';$('jwlib').value=c.jw||'';$('p2p').checked=c.p2p!==false;}
+  function playerHTML(c){
+    const type=c.t==='auto'?detect(c.v):c.t;
+    const safe=x=>String(x||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const subtitle=c.sub ? `,tracks:[{file:'${safe(c.sub)}',kind:'captions',label:'${safe(c.lang||'hy')}',default:true}]` : '';
+    const logo=c.logo?`logo:{file:'${safe(c.logo)}',position:'top-right',link:'${safe(c.logoLink||'')}'},`:'';
+    return `<div id="jw-root" style="width:100%;height:100%;min-height:360px"></div><script src="${safe(c.jw)}"><\/script><script>(function(){function start(){if(!window.jwplayer){setTimeout(start,250);return}var p=jwplayer('jw-root');p.setup({file:'${safe(c.v)}',title:'${safe(c.title)}',image:'${safe(c.poster)}',autostart:false,preload:'metadata',${logo}controls:true,displaytitle:true${subtitle}});window.__JW=p;}start()})();<\/script>`;
+  }
+  function preview(){
+    const c=getConfig();
+    if(!c.v){$('status').textContent='Մուտքագրիր Video URL-ը։';$('status').className='status warn';$('result').classList.add('show');return}
+    if(!c.jw){$('status').textContent='Ավելացրու JW Player Library URL-ը։';$('status').className='status warn';$('result').classList.add('show');return}
+    $('preview').innerHTML=playerHTML(c);
+    $('status').textContent='Player-ը բեռնվում է…';$('status').className='status';
+  }
+  function generate(){
+    const c=getConfig();
+    if(!c.v){$('result').classList.add('show');$('status').textContent='❌ Video URL-ը պարտադիր է։';$('status').className='status warn';return}
+    if(!c.jw){$('result').classList.add('show');$('status').textContent='❌ JW Player Library URL-ը պարտադիր է։';$('status').className='status warn';return}
+    const url=location.origin+location.pathname+'#p='+encode(c);
+    $('generated').value=url;$('result').classList.add('show');$('status').textContent='✓ Պատրաստ է։ Իրական URL-ը plain text-ով չի երևում generated link-ի մեջ։';$('status').className='status';
+    history.replaceState(null,'',url);
+  }
+  $('generate').onclick=generate;$('previewBtn').onclick=preview;$('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('generated').value);$('status').textContent='✓ Հղումը պատճենվեց։'}catch(e){$('generated').select();document.execCommand('copy');$('status').textContent='✓ Հղումը պատճենվեց։'}};
+  const hash=new URLSearchParams(location.hash.slice(1));const c=hash.get('p');if(c){const cfg=decode(c);if(cfg){applyConfig(cfg);setTimeout(preview,300)}}
+})();
+</script>
+</body>
+</html>
