@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Спортивные каналы онлайн | MatchPro</title>
+<meta name="description" content="Смотрите спортивные каналы и прямые трансляции онлайн на MatchPro.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" type="image/png" sizes="32x32" href="./media/fv/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./media/fv/favicon-16x16.png">
+<link rel="apple-touch-icon" href="./media/fv/apple-touch-icon.png">
+<link rel="stylesheet" href="./main/720-css/main.css">
+<link rel="stylesheet" href="./main/900-css/matchpro.css">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="app-header"><a href="./" aria-label="MatchPro"><img src="./media/logo.png" alt="MatchPro"></a></header>
+<div class="intro-text" id="intro">Лучшие матчи — в прямом эфире</div>
+<main class="main">
+<section class="channel-grid" id="channels"></section>
+<section class="app-player" id="player-section" hidden>
+  <div class="app-player-head"><button id="close-player" type="button">← Назад</button><strong id="player-title"></strong></div>
+  <div class="player-container" id="player"></div>
+</section>
+<div class="info-text" id="info">Добро пожаловать в увлекательный мир спорта! У нас вы найдёте прямые трансляции самых захватывающих турниров и спортивных событий. Следите за любимыми командами и смотрите эфир онлайн.</div>
+</main>
+<footer class="matchpro-footer"><p>© <span id="year"></span> MatchPro</p><div class="app-language"><button data-lang="ru" type="button">RU</button><button data-lang="en" type="button">EN</button></div></footer>
+<script src="./app.js" defer></script>
+</body>
+</html>

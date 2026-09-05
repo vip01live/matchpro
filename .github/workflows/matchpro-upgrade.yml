@@ -1,0 +1,14 @@
+name: MatchPro upgrade
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disabled
+        run: echo "Automatic page rewriting is disabled to preserve the original MatchPro design."
