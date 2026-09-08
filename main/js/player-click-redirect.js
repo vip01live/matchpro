@@ -3,28 +3,24 @@
  *
  * Put your desired URL in REDIRECT_URL below.
  * The redirect works ONLY inside .player-container.
- * First player click opens the URL, then it can open again after 20 minutes.
- * The cooldown is stored separately for each page on the user's device.
+ * First player click opens the URL. After that, NO player on any page
+ * can open it again until 20 minutes have passed.
  */
 (function () {
   'use strict';
 
   var REDIRECT_URL = 'https://lkhq.cc/60dc1304';
   var COOLDOWN_MS = 20 * 60 * 1000;
-  var STORAGE_PREFIX = 'matchpro_player_redirect_v1:';
+  var STORAGE_KEY = 'matchpro_player_redirect_last_open_v1';
   var OVERLAY_CLASS = 'matchpro-player-click-overlay';
 
   if (!REDIRECT_URL || REDIRECT_URL === 'PASTE-YOUR-LINK-HERE') return;
   if (window.MATCHPRO_PLAYER_CLICK_REDIRECT_LOADED) return;
   window.MATCHPRO_PLAYER_CLICK_REDIRECT_LOADED = true;
 
-  function storageKey() {
-    return STORAGE_PREFIX + location.pathname + location.search;
-  }
-
   function canOpen() {
     try {
-      var last = parseInt(localStorage.getItem(storageKey()) || '0', 10);
+      var last = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
       return !last || (Date.now() - last >= COOLDOWN_MS);
     } catch (e) {
       return true;
@@ -33,7 +29,7 @@
 
   function markOpened() {
     try {
-      localStorage.setItem(storageKey(), String(Date.now()));
+      localStorage.setItem(STORAGE_KEY, String(Date.now()));
     } catch (e) {}
   }
 
@@ -69,9 +65,10 @@
         return;
       }
 
-      openRedirect();
-      overlay.remove();
-    }, { once: true });
+      if (openRedirect()) {
+        overlay.remove();
+      }
+    });
 
     container.appendChild(overlay);
   }
