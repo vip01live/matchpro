@@ -1,20 +1,20 @@
 /*
  * MATCHPRO PLAYER CLICK REDIRECT
  *
- * Put your advertising / destination URL in REDIRECT_URL below.
- * The redirect is attached ONLY to .player-container elements.
- * It opens on the first player click, then becomes available again
- * after the configured cooldown. Each page has its own cooldown key.
+ * Put your desired URL in REDIRECT_URL below.
+ * The redirect works ONLY inside .player-container.
+ * First player click opens the URL, then it can open again after 20 minutes.
+ * The cooldown is stored separately for each page on the user's device.
  */
 (function () {
   'use strict';
 
-  var REDIRECT_URL = 'https://example.com/';
+  var REDIRECT_URL = 'PASTE-YOUR-LINK-HERE';
   var COOLDOWN_MS = 20 * 60 * 1000;
   var STORAGE_PREFIX = 'matchpro_player_redirect_v1:';
   var OVERLAY_CLASS = 'matchpro-player-click-overlay';
 
-  if (!REDIRECT_URL || REDIRECT_URL === 'https://example.com/') return;
+  if (!REDIRECT_URL || REDIRECT_URL === 'PASTE-YOUR-LINK-HERE') return;
   if (window.MATCHPRO_PLAYER_CLICK_REDIRECT_LOADED) return;
   window.MATCHPRO_PLAYER_CLICK_REDIRECT_LOADED = true;
 
