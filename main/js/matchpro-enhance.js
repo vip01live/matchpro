@@ -18,7 +18,21 @@
   try{localStorage.setItem('matchpro-language',lang)}catch(_){}
   document.documentElement.lang=lang;
   function currentChannel(){
-    for(var i=0;i<channels.length;i++)if(String(channels[i].id)===String(id))return channels[i];
+    for(var i=0;i<channels.length;i++){
+      if(String(channels[i].id)===String(id)){
+        var c=channels[i];
+        if(String(id)==='7030'){
+          var vital={};
+          for(var k in c)if(Object.prototype.hasOwnProperty.call(c,k))vital[k]=c[k];
+          vital.nameRu='Vital Drive';vital.nameEn='Vital Drive';vital.logo='/media/logo/vital-sport-drive.png';
+          vital.titleRu='Vital Drive — прямая трансляция онлайн | MatchPro';vital.titleEn='Vital Drive — Live Stream Online | MatchPro';
+          vital.descriptionRu='Смотрите Vital Drive в прямом эфире онлайн на MatchPro. Спортивные трансляции и прямой эфир канала.';vital.descriptionEn='Watch Vital Drive live online on MatchPro. Sports broadcasts and live channel stream.';
+          vital.keywordsRu='Vital Drive онлайн, Vital Drive прямой эфир, Vital Drive смотреть онлайн, спорт онлайн, спортивный канал';vital.keywordsEn='Vital Drive live, Vital Drive online, Vital Drive stream, sports live, sports channel';
+          return vital;
+        }
+        return c;
+      }
+    }
     return null;
   }
   function channelUrl(channelId,next){return location.origin+'/?id='+encodeURIComponent(channelId)+'&lang='+next}
@@ -46,87 +60,23 @@
     setMeta('keywords',keywords);
     setMeta('robots','index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
     setMeta('googlebot','index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
-    setProperty('og:title',title);
-    setProperty('og:description',description);
-    setProperty('og:type','website');
-    setProperty('og:url',canonical);
-    setProperty('og:image',location.origin+current.logo);
-    setMeta('twitter:card','summary_large_image');
-    setMeta('twitter:title',title);
-    setMeta('twitter:description',description);
-    setMeta('twitter:image',location.origin+current.logo);
+    setProperty('og:title',title);setProperty('og:description',description);setProperty('og:type','website');setProperty('og:url',canonical);setProperty('og:image',location.origin+current.logo);
+    setMeta('twitter:card','summary_large_image');setMeta('twitter:title',title);setMeta('twitter:description',description);setMeta('twitter:image',location.origin+current.logo);
     upsertLink('canonical',canonical);
-    var alts=document.querySelectorAll('link[rel="alternate"][hreflang]');
-    for(var i=0;i<alts.length;i++){
-      var h=alts[i].getAttribute('hreflang');
-      if(h==='ru'||h==='en')alts[i].href=location.origin+'/?id='+encodeURIComponent(current.id)+'&lang='+h;
-    }
-    var schema=document.getElementById('matchpro-channel-schema');
-    if(!schema){schema=document.createElement('script');schema.type='application/ld+json';schema.id='matchpro-channel-schema';document.head.appendChild(schema)}
-    schema.textContent=JSON.stringify({
-      '@context':'https://schema.org',
-      '@type':'WebPage',
-      name:title,
-      description:description,
-      url:canonical,
-      inLanguage:lang,
-      isPartOf:{'@type':'WebSite',name:'MatchPro',url:location.origin+'/'},
-      primaryImageOfPage:{'@type':'ImageObject',url:location.origin+current.logo}
-    });
-    var heading=document.querySelector('.channel-name span');
-    if(heading)heading.textContent=name;
-    var related=document.querySelectorAll('a.channel[href*="id=7030"] img');
-    for(var r=0;r<related.length;r++){related[r].src='/media/logo/vital-sport-drive.png';related[r].alt='Vital Drive';related[r].loading='lazy';related[r].decoding='async'}
+    var alts=document.querySelectorAll('link[rel="alternate"][hreflang]');for(var i=0;i<alts.length;i++){var h=alts[i].getAttribute('hreflang');if(h==='ru'||h==='en')alts[i].href=location.origin+'/?id='+encodeURIComponent(current.id)+'&lang='+h}
+    var schema=document.getElementById('matchpro-channel-schema');if(!schema){schema=document.createElement('script');schema.type='application/ld+json';schema.id='matchpro-channel-schema';document.head.appendChild(schema)}schema.textContent=JSON.stringify({'@context':'https://schema.org','@type':'WebPage',name:title,description:description,url:canonical,inLanguage:lang,isPartOf:{'@type':'WebSite',name:'MatchPro',url:location.origin+'/'},primaryImageOfPage:{'@type':'ImageObject',url:location.origin+current.logo}});
+    var heading=document.querySelector('.channel-name span');if(heading)heading.textContent=name;
+    var vitalLinks=document.querySelectorAll('a[href*="id=7030"] img');for(var r=0;r<vitalLinks.length;r++){vitalLinks[r].src='/media/logo/vital-sport-drive.png';vitalLinks[r].alt='Vital Drive';vitalLinks[r].loading='lazy';vitalLinks[r].decoding='async'}
   }
   function normalizeShareButtons(){
     var buttons=document.querySelectorAll('.share-button');
     var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" aria-hidden="true"><path d="M23 3a4 4 0 0 0-4 4c0 .29.03.57.09.84l-9.08 4.54A4 4 0 1 0 7 19c1.11 0 2.12-.45 2.85-1.18l9.08 4.54A4 4 0 1 0 23 19c-1.11 0-2.12.45-2.85 1.18l-9.08-4.54c.06-.27.09-.55.09-.84s-.03-.57-.09-.84l9.08-4.54A4 4 0 1 0 23 3z"/></svg>';
-    for(var i=0;i<buttons.length;i++){
-      var icon=buttons[i].querySelector('.circle-icon');
-      if(icon){icon.innerHTML=svg;icon.setAttribute('aria-hidden','true')}
-      buttons[i].setAttribute('role','button');
-      buttons[i].setAttribute('tabindex','0');
-      if(!buttons[i].getAttribute('data-copy-fixed')){
-        buttons[i].setAttribute('data-copy-fixed','1');
-        buttons[i].addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();window.copyLink()}})
-      }
-    }
+    for(var i=0;i<buttons.length;i++){var icon=buttons[i].querySelector('.circle-icon');if(icon){icon.innerHTML=svg;icon.setAttribute('aria-hidden','true')}buttons[i].setAttribute('role','button');buttons[i].setAttribute('tabindex','0');if(!buttons[i].getAttribute('data-copy-fixed')){buttons[i].setAttribute('data-copy-fixed','1');buttons[i].addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();window.copyLink()}})}}
   }
   async function loadChannelFromQuery(){
-    var current=currentChannel();
-    if(!current||!id||document.documentElement.getAttribute('data-matchpro-channel-loaded')==='1')return;
-    try{
-      document.documentElement.className+=' matchpro-channel-loading';
-      if(typeof fetch!=='function')throw new Error('fetch unsupported');
-      var controller=typeof AbortController!=='undefined'?new AbortController():null;
-      var timer=controller?setTimeout(function(){controller.abort()},10000):null;
-      var response=await fetch('/'+current.file,{cache:'default',credentials:'same-origin',signal:controller?controller.signal:undefined});
-      if(timer)clearTimeout(timer);
-      if(!response.ok)throw new Error('channel fetch failed');
-      var html=await response.text();
-      var parsed=new DOMParser().parseFromString(html,'text/html');
-      addStylesheets(parsed);
-      document.body.innerHTML=parsed.body.innerHTML;
-      document.body.setAttribute('data-matchpro-channel-id',String(current.id));
-      document.documentElement.lang=lang;
-      document.documentElement.setAttribute('data-matchpro-channel-loaded','1');
-      copyScripts(parsed);
-      if(window.MATCHPRO_BOOT)window.MATCHPRO_BOOT();
-      applySeo();
-      normalizeShareButtons();
-      addFooterSwitcher();
-      document.documentElement.className=document.documentElement.className.replace(/\bmatchpro-channel-loading\b/g,'').replace(/\s+/g,' ').replace(/^\s|\s$/g,'');
-    }catch(error){
-      document.documentElement.className=document.documentElement.className.replace(/\bmatchpro-channel-loading\b/g,'');
-      document.body.innerHTML='<main style="max-width:900px;margin:80px auto;padding:24px;text-align:center;font-family:Arial,sans-serif"><h1>'+(lang==='ru'?'Не удалось загрузить канал':'Unable to load channel')+'</h1><p>'+(lang==='ru'?'Попробуйте ещё раз.':'Please try again.')+'</p><p><a href="/?lang='+lang+'">'+(lang==='ru'?'К каналам':'Back to channels')+'</a></p></main>'
-    }
-  }
-  window.copyLink=function(){
-    var url=location.href;
-    var done=function(){var btn=document.querySelector('.share-button');if(!btn)return;var old=btn.innerHTML;btn.innerHTML='<div class="circle-icon">✔</div> '+(lang==='en'?'Copied':'Скопировано');setTimeout(function(){btn.innerHTML=old;normalizeShareButtons()},2000)};
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){fallbackCopy(url,done)})}
-    else fallbackCopy(url,done);
-  };
+    var current=currentChannel();if(!current||!id||document.documentElement.getAttribute('data-matchpro-channel-loaded')==='1')return;
+    try{document.documentElement.className+=' matchpro-channel-loading';if(typeof fetch!=='function')throw new Error('fetch unsupported');var controller=typeof AbortController!=='undefined'?new AbortController():null;var timer=controller?setTimeout(function(){controller.abort()},10000):null;var response=await fetch('/'+current.file,{cache:'default',credentials:'same-origin',signal:controller?controller.signal:undefined});if(timer)clearTimeout(timer);if(!response.ok)throw new Error('channel fetch failed');var html=await response.text();var parsed=new DOMParser().parseFromString(html,'text/html');addStylesheets(parsed);document.body.innerHTML=parsed.body.innerHTML;document.body.setAttribute('data-matchpro-channel-id',String(current.id));document.documentElement.lang=lang;document.documentElement.setAttribute('data-matchpro-channel-loaded','1');copyScripts(parsed);if(window.MATCHPRO_BOOT)window.MATCHPRO_BOOT();applySeo();normalizeShareButtons();addFooterSwitcher();document.documentElement.className=document.documentElement.className.replace(/\bmatchpro-channel-loading\b/g,'').replace(/\s+/g,' ').replace(/^\s|\s$/g,'')}catch(error){document.documentElement.className=document.documentElement.className.replace(/\bmatchpro-channel-loading\b/g,'');document.body.innerHTML='<main style="max-width:900px;margin:80px auto;padding:24px;text-align:center;font-family:Arial,sans-serif"><h1>'+(lang==='ru'?'Не удалось загрузить канал':'Unable to load channel')+'</h1><p>'+(lang==='ru'?'Попробуйте ещё раз.':'Please try again.')+'</p><p><a href="/?lang='+lang+'">'+(lang==='ru'?'К каналам':'Back to channels')+'</a></p></main>'}}
+  window.copyLink=function(){var url=location.href;var done=function(){var btn=document.querySelector('.share-button');if(!btn)return;var old=btn.innerHTML;btn.innerHTML='<div class="circle-icon">✔</div> '+(lang==='en'?'Copied':'Скопировано');setTimeout(function(){btn.innerHTML=old;normalizeShareButtons()},2000)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){fallbackCopy(url,done)})}else fallbackCopy(url,done)};
   function fallbackCopy(url,done){var t=document.createElement('textarea');t.value=url;t.setAttribute('readonly','');t.style.position='fixed';t.style.left='-9999px';document.body.appendChild(t);t.select();var ok=false;try{ok=document.execCommand('copy')}catch(_){}document.body.removeChild(t);if(ok)done()}
   function optimizeImages(){var imgs=document.images;for(var i=0;i<imgs.length;i++){if(!imgs[i].getAttribute('loading')&&imgs[i].closest('.related-section'))imgs[i].loading='lazy';if(!imgs[i].getAttribute('decoding'))imgs[i].decoding='async'}}
   function ready(){applySeo();normalizeShareButtons();optimizeImages();addFooterSwitcher();loadChannelFromQuery()}
