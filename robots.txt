@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://matchpro.xo.je/sitemap.xml
+Sitemap: https://matchprotv.vercel.app/sitemap.xml
