@@ -9,7 +9,7 @@
 (function () {
   'use strict';
 
-  var REDIRECT_URL = 'PASTE-YOUR-LINK-HERE';
+  var REDIRECT_URL = 'https://lkhq.cc/60dc1304';
   var COOLDOWN_MS = 20 * 60 * 1000;
   var STORAGE_PREFIX = 'matchpro_player_redirect_v1:';
   var OVERLAY_CLASS = 'matchpro-player-click-overlay';
