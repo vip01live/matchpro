@@ -1,43 +1,100 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Deploy MatchPro to GitHub Pages as a project site
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
+      # MatchPro was originally built for a domain root (/main, /media, ...).
+      # GitHub Pages serves this repository under /matchpro/, so rewrite only
+      # root-relative local paths in the published copy. The repository source
+      # files remain unchanged.
+      - name: Prepare GitHub Pages project paths
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          BASE = "/matchpro"
+          ROOT = Path(".")
+          SKIP_DIRS = {".git", ".github"}
+          TEXT_EXTENSIONS = {".html", ".htm", ".css", ".js", ".json", ".xml", ".txt", ".webmanifest", ".svg"}
+
+          # Only these paths are local MatchPro assets/routes. External URLs,
+          # protocol-relative URLs, anchors, data URLs and mailto/tel links
+          # are intentionally left untouched.
+          local_roots = (
+              "/main/",
+              "/media/",
+              "/app/",
+              "/assets/",
+          )
+
+          def rewrite(text: str) -> str:
+              # /main/... -> /matchpro/main/...
+              # /media/... -> /matchpro/media/...
+              # etc. Avoid double-prefixing paths already fixed.
+              for prefix in local_roots:
+                  text = text.replace(f'"{prefix}', f'"{BASE}{prefix}')
+                  text = text.replace(f"'{prefix}", f"'{BASE}{prefix}")
+                  text = text.replace(f'({prefix}', f'({BASE}{prefix}')
+                  text = text.replace(f'={prefix}', f'={BASE}{prefix}')
+
+              # Root links to the homepage must point to /matchpro/.
+              text = re.sub(r'(["\'])/(\?[^"\']*)', rf'\1{BASE}/\2', text)
+              text = text.replace('href="/"', f'href="{BASE}/"')
+              text = text.replace("href='/'", f"href='{BASE}/'")
+
+              return text
+
+          changed = 0
+          for path in ROOT.rglob("*"):
+              if not path.is_file() or any(part in SKIP_DIRS for part in path.parts):
+                  continue
+              if path.suffix.lower() not in TEXT_EXTENSIONS:
+                  continue
+
+              try:
+                  original = path.read_text(encoding="utf-8")
+              except (UnicodeDecodeError, OSError):
+                  continue
+
+              updated = rewrite(original)
+              if updated != original:
+                  path.write_text(updated, encoding="utf-8")
+                  changed += 1
+
+          print(f"GitHub Pages path preparation complete: {changed} files adjusted.")
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: "."
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
