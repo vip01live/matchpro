@@ -1,35 +1,32 @@
-(function(){'use strict';
-if(window.MATCHPRO_ADS_LOADED)return;
-window.MATCHPRO_ADS_LOADED=true;
+(function(){
+  'use strict';
 
-function getAdsScriptUrl(){
-  var scripts=document.getElementsByTagName('script');
-  for(var i=scripts.length-1;i>=0;i--){
-    var src=scripts[i].src||scripts[i].getAttribute('src')||'';
-    if(src.indexOf('ads-loader.js')!==-1){
-      try{return new URL('../ads/ad.js',src).href}catch(_){}
-    }
+  if(window.MATCHPRO_ADS_LOADED)return;
+  window.MATCHPRO_ADS_LOADED=true;
+
+  function addScript(src,zone,name){
+    if(document.querySelector('script[data-matchpro-ad="'+name+'"]'))return;
+    var s=document.createElement('script');
+    s.src=src;
+    s.async=true;
+    s.dataset.zone=zone;
+    s.dataset.matchproAd=name;
+    (document.head||document.documentElement).appendChild(s);
   }
-  return new URL('/main/ads/ad.js',window.location.origin).href;
-}
 
-function load(){
-  if(document.querySelector('script[data-matchpro-global-ads="1"]'))return;
-  var s=document.createElement('script');
-  s.src=getAdsScriptUrl();
-  s.async=true;
-  s.dataset.matchproGlobalAds='1';
-  s.onload=function(){window.MATCHPRO_GLOBAL_ADS_READY=true;};
-  s.onerror=function(){
-    /* Fallback for deployments where the loader URL was rewritten. */
-    var fallback=document.createElement('script');
-    fallback.src=new URL('/main/ads/ad.js',window.location.origin).href;
-    fallback.async=true;
-    fallback.dataset.matchproGlobalAds='1';
-    (document.head||document.documentElement).appendChild(fallback);
-  };
-  (document.head||document.documentElement).appendChild(s);
-}
+  function load(){
+    if(window.MATCHPRO_ADS_STARTED)return;
+    window.MATCHPRO_ADS_STARTED=true;
 
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+    /* Load the advertising providers directly so Vercel, GitHub Pages,
+       and custom domains do not depend on a local ad.js path. */
+    addScript('https://n6wxm.com/vignette.min.js','11711828','n6wxm-zone-11711828');
+    addScript('https://nap5k.com/tag.min.js','11711877','nap5k-zone-11711877');
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',load,{once:true});
+  }else{
+    load();
+  }
 })();
