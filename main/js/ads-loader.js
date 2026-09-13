@@ -56,6 +56,24 @@ function cleanupOnBack(){
   window.addEventListener('pageshow',function(e){if(e.persisted||back)cleanup(e.persisted||back)});
 }
 
+function getAdsScriptUrl(){
+  /*
+   * Do not use /main/ads/ad.js here. GitHub Pages project sites live under
+   * /<repository>/, so a root-absolute URL points to the wrong location.
+   * Resolve ad.js from the actual ads-loader.js URL instead. This works on:
+   *   https://vip01live.github.io/matchpro/
+   * and on a custom domain/root deployment as well.
+   */
+  var scripts=document.getElementsByTagName('script');
+  for(var i=scripts.length-1;i>=0;i--){
+    var src=scripts[i].src||scripts[i].getAttribute('src')||'';
+    if(src.indexOf('ads-loader.js')!==-1){
+      try{return new URL('../ads/ad.js',src).href}catch(_){}
+    }
+  }
+  return 'main/ads/ad.js';
+}
+
 watchProviderNodes();
 cleanupOnBack();
 
@@ -65,7 +83,7 @@ function load(){
   if(nav&&nav.type==='back_forward')return;
   if(document.querySelector('script[data-matchpro-global-ads="1"]'))return;
   var s=document.createElement('script');
-  s.src='/main/ads/ad.js';
+  s.src=getAdsScriptUrl();
   s.async=true;
   s.dataset.matchproGlobalAds='1';
   (document.head||document.documentElement).appendChild(s);
