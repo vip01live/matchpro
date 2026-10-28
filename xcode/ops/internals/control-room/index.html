@@ -44,14 +44,41 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   <div class="layout">
     <aside class="sidebar" aria-label="Կառավարման բաժիններ">
       <div class="brand"><div class="brand-mark">MP</div><div><h1>MatchPro</h1><p>Control Center</p></div></div>
-      <div class="nav-label">ԿԱՌԱՎԱՐՈՒՄ</div>
-      <button class="navbtn active" data-view="channels"><span class="nav-icon">▦</span> Ալիքներ</button>
-      <button class="navbtn" data-view="info"><span class="nav-icon">⚙</span> Կարգավորումներ</button>
+      <div class="nav-label">ԿԱՌԱՎԱՐՄԱՆ ԿԵՆՏՐՈՆ</div>
+      <button class="navbtn active" data-view="dashboard"><span class="nav-icon">◫</span> Dashboard</button>
+      <button class="navbtn" data-view="channels"><span class="nav-icon">▦</span> Ալիքներ</button>
+      <div class="nav-label">ԿԱՅՔԻ ԿԱՐԳԱՎՈՐՈՒՄՆԵՐ</div>
+      <button class="navbtn" data-view="ads"><span class="nav-icon">↗</span> Գովազդ</button>
+      <button class="navbtn" data-view="branding"><span class="nav-icon">✦</span> Լոգո և favicon</button>
+      <button class="navbtn" data-view="content"><span class="nav-icon">⌘</span> SEO և բովանդակություն</button>
+      <button class="navbtn" data-view="maintenance"><span class="nav-icon">⚙</span> Տեխնիկական կարգավորումներ</button>
+      <button class="navbtn" data-view="security"><span class="nav-icon">◇</span> Անվտանգություն և մուտք</button>
       <div class="sidebar-bottom"><div class="hint" style="margin:0 0 10px">Փոփոխությունները ստեղծում են commit և հրապարակվում են կայքի deploy-ից հետո։</div><button id="logout-button" class="btn outline" style="width:100%">Դուրս գալ</button></div>
     </aside>
 
     <main>
-      <section id="channels-view">
+      <section id="dashboard-view" class="hidden">
+        <div class="topbar">
+          <div><h2>Կառավարման ամփոփում</h2><p>MatchPro-ի ալիքների և հիմնական կարգավորումների արագ դիտարկում։</p></div>
+          <div class="actions"><button type="button" class="btn outline" data-jump-view="channels">Բացել ալիքները</button><button type="button" class="btn primary" data-jump-view="ads">Գովազդի կարգավորումներ</button></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="label">Բոլոր ալիքները</div><div class="number" id="dash-total">—</div></div>
+          <div class="stat"><div class="label">Հրապարակված</div><div class="number" id="dash-published">—</div></div>
+          <div class="stat"><div class="label">Չհրապարակված</div><div class="number" id="dash-unpublished">—</div></div>
+          <div class="stat"><div class="label">Ինդեքսավորման թույլտվությամբ</div><div class="number" id="dash-indexable">—</div></div>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><div><h3>Համակարգի վիճակ</h3><p>Տվյալների բեռնումը և հրապարակման վիճակը դիտարկվում են առանձին։</p></div></div>
+          <div class="notice" id="dash-status" role="status" aria-live="polite">Մուտք գործելուց հետո այստեղ կերևա տվյալների վերջին բեռնման վիճակը։</div>
+          <div class="actions" style="margin-top:16px">
+            <button type="button" class="btn outline" data-jump-view="branding">Կառավարել լոգոն</button>
+            <button type="button" class="btn outline" data-jump-view="content">SEO և տեքստեր</button>
+            <button type="button" class="btn outline" data-jump-view="maintenance">Տեխնիկական կարգավորումներ</button>
+          </div>
+        </section>
+      </section>
+      <section id="channels-view" class="hidden">
         <div class="topbar">
           <div><h2>Ալիքների կառավարում</h2><p>Ավելացրեք, խմբագրեք կամ հեռացրեք հեռարձակման ալիքները։</p></div>
           <div class="actions"><button id="refresh-button" class="btn outline">↻ Թարմացնել</button><button id="new-button" class="btn primary">＋ Ավելացնել ալիք</button></div>
@@ -149,9 +176,14 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       <div id="settings-error" class="error"></div>
       <div class="form-actions"><button type="button" id="back-list-button" class="btn outline">← Վերադառնալ ալիքներին</button><button type="submit" id="save-settings-button" class="btn primary">✓ Պահպանել կարգավորումները</button></div>
     </form>
-    <div class="notice"><strong>Կարևոր սահմանափակում․</strong> գաղտնաբառը պաշտպանում է միայն այս բրաուզերում տեղային պահված token-ը։ Իրական սերվերային մուտքի պաշտպանության և կայքը սերվերի մակարդակով փակելու համար անհրաժեշտ է backend։</div>
-    <button id="change-password-button" class="btn outline">Փոխել ադմինի գաղտնաբառը</button>
-    <div id="password-change-area" class="hidden" style="margin-top:16px"><div class="field"><label for="newAdminPassword">Նոր գաղտնաբառ՝ 12+ նիշ</label><input id="newAdminPassword" type="password" minlength="12" autocomplete="new-password"></div><button id="save-password-button" class="btn primary">Պահպանել նոր գաղտնաբառը</button></div>
+    <div id="security-panel" class="hidden">
+      <div class="lang-card"><div class="lang-head"><span class="flag">SEC</span> Անվտանգություն և մուտքի կառավարում</div>
+        <div class="notice"><strong>Կարևոր սահմանափակում․</strong> այս նախագիծը տեղակայված է GitHub Pages-ում։ Այստեղ գաղտնաբառը միայն այս բրաուզերում պահված GitHub token-ը կոդավորելու բանալի է, ոչ թե իրական սերվերային authentication։ Token-ը չի տեղադրվում հրապարակվող JavaScript-ում, բայց այն օգտագործվում է հենց բրաուզերից։ Իրական username/password մուտքի և պաշտպանված սերվերային գործողությունների համար անհրաժեշտ է backend, որը ներկայումս տեղակայված չէ։</div>
+        <p class="subtle-note">Մի օգտագործեք հանրային կամ ուրիշների հետ կիսվող սարք։ Logout-ը ջնջում է ընթացիկ էջի token-ը հիշողությունից, բայց տեղային կոդավորված token-ը մնում է այս բրաուզերում՝ մինչև բրաուզերի տվյալների մաքրումը։</p>
+        <button id="change-password-button" class="btn outline">Փոխել այս բրաուզերի գաղտնաբառը</button>
+        <div id="password-change-area" class="hidden" style="margin-top:16px"><div class="field"><label for="newAdminPassword">Նոր գաղտնաբառ՝ 12+ նիշ</label><input id="newAdminPassword" type="password" minlength="12" autocomplete="new-password"></div><button id="save-password-button" class="btn primary">Պահպանել նոր գաղտնաբառը</button></div>
+      </div>
+    </div>
   </div>
 </section>
       <div class="footnote">MatchPro Control Center · մուտքի token-ը պահվում է միայն այս browser-ում՝ կոդավորված ձևով</div>
@@ -179,6 +211,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   var busy = false;
   var toastTimer = null;
   var siteSettings = null;
+  var lastDataLoad = '';
   var $ = function (id) { return document.getElementById(id); };
 
   function escapeHtml(value) {
@@ -194,6 +227,16 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       if (u.protocol === 'https:' || u.protocol === 'http:') return v;
     } catch (_) {}
     return '';
+  }
+  function assetUrl(value) {
+    var raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw) || raw.indexOf('//') === 0) return safeUrl(raw, false);
+    var path = raw.charAt(0) === '/' ? raw : '/' + raw;
+    var basePath = '';
+    try { basePath = new URL(SITE_BASE, location.origin).pathname.replace(/\/+$/, ''); } catch (_) {}
+    if (basePath && (path === basePath || path.indexOf(basePath + '/') === 0)) return location.origin + path;
+    return SITE_BASE.replace(/\/+$/, '') + path;
   }
   function base64ToUtf8(value) {
     var binary = atob(String(value || '').replace(/\s/g, ''));
@@ -214,6 +257,19 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   async function readEncryptedToken(password) { var raw=localStorage.getItem('matchpro-admin-token-v1');if(!raw)return '';var saved=JSON.parse(raw),key=await adminKey(password,base64ToBytes(saved.salt));var clear=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64ToBytes(saved.iv)},key,base64ToBytes(saved.data));return new TextDecoder().decode(clear); }
   function fileBase64(file) { return new Promise(function(resolve,reject){var reader=new FileReader();reader.onerror=function(){reject(new Error('Ֆայլը կարդալ չհաջողվեց։'))};reader.onload=function(){resolve(String(reader.result).split(',')[1]||'')};reader.readAsDataURL(file);}); }
   function fileExtension(file,fallback) { var ext=(String(file.name||'').toLowerCase().match(/\.([a-z0-9]{2,5})$/)||[])[1];return /^(png|jpe?g|webp|gif|avif|ico|svg|mp4|webm|ogg)$/.test(ext||'')?(ext==='jpeg'?'jpg':ext):fallback; }
+  function allowedMediaFile(file, kind) {
+    if (!file) return false;
+    var ext = fileExtension(file, '');
+    var rules = {
+      image: {png:['image/png'],jpg:['image/jpeg','image/jpg'],webp:['image/webp']},
+      favicon: {png:['image/png'],jpg:['image/jpeg','image/jpg'],webp:['image/webp'],ico:['image/x-icon','image/vnd.microsoft.icon','image/ico'],svg:['image/svg+xml']},
+      video: {mp4:['video/mp4'],webm:['video/webm'],ogg:['video/ogg','application/ogg']}
+    };
+    var accepted = rules[kind] && rules[kind][ext];
+    if (!accepted) return false;
+    var mime = String(file.type || '').toLowerCase().trim();
+    return !mime || accepted.indexOf(mime) >= 0;
+  }
   function uploadUuid() { if (crypto && crypto.randomUUID) return crypto.randomUUID(); var bytes=crypto.getRandomValues(new Uint8Array(16)); bytes[6]=(bytes[6]&15)|64; bytes[8]=(bytes[8]&63)|128; var hex=Array.prototype.map.call(bytes,function(x){return ('0'+x.toString(16)).slice(-2)}).join(''); return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20); }
   function iframeFileFor(channel) { return channel.iframeFile || ('channel-' + channel.id + '-' + slugify(channel.nameEn || channel.file || 'channel') + '.html'); }
   function buildIframeHtml(playerUrl,title) { var encoded=utf8ToBase64(playerUrl);return '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer"><title>'+escapeHtml(title||'Channel player')+'</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}iframe{display:block;width:100%;height:100%;border:0}</style></head><body><script>(function(){var encodedSource="'+encoded+'";var binary=atob(encodedSource);var bytes=new Uint8Array(binary.length);for(var i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);var frame=document.createElement("iframe");frame.src=new TextDecoder("utf-8").decode(bytes);frame.title='+JSON.stringify(title||'Channel player')+';frame.allow="autoplay; encrypted-media; fullscreen; picture-in-picture";frame.allowFullscreen=true;frame.referrerPolicy="no-referrer";document.body.appendChild(frame);})();' + '</' + 'script></body></html>\n'; }
@@ -260,6 +316,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   async function loadState() {
     var source = await readTextFile('main/js/channels.js');
     channels = parseChannels(source);
+    lastDataLoad = new Date().toLocaleString();
     renderList();
   }
   function notify(message, error) {
@@ -321,6 +378,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       $('login-screen').classList.add('hidden');
       $('app-screen').classList.remove('hidden');
       $('token').value = '';
+      setView('dashboard');
       notify('Մուտքը հաջողվեց։ Միացված է ' + OWNER + '/' + REPO + ' ռեպոզիտորիային։');
     } catch (error) {
       token = '';
@@ -337,7 +395,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     });
     filtered.forEach(function (channel) {
       var tr = document.createElement('tr');
-      tr.innerHTML = '<td><div class="channel-cell"><img class="channel-logo" src="' + escapeHtml(safeUrl(channel.logo, true)) + '" alt=""><div><div class="channel-name">' + escapeHtml(channel.nameHy || channel.nameRu || channel.nameEn) + '</div><div class="channel-sub">' + escapeHtml(channel.nameEn || '') + '</div></div></div></td>' +
+      tr.innerHTML = '<td><div class="channel-cell"><img class="channel-logo" src="' + escapeHtml(assetUrl(channel.logo)) + '" alt=""><div><div class="channel-name">' + escapeHtml(channel.nameHy || channel.nameRu || channel.nameEn) + '</div><div class="channel-sub">' + escapeHtml(channel.nameEn || '') + '</div></div></div></td>' +
         '<td><span class="badge">' + escapeHtml(channel.id) + '</span></td><td><span class="small">' + escapeHtml(channel.file) + '</span></td><td>HY · RU · EN</td>' +
         '<td><div class="row-actions"><button type="button" class="btn small outline" data-edit="' + escapeHtml(channel.id) + '">Խմբագրել</button><button type="button" class="btn small danger" data-delete="' + escapeHtml(channel.id) + '">Ջնջել</button></div></td>';
       rows.appendChild(tr);
@@ -345,6 +403,18 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     $('empty-state').classList.toggle('hidden', filtered.length > 0);
     $('stat-count').textContent = String(channels.length);
     $('stat-urls').textContent = String(1 + channels.length * 3);
+    updateDashboard();
+  }
+  function updateDashboard() {
+    var published = channels.filter(function (channel) { return channel.published !== false; }).length;
+    var indexable = channels.filter(function (channel) { return channel.published !== false && channel.indexable !== false; }).length;
+    $('dash-total').textContent = String(channels.length);
+    $('dash-published').textContent = String(published);
+    $('dash-unpublished').textContent = String(channels.length - published);
+    $('dash-indexable').textContent = String(indexable);
+    $('dash-status').textContent = lastDataLoad
+      ? 'Տվյալները բեռնվել են GitHub-ից՝ ' + lastDataLoad + '. Հրապարակման վերջնական վիճակը ստուգեք GitHub Actions-ում։'
+      : 'Տվյալների բեռնումը դեռ չի հաստատվել։';
   }
   function slugify(value) {
     var v = String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -367,6 +437,23 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     });
     if(name==='content')activateLanguageTab('hy','home');
     if(name==='maintenance')activateLanguageTab('hy','maintenance');
+  }
+
+  function setView(view) {
+    var settingsViews = ['ads', 'branding', 'content', 'maintenance'];
+    var isSettings = settingsViews.indexOf(view) >= 0;
+    var isSecurity = view === 'security';
+    document.querySelectorAll('[data-view]').forEach(function (button) {
+      button.classList.toggle('active', button.dataset.view === view);
+    });
+    $('dashboard-view').classList.toggle('hidden', view !== 'dashboard');
+    $('channels-view').classList.toggle('hidden', view !== 'channels');
+    $('info-view').classList.toggle('hidden', !(isSettings || isSecurity));
+    $('form-view').classList.add('hidden');
+    $('site-settings-form').classList.toggle('hidden', isSecurity);
+    $('security-panel').classList.toggle('hidden', !isSecurity);
+    if (isSettings) activateSettingsTab(view);
+    if (view === 'channels') showForm(false);
   }
 
   function activateLanguageTab(lang,scope) {
@@ -395,7 +482,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     var keys = ['logo','nameHy','titleHy','descriptionHy','keywordsHy','nameRu','titleRu','descriptionRu','keywordsRu','nameEn','titleEn','descriptionEn','keywordsEn','redirectUrl','videoAdUrl'];
     keys.forEach(function (key) { $(key).value = channel && channel[key] ? channel[key] : ''; });
     $('playerUrl').value=playerUrl||''; $('adMode').value=channel&&channel.adMode?channel.adMode:'redirect'; $('published').checked=!channel||channel.published!==false; $('indexable').checked=!channel||channel.indexable!==false;
-    $('logoFile').value=''; $('videoFile').value=''; $('logo-preview').src=safeUrl(channel&&channel.logo?channel.logo:'/media/fv/favicon-32x32.png',true)||'/media/fv/favicon-32x32.png'; $('video-preview').classList.add('hidden');$('video-preview').removeAttribute('src');
+    $('logoFile').value=''; $('videoFile').value=''; $('logo-preview').src=assetUrl(channel&&channel.logo?channel.logo:'/media/fv/favicon-32x32.png')||assetUrl('/media/fv/favicon-32x32.png'); $('video-preview').classList.add('hidden');$('video-preview').removeAttribute('src');
     activateLanguageTab('hy','channel');
     $('form-title').textContent = editing ? 'Խմբագրել ալիքը' : 'Ավելացնել նոր ալիք';
     $('form-mode').textContent = editing ? 'ԽՄԲԱԳՐՈՒՄ' : 'ՆՈՐ ԱԼԻՔ';
@@ -546,8 +633,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     event.preventDefault(); if(busy)return; showFormError('');
     if(!validateLanguageFields())return;
     var data=fieldData(),logoFile=$('logoFile').files&&$('logoFile').files[0],videoFile=$('videoFile').files&&$('videoFile').files[0];
-    if(logoFile&&logoFile.size>5*1024*1024){showFormError('Լոգոյի ֆայլը պետք է լինի առավելագույնը 5 ՄԲ։');return;}
-    if(videoFile&&videoFile.size>15*1024*1024){showFormError('Գովազդային տեսանյութը պետք է լինի առավելագույնը 15 ՄԲ։');return;}
+    if(logoFile&&(logoFile.size>5*1024*1024||!allowedMediaFile(logoFile,'image'))){showFormError('Լոգոյի համար ընտրեք վավեր PNG, JPG կամ WEBP պատկեր՝ մինչև 5 ՄԲ, որի ընդլայնումն ու MIME տեսակը համընկնում են։');return;}
+    if(videoFile&&(videoFile.size>15*1024*1024||!allowedMediaFile(videoFile,'video'))){showFormError('Տեսանյութի համար ընտրեք վավեր MP4, WEBM կամ OGG ֆայլ՝ մինչև 15 ՄԲ, որի ընդլայնումն ու MIME տեսակը համընկնում են։');return;}
     data.logo=safeUrl(data.logo,true);data.playerUrl=safeUrl(data.playerUrl,true);data.redirectUrl=data.redirectUrl?safeUrl(data.redirectUrl,false):'';data.videoAdUrl=data.videoAdUrl?safeUrl(data.videoAdUrl,true):'';
     if(!data.playerUrl){showFormError('Նվագարկչի URL-ը սխալ է։ Թույլատրվում են միայն http(s) և /-ով սկսվող տեղական ուղիներ։');return;}
     if($('redirectUrl').value.trim()&&!data.redirectUrl){showFormError('Վերահղման URL-ը սխալ է։');return;}
@@ -599,7 +686,11 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   }
   async function loadSettings(){
     var defs=defaultSiteSettings();
-    try{siteSettings=JSON.parse(await readTextFile('main/js/site-settings.json'))}catch(_){siteSettings=defs}
+    try {
+      siteSettings = JSON.parse(await readTextFile('main/js/site-settings.json'));
+    } catch (error) {
+      throw new Error('Չհաջողվեց կարդալ main/js/site-settings.json-ը։ Կարգավորումները չեն փոխվել՝ տվյալների կորուստը կանխելու համար։ ' + (error.message || ''));
+    }
     siteSettings=Object.assign({},defs,siteSettings||{});
     siteSettings.maintenance=Object.assign({},defs.maintenance,siteSettings.maintenance||{});
     siteSettings.maintenance.message=Object.assign({},defs.maintenance.message,siteSettings.maintenance.message||{});
@@ -610,8 +701,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     $('defaultRedirectUrl').value=siteSettings.defaultRedirectUrl||'';
     $('siteLogoPath').value=siteSettings.logo||defs.logo;
     $('faviconPath').value=siteSettings.favicon||defs.favicon;
-    $('site-logo-preview').src=safeUrl(siteSettings.logo||defs.logo,true)||'/media/logo.png';
-    $('favicon-preview').src=safeUrl(siteSettings.favicon||defs.favicon,true)||'/media/fv/favicon-32x32.png';
+    $('site-logo-preview').src=assetUrl(siteSettings.logo||defs.logo)||assetUrl('/media/logo.png');
+    $('favicon-preview').src=assetUrl(siteSettings.favicon||defs.favicon)||assetUrl('/media/fv/favicon-32x32.png');
     $('maintenanceTextHy').value=siteSettings.maintenance.message.hy||'';
     $('maintenanceTextRu').value=siteSettings.maintenance.message.ru||'';
     $('maintenanceTextEn').value=siteSettings.maintenance.message.en||'';
@@ -627,8 +718,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     if(redirect&&!safeUrl(redirect,false)){$('settings-error').textContent='Ընդհանուր վերահղման URL-ը սխալ է։';activateSettingsTab('ads');return}
     if(!logoPath){$('settings-error').textContent='Կայքի լոգոյի ուղին սխալ է։';activateSettingsTab('branding');return}
     if(!iconPath){$('settings-error').textContent='Favicon-ի ուղին սխալ է։';activateSettingsTab('branding');return}
-    if(logoFile&&(logoFile.size>5*1024*1024||!/^(png|jpg|webp)$/.test(fileExtension(logoFile,''))||!(logoFile.type===''||/^image\/(png|jpeg|webp)$/i.test(logoFile.type)))){$('settings-error').textContent='Լոգոյի համար ընտրեք PNG, JPG կամ WEBP պատկեր՝ մինչև 5 ՄԲ։';activateSettingsTab('branding');return}
-    if(iconFile&&(iconFile.size>2*1024*1024||!/^(png|jpg|webp|ico|svg)$/.test(fileExtension(iconFile,'')))){$('settings-error').textContent='Favicon-ի համար ընտրեք PNG, JPG, WEBP, ICO կամ SVG՝ մինչև 2 ՄԲ։';activateSettingsTab('branding');return}
+    if(logoFile&&(logoFile.size>5*1024*1024||!allowedMediaFile(logoFile,'image'))){$('settings-error').textContent='Լոգոյի համար ընտրեք վավեր PNG, JPG կամ WEBP պատկեր՝ մինչև 5 ՄԲ։';activateSettingsTab('branding');return}
+    if(iconFile&&(iconFile.size>2*1024*1024||!allowedMediaFile(iconFile,'favicon'))){$('settings-error').textContent='Favicon-ի համար ընտրեք վավեր PNG, JPG, WEBP, ICO կամ SVG՝ մինչև 2 ՄԲ։';activateSettingsTab('branding');return}
     var settingData=Object.assign({},base);
     settingData.maintenance={enabled:$('maintenanceEnabled').checked,message:{hy:$('maintenanceTextHy').value.trim(),ru:$('maintenanceTextRu').value.trim(),en:$('maintenanceTextEn').value.trim()}};
     settingData.adblock={enabled:false};settingData.defaultRedirectUrl=redirect;settingData.logo=logoPath;settingData.favicon=iconPath;settingData.home={};
@@ -641,7 +732,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       changes['main/js/site-settings.json']=JSON.stringify(settingData,null,2)+'\n';
       await commitChanges(changes,[],'Update MatchPro site settings and branding');
       siteSettings=settingData;$('siteLogoPath').value=settingData.logo;$('faviconPath').value=settingData.favicon;
-      $('site-logo-preview').src=safeUrl(settingData.logo,true)||'/media/logo.png';$('favicon-preview').src=safeUrl(settingData.favicon,true)||'/media/fv/favicon-32x32.png';
+      $('site-logo-preview').src=assetUrl(settingData.logo)||assetUrl('/media/logo.png');$('favicon-preview').src=assetUrl(settingData.favicon)||assetUrl('/media/fv/favicon-32x32.png');
       $('siteLogoFile').value='';$('faviconFile').value='';notify('Կարգավորումները և բրենդային նկարները պահպանվեցին։ Փոփոխությունները կհրապարակվեն deploy-ից հետո։');
     }catch(error){$('settings-error').textContent=error.message||'Կարգավորումները չպահպանվեցին։'}finally{setBusy(false)}
   }
@@ -667,13 +758,13 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   $('change-password-button').addEventListener('click',function(){$('password-change-area').classList.toggle('hidden')});
   $('save-password-button').addEventListener('click',changeAdminPassword);
   document.querySelectorAll('[data-settings-tab]').forEach(function(button){button.addEventListener('click',function(){activateSettingsTab(button.dataset.settingsTab)})});
-  $('siteLogoFile').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>5*1024*1024||!/^(png|jpg|webp)$/.test(fileExtension(f,''))){notify('Ընտրեք PNG, JPG կամ WEBP լոգո՝ մինչև 5 ՄԲ։',true);this.value='';return}$('site-logo-preview').src=URL.createObjectURL(f)});
-  $('faviconFile').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>2*1024*1024||!/^(png|jpg|webp|ico|svg)$/.test(fileExtension(f,''))){notify('Ընտրեք PNG, JPG, WEBP, ICO կամ SVG favicon՝ մինչև 2 ՄԲ։',true);this.value='';return}$('favicon-preview').src=URL.createObjectURL(f)});
-  $('siteLogoPath').addEventListener('input',function(){if(!($('siteLogoFile').files&&$('siteLogoFile').files[0]))$('site-logo-preview').src=safeUrl(this.value,true)||'/media/logo.png'});
-  $('faviconPath').addEventListener('input',function(){if(!($('faviconFile').files&&$('faviconFile').files[0]))$('favicon-preview').src=safeUrl(this.value,true)||'/media/fv/favicon-32x32.png'});
-  $('logoFile').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>5*1024*1024){notify('Լոգոյի ֆայլը պետք է լինի մինչև 5 ՄԲ։',true);this.value='';return}$('logo-preview').src=URL.createObjectURL(f)});
-  $('videoFile').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>15*1024*1024){notify('Տեսանյութը պետք է լինի մինչև 15 ՄԲ։',true);this.value='';return}$('video-preview').src=URL.createObjectURL(f);$('video-preview').classList.remove('hidden')});
-  $('logo').addEventListener('input',function(){if(!($('logoFile').files&&$('logoFile').files[0]))$('logo-preview').src=safeUrl(this.value,true)||'/media/fv/favicon-32x32.png'});
+  $('siteLogoFile').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>5*1024*1024||!allowedMediaFile(f,'image')){notify('Ընտրեք վավեր PNG, JPG կամ WEBP լոգո՝ մինչև 5 ՄԲ։',true);this.value='';return}$('site-logo-preview').src=URL.createObjectURL(f)});
+  $('faviconFile').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>2*1024*1024||!allowedMediaFile(f,'favicon')){notify('Ընտրեք վավեր PNG, JPG, WEBP, ICO կամ SVG favicon՝ մինչև 2 ՄԲ։',true);this.value='';return}$('favicon-preview').src=URL.createObjectURL(f)});
+  $('siteLogoPath').addEventListener('input',function(){if(!($('siteLogoFile').files&&$('siteLogoFile').files[0]))$('site-logo-preview').src=assetUrl(this.value)||assetUrl('/media/logo.png')});
+  $('faviconPath').addEventListener('input',function(){if(!($('faviconFile').files&&$('faviconFile').files[0]))$('favicon-preview').src=assetUrl(this.value)||assetUrl('/media/fv/favicon-32x32.png')});
+  $('logoFile').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>5*1024*1024||!allowedMediaFile(f,'image')){notify('Ընտրեք վավեր PNG, JPG կամ WEBP լոգո՝ մինչև 5 ՄԲ։',true);this.value='';return}$('logo-preview').src=URL.createObjectURL(f)});
+  $('videoFile').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>15*1024*1024||!allowedMediaFile(f,'video')){notify('Ընտրեք վավեր MP4, WEBM կամ OGG տեսանյութ՝ մինչև 15 ՄԲ։',true);this.value='';return}$('video-preview').src=URL.createObjectURL(f);$('video-preview').classList.remove('hidden')});
+  $('logo').addEventListener('input',function(){if(!($('logoFile').files&&$('logoFile').files[0]))$('logo-preview').src=assetUrl(this.value)||assetUrl('/media/fv/favicon-32x32.png')});
   $('channel-form').addEventListener('submit', saveChannel);
   $('new-button').addEventListener('click', newChannel);
   $('cancel-button').addEventListener('click', function () { showForm(false); });
@@ -692,16 +783,12 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   });
   $('delete-current-button').addEventListener('click', function () { if (editing && selectedId != null) deleteChannel(selectedId); });
   $('logout-button').addEventListener('click', logout);
-  $('back-list-button').addEventListener('click', function () { showForm(false); });
+  $('back-list-button').addEventListener('click', function () { setView('channels'); showForm(false); });
   document.querySelectorAll('[data-view]').forEach(function (button) {
-    button.addEventListener('click', function () {
-      document.querySelectorAll('[data-view]').forEach(function (b) { b.classList.toggle('active', b === button); });
-      var isInfo = button.dataset.view === 'info';
-      $('channels-view').classList.toggle('hidden', isInfo);
-      $('info-view').classList.toggle('hidden', !isInfo);
-      $('form-view').classList.add('hidden');
-      if(isInfo)activateLanguageTab('hy','home');
-    });
+    button.addEventListener('click', function () { setView(button.dataset.view); });
+  });
+  document.querySelectorAll('[data-jump-view]').forEach(function (button) {
+    button.addEventListener('click', function () { setView(button.dataset.jumpView); });
   });
 })();</script>
 </body>
