@@ -8,7 +8,7 @@
     }
   },
   "adblock": {
-    "enabled": true
+    "enabled": false
   },
   "defaultRedirectUrl": "https://lkhq.cc/60dc1304",
   "favicon": "/media/fv/favicon-32x32.png",
