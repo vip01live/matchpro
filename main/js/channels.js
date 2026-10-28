@@ -16,8 +16,11 @@ window.MATCHPRO_CHANNELS = [
     "descriptionHy": "Դիտեք Մատչ TV-ի ուղիղ եթերը MatchPro-ում։ Սպորտային հաղորդումներ և մարզական իրադարձություններ՝ առցանց։",
     "keywordsHy": "Մատչ TV ուղիղ եթեր, սպորտային ալիքներ, սպորտ առցանց",
     "iframeFile": "channel-7001-matchtv.html",
-    "published": true,
-    "indexable": true
+    "published": false,
+    "indexable": true,
+    "adMode": "redirect",
+    "redirectUrl": "",
+    "videoAdUrl": ""
   },
   {
     "id": 7002,
