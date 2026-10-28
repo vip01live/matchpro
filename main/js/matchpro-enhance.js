@@ -10,10 +10,13 @@
   function getLang(){
     if(explicit==='hy'||explicit==='ru'||explicit==='en')return explicit;
     try{var s=localStorage.getItem('matchpro-language');if(s==='hy'||s==='ru'||s==='en')return s}catch(_){}
-    return'hy';
+    var browser=(navigator.language||'').toLowerCase();
+    if(browser.indexOf('hy')===0)return'hy';
+    if(/^(ru|be|kk|ky|uz)(-|$)/.test(browser))return'ru';
+    return'en';
   }
   var lang=getLang();
-  try{localStorage.setItem('matchpro-language',lang)}catch(_){}
+  if(explicit==='hy'||explicit==='ru'||explicit==='en'){try{localStorage.setItem('matchpro-language',lang)}catch(_){}}
   document.documentElement.lang=lang;
   function currentChannel(){
     for(var i=0;i<channels.length;i++){
@@ -57,8 +60,9 @@
     document.title=title||((name||'Sports channel')+' | MatchPro');
     setMeta('description',description);
     setMeta('keywords',keywords);
-    setMeta('robots','index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
-    setMeta('googlebot','index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    var mayIndex=current.published!==false&&current.indexable!==false;
+    setMeta('robots',mayIndex?'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1':'noindex,nofollow');
+    setMeta('googlebot',mayIndex?'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1':'noindex,nofollow');
     setProperty('og:title',title);setProperty('og:description',description);setProperty('og:type','website');setProperty('og:url',canonical);setProperty('og:image',location.origin+current.logo);
     setMeta('twitter:card','summary_large_image');setMeta('twitter:title',title);setMeta('twitter:description',description);setMeta('twitter:image',location.origin+current.logo);
     upsertLink('canonical',canonical);

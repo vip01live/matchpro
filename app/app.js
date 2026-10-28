@@ -61,7 +61,7 @@
   function render() {
     if (!grid) return;
     grid.innerHTML = '';
-    channels.forEach(function (channel) {
+    channels.filter(function(channel){return channel.published!==false;}).forEach(function (channel) {
       var link = document.createElement('a');
       link.className = 'channel';
       link.href = route(channel.id);
@@ -96,7 +96,7 @@
   }
   async function openChannel(id) {
     var channel = channels.find(function (x) { return String(x.id) === String(id); });
-    if (!channel || !player || !playerSection) return;
+    if (!channel || channel.published===false || !player || !playerSection) return;
     var token = ++loadToken;
     if (loadController) loadController.abort();
     loadController = new AbortController();
