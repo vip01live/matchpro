@@ -69,9 +69,15 @@
     document.head.appendChild(style);
   }
 
+  function releaseOverlay(overlay) {
+    if (!overlay) return;
+    if (typeof overlay._matchproRestoreFrame === 'function') overlay._matchproRestoreFrame();
+    overlay.remove();
+  }
+
   function markDone(overlay) {
     write(key(), '1');
-    if (overlay && overlay.parentNode) overlay.remove();
+    if (overlay && overlay.parentNode) releaseOverlay(overlay);
   }
 
   function openAdInNewTab(url, overlay) {
@@ -128,7 +134,7 @@
     video.autoplay = true;
     video.playsInline = true;
     video.preload = 'auto';
-    video.addEventListener('ended', function () { overlay.remove(); });
+    video.addEventListener('ended', function () { releaseOverlay(overlay); });
     video.addEventListener('error', function () {
       if (overlay.querySelector('.mp-ad-fallback')) return;
       var button = document.createElement('button');
@@ -138,7 +144,7 @@
       button.addEventListener('click', function (event) {
         event.preventDefault();
         event.stopPropagation();
-        overlay.remove();
+        releaseOverlay(overlay);
       });
       overlay.appendChild(button);
     });
@@ -156,7 +162,16 @@
 
     if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
 
+    var frame = container.querySelector('iframe');
+    var previousTabIndex = frame.getAttribute('tabindex');
+    frame.setAttribute('tabindex', '-1');
+    frame.setAttribute('aria-hidden', 'true');
     var overlay = document.createElement('div');
+    overlay._matchproRestoreFrame = function () {
+      if (previousTabIndex === null) frame.removeAttribute('tabindex');
+      else frame.setAttribute('tabindex', previousTabIndex);
+      frame.removeAttribute('aria-hidden');
+    };
     overlay.className = CLS;
     overlay.setAttribute('role', 'button');
     overlay.setAttribute('tabindex', '0');
@@ -170,7 +185,7 @@
       event.preventDefault();
       event.stopPropagation();
       if (read(key()) === '1') {
-        overlay.remove();
+        releaseOverlay(overlay);
         return;
       }
 
@@ -197,7 +212,7 @@
   function scan() {
     if (read(key()) === '1') {
       document.querySelectorAll('.' + CLS).forEach(function (overlay) {
-        if (!overlay.querySelector('video')) overlay.remove();
+        if (!overlay.querySelector('video')) releaseOverlay(overlay);
       });
       return;
     }
