@@ -33,8 +33,10 @@
   }
 
   function httpUrl(value) {
+    var raw = String(value || '').trim();
+    if (!raw) return '';
     try {
-      var parsed = new URL(String(value || '').trim(), location.href);
+      var parsed = new URL(raw, location.href);
       if (parsed.protocol === 'https:' || parsed.protocol === 'http:') return parsed.href;
     } catch (_) {}
     return '';
@@ -49,7 +51,7 @@
 
   function videoUrl() {
     var current = channel();
-    return httpUrl(current && current.videoAdUrl);
+    return current ? httpUrl(current.videoAdUrl) : '';
   }
 
   function styles() {
