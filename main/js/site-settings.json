@@ -1,0 +1,38 @@
+{
+  "maintenance": {
+    "enabled": false,
+    "message": {
+      "hy": "Կայքում իրականացվում են տեխնիկական աշխատանքներ։ Խնդրում ենք փորձել ավելի ուշ։",
+      "ru": "На сайте ведутся технические работы. Пожалуйста, зайдите позже.",
+      "en": "We are performing maintenance. Please come back later."
+    }
+  },
+  "adblock": {
+    "enabled": true
+  },
+  "defaultRedirectUrl": "https://lkhq.cc/60dc1304",
+  "favicon": "/media/fv/favicon-32x32.png",
+  "home": {
+    "hy": {
+      "title": "Մարզական ալիքներ՝ ուղիղ եթերում | MatchPro",
+      "description": "Դիտեք ֆուտբոլի, հոկեյի, բասկետբոլի և այլ մարզաձևերի հասանելի ուղիղ հեռարձակումները MatchPro-ում։",
+      "keywords": "մարզական ալիքներ առցանց, ուղիղ եթեր, ֆուտբոլ, հոկեյ, բասկետբոլ, MatchPro",
+      "intro": "Լավագույն մարզական իրադարձությունները՝ ուղիղ եթերում",
+      "info": "Ընտրեք ձեր նախընտրած մարզական ալիքը և հետևեք ֆուտբոլի, հոկեյի, բասկետբոլի ու այլ մարզաձևերի հասանելի հեռարձակումներին մեկ վայրում։ MatchPro-ում կարող եք արագ գտնել հետաքրքրող ալիքը և դիտել ուղիղ եթերը։"
+    },
+    "ru": {
+      "title": "Спортивные каналы онлайн в прямом эфире | MatchPro",
+      "description": "Смотрите доступные спортивные трансляции футбола, хоккея, баскетбола и других видов спорта на MatchPro.",
+      "keywords": "спортивные каналы онлайн, прямой эфир, футбол, хоккей, баскетбол, MatchPro",
+      "intro": "Лучшие матчи — в прямом эфире",
+      "info": "Выбирайте спортивные каналы и следите за доступными футбольными, хоккейными, баскетбольными и другими трансляциями в одном месте. MatchPro помогает быстро находить интересующие вас каналы."
+    },
+    "en": {
+      "title": "Sports Channels Live Online | MatchPro",
+      "description": "Watch available live sports broadcasts, including football, hockey, basketball and more on MatchPro.",
+      "keywords": "sports channels online, live stream, football, hockey, basketball, MatchPro",
+      "intro": "The best matches — live",
+      "info": "Choose your preferred sports channel and follow available football, hockey, basketball and other live broadcasts in one place. MatchPro helps you find the channel you want quickly."
+    }
+  }
+}

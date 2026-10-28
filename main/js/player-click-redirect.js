@@ -1,103 +1,24 @@
-/* MatchPro: open the ad once per site visit, then leave player clicks alone. */
-(function () {
-  'use strict';
-  if (window.MATCHPRO_PLAYER_CLICK_REDIRECT_LOADED) return;
-  window.MATCHPRO_PLAYER_CLICK_REDIRECT_LOADED = true;
-
-  var REDIRECT_URL = (window.MATCHPRO_PLAYER_CONFIG && window.MATCHPRO_PLAYER_CONFIG.redirectUrl) || 'https://lkhq.cc/60dc1304';
-  var VISIT_KEY = 'matchpro_player_ad_done_v3';
-  var REDIRECT_NAV_KEY = 'matchpro_player_ad_navigation_v3';
-  var INTERNAL_NAV_KEY = 'matchpro_internal_navigation_v3';
-  var OVERLAY_CLASS = 'matchpro-player-click-overlay';
-
-  function read(key) {
-    try { return sessionStorage.getItem(key); } catch (_) { return null; }
-  }
-  function write(key, value) {
-    try { sessionStorage.setItem(key, value); } catch (_) {}
-  }
-  function remove(key) {
-    try { sessionStorage.removeItem(key); } catch (_) {}
-  }
-  function addStyles() {
-    if (document.getElementById('matchpro-player-click-redirect-style')) return;
-    var style = document.createElement('style');
-    style.id = 'matchpro-player-click-redirect-style';
-    style.textContent = '.' + OVERLAY_CLASS + '{position:absolute;inset:0;z-index:2147483646;display:block;width:100%;height:100%;margin:0;padding:0;border:0;background:transparent;cursor:pointer;appearance:none;-webkit-appearance:none}' +
-      '.' + OVERLAY_CLASS + ':focus{outline:none}' +
-      '.' + OVERLAY_CLASS + '[hidden]{display:none!important}';
-    (document.head || document.documentElement).appendChild(style);
-  }
-  function addOverlay(container) {
-    if (!container || read(VISIT_KEY) === '1' || !container.querySelector('iframe')) return;
-    if (container.querySelector('.' + OVERLAY_CLASS)) return;
-    if (window.getComputedStyle(container).position === 'static') container.style.position = 'relative';
-
-    var overlay = document.createElement('button');
-    overlay.type = 'button';
-    overlay.className = OVERLAY_CLASS;
-    overlay.setAttribute('aria-label', 'Continue to the player');
-    overlay.setAttribute('title', 'Continue to the player');
-    overlay.addEventListener('click', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      if (read(VISIT_KEY) === '1') {
-        overlay.remove();
-        return;
-      }
-      write(VISIT_KEY, '1');
-
-      var opened = null;
-      try { opened = window.open(REDIRECT_URL, '_blank'); } catch (_) {}
-      if (opened) {
-        try { opened.opener = null; } catch (_) {}
-        overlay.remove();
-        return;
-      }
-
-      /* If the browser blocks the new tab, use the same tab as a fallback.
-         Preserve the once-per-visit flag when the user returns with Back. */
-      write(REDIRECT_NAV_KEY, '1');
-      overlay.remove();
-      try { location.assign(REDIRECT_URL); } catch (_) {}
-    });
-    container.appendChild(overlay);
-  }
-  function scan() {
-    if (read(VISIT_KEY) === '1') {
-      document.querySelectorAll('.' + OVERLAY_CLASS).forEach(function (item) { item.remove(); });
-      return;
-    }
-    addStyles();
-    document.querySelectorAll('.player-container').forEach(addOverlay);
-  }
-
-  document.addEventListener('click', function (event) {
-    var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
-    if (!link) return;
-    try {
-      var target = new URL(link.href, location.href);
-      if (target.origin === location.origin) write(INTERNAL_NAV_KEY, String(Date.now()));
-    } catch (_) {}
-  }, true);
-
-  window.addEventListener('pagehide', function () {
-    if (read(REDIRECT_NAV_KEY) === '1') {
-      remove(REDIRECT_NAV_KEY);
-      return;
-    }
-    var mark = Number(read(INTERNAL_NAV_KEY) || 0);
-    remove(INTERNAL_NAV_KEY);
-    if (mark && Date.now() - mark < 2500) return;
-    remove(VISIT_KEY);
-  });
-
-  var observer = new MutationObserver(scan);
-  function start() {
-    scan();
-    if (document.documentElement) observer.observe(document.documentElement, { childList: true, subtree: true });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
-  else start();
-  window.addEventListener('pageshow', scan);
+(function(){
+'use strict';
+if(window.MATCHPRO_PLAYER_CLICK_REDIRECT_LOADED)return;
+window.MATCHPRO_PLAYER_CLICK_REDIRECT_LOADED=true;
+var PREFIX='matchpro_player_ad_done_v4_',NAV='matchpro_player_ad_navigation_v4',INTERNAL='matchpro_internal_navigation_v4',CLS='matchpro-player-click-overlay';
+function channel(){var id=(document.body&&document.body.getAttribute('data-matchpro-channel-id'))||(new URLSearchParams(location.search)).get('id');var a=Array.isArray(window.MATCHPRO_CHANNELS)?window.MATCHPRO_CHANNELS:[];return id?a.find(function(x){return String(x.id)===String(id)}):null}
+function id(){var c=channel();return c?String(c.id):'site'}
+function key(){return PREFIX+id()}
+function mode(){var c=channel();return c&&['redirect','video','none'].indexOf(c.adMode)>=0?c.adMode:'redirect'}
+function redirectUrl(){var c=channel(),s=window.MATCHPRO_SITE_SETTINGS||{},p=window.MATCHPRO_PLAYER_CONFIG||{};return c&&c.redirectUrl||s.defaultRedirectUrl||p.redirectUrl||''}
+function videoUrl(){var c=channel();return c&&c.videoAdUrl||''}
+function read(k){try{return sessionStorage.getItem(k)}catch(_){return null}}
+function write(k,v){try{sessionStorage.setItem(k,v)}catch(_){}}
+function remove(k){try{sessionStorage.removeItem(k)}catch(_){}}
+function styles(){if(document.getElementById('matchpro-player-ad-style'))return;var s=document.createElement('style');s.id='matchpro-player-ad-style';s.textContent='.'+CLS+'{position:absolute;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;width:100%;height:100%;margin:0;padding:0;border:0;background:rgba(0,0,0,.06);cursor:pointer}.'+CLS+'[hidden]{display:none!important}.'+CLS+' video{width:100%;height:100%;object-fit:contain;background:#000}.'+CLS+' .mp-ad-fallback{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);padding:10px 16px;border-radius:10px;border:1px solid #60758c;background:#101923;color:#fff;font:600 14px system-ui;cursor:pointer}';document.head.appendChild(s)}
+function showVideo(overlay){overlay.replaceChildren();overlay.style.background='#000';overlay.style.cursor='default';var v=document.createElement('video');v.src=videoUrl();v.controls=true;v.autoplay=true;v.playsInline=true;v.preload='auto';v.addEventListener('ended',function(){overlay.remove()});v.addEventListener('error',function(){if(overlay.querySelector('.mp-ad-fallback'))return;var b=document.createElement('button');b.type='button';b.className='mp-ad-fallback';b.textContent='Continue to channel';b.addEventListener('click',function(e){e.stopPropagation();overlay.remove()});overlay.appendChild(b)});overlay.appendChild(v);var p=v.play();if(p&&p.catch)p.catch(function(){})}
+function addOverlay(container){var m=mode(),dest=m==='video'?videoUrl():redirectUrl();if(!container||m==='none'||!dest||read(key())==='1'||!container.querySelector('iframe')||container.querySelector('.'+CLS))return;if(getComputedStyle(container).position==='static')container.style.position='relative';var o=document.createElement('div');o.className=CLS;o.setAttribute('role','button');o.setAttribute('tabindex','0');o.setAttribute('aria-label',m==='video'?'Play advertisement before channel':'Open advertisement before channel');o.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('video,.mp-ad-fallback'))return;e.preventDefault();e.stopPropagation();if(read(key())==='1'){o.remove();return}write(key(),'1');if(m==='video'){showVideo(o);return}var url=redirectUrl(),opened=null;try{opened=window.open(url,'_blank','noopener,noreferrer')}catch(_){}if(opened){try{opened.opener=null}catch(_){}o.remove();return}write(NAV,'1');o.remove();try{location.assign(url)}catch(_){}});o.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();o.click()}});container.appendChild(o)}
+var lastId='';
+function scan(){var now=id();if(lastId&&lastId!==now)remove(PREFIX+lastId);lastId=now;if(read(key())==='1'){document.querySelectorAll('.'+CLS).forEach(function(o){if(!o.querySelector('video'))o.remove()});return}styles();document.querySelectorAll('.player-container').forEach(addOverlay)}
+document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;if(!a)return;try{var u=new URL(a.href,location.href);if(u.origin===location.origin)write(INTERNAL,String(Date.now()))}catch(_){}},true);
+window.addEventListener('pagehide',function(){if(read(NAV)==='1'){remove(NAV);return}var mark=Number(read(INTERNAL)||0);remove(INTERNAL);if(mark&&Date.now()-mark<2500){remove(key());return}try{for(var i=sessionStorage.length-1;i>=0;i--){var k=sessionStorage.key(i);if(k&&k.indexOf(PREFIX)===0)sessionStorage.removeItem(k)}}catch(_){}});
+var observer=new MutationObserver(scan);function start(){scan();if(document.documentElement)observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['data-matchpro-channel-id']})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();window.addEventListener('pageshow',scan);
 })();

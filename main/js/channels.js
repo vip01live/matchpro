@@ -14,7 +14,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Մատչ TV",
     "titleHy": "Մատչ TV — ուղիղ եթեր առցանց | MatchPro",
     "descriptionHy": "Դիտեք Մատչ TV-ի ուղիղ եթերը MatchPro-ում։ Սպորտային հաղորդումներ և մարզական իրադարձություններ՝ առցանց։",
-    "keywordsHy": "Մատչ TV ուղիղ եթեր, սպորտային ալիքներ, սպորտ առցանց"
+    "keywordsHy": "Մատչ TV ուղիղ եթեր, սպորտային ալիքներ, սպորտ առցանց",
+    "iframeFile": "channel-7001-matchtv.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7002,
@@ -31,7 +34,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Մատչ Պրեմիեր",
     "titleHy": "Մատչ Պրեմիեր — ուղիղ հեռարձակում | MatchPro",
     "descriptionHy": "Դիտեք Մատչ Պրեմիեր ալիքի ուղիղ հեռարձակումը MatchPro-ում։",
-    "keywordsHy": "Մատչ Պրեմիեր առցանց, ֆուտբոլի ուղիղ եթեր"
+    "keywordsHy": "Մատչ Պրեմիեր առցանց, ֆուտբոլի ուղիղ եթեր",
+    "iframeFile": "channel-7002-match-premier.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7003,
@@ -48,7 +54,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Մատչ Արենա",
     "titleHy": "Մատչ Արենա — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Մատչ Արենայի մարզական հեռարձակումները ուղիղ եթերում։",
-    "keywordsHy": "Մատչ Արենա առցանց, մարզական հեռարձակումներ"
+    "keywordsHy": "Մատչ Արենա առցանց, մարզական հեռարձակումներ",
+    "iframeFile": "matcharena.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7004,
@@ -65,7 +74,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Մատչ Ֆուտբոլ 1",
     "titleHy": "Մատչ Ֆուտբոլ 1 — ֆուտբոլի ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Մատչ Ֆուտբոլ 1-ի ուղիղ հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "Մատչ Ֆուտբոլ 1 առցանց, ֆուտբոլի ուղիղ եթեր"
+    "keywordsHy": "Մատչ Ֆուտբոլ 1 առցանց, ֆուտբոլի ուղիղ եթեր",
+    "iframeFile": "channel-7004-match-football-1.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7005,
@@ -82,7 +94,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Մատչ Ֆուտբոլ 2",
     "titleHy": "Մատչ Ֆուտբոլ 2 — ֆուտբոլի ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Մատչ Ֆուտբոլ 2-ի ուղիղ հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "Մատչ Ֆուտբոլ 2 առցանց, ֆուտբոլի ուղիղ եթեր"
+    "keywordsHy": "Մատչ Ֆուտբոլ 2 առցանց, ֆուտբոլի ուղիղ եթեր",
+    "iframeFile": "match2.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7006,
@@ -99,7 +114,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Մատչ Ֆուտբոլ 3",
     "titleHy": "Մատչ Ֆուտբոլ 3 — ֆուտբոլի ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Մատչ Ֆուտբոլ 3-ի ուղիղ հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "Մատչ Ֆուտբոլ 3 առցանց, ֆուտբոլի ուղիղ եթեր"
+    "keywordsHy": "Մատչ Ֆուտբոլ 3 առցանց, ֆուտբոլի ուղիղ եթեր",
+    "iframeFile": "match3.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7007,
@@ -116,7 +134,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Սետանտա Սպորտ 1",
     "titleHy": "Սետանտա Սպորտ 1 — սպորտի ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Սետանտա Սպորտ 1-ի մարզական հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "Սետանտա Սպորտ 1 առցանց, սպորտի ուղիղ եթեր"
+    "keywordsHy": "Սետանտա Սպորտ 1 առցանց, սպորտի ուղիղ եթեր",
+    "iframeFile": "setanta1.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7008,
@@ -133,7 +154,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Սետանտա Սպորտ 2",
     "titleHy": "Սետանտա Սպորտ 2 — սպորտի ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Սետանտա Սպորտ 2-ի մարզական հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "Սետանտա Սպորտ 2 առցանց, սպորտային ալիքներ"
+    "keywordsHy": "Սետանտա Սպորտ 2 առցանց, սպորտային ալիքներ",
+    "iframeFile": "setanta2.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7009,
@@ -150,7 +174,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Սետանտա Ուկրաինա",
     "titleHy": "Սետանտա Ուկրաինա — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Սետանտա Ուկրաինա ալիքի ուղիղ հեռարձակումները։",
-    "keywordsHy": "Սետանտա Ուկրաինա առցանց, սպորտ"
+    "keywordsHy": "Սետանտա Ուկրաինա առցանց, սպորտ",
+    "iframeFile": "ssuk1.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7010,
@@ -167,7 +194,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Սետանտա Սպորտ Պլյուս",
     "titleHy": "Սետանտա Սպորտ Պլյուս — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Սետանտա Սպորտ Պլյուսի մարզական հաղորդումները։",
-    "keywordsHy": "Սետանտա Սպորտ Պլյուս առցանց, սպորտային հեռարձակում"
+    "keywordsHy": "Սետանտա Սպորտ Պլյուս առցանց, սպորտային հեռարձակում",
+    "iframeFile": "ssp.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7011,
@@ -184,7 +214,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Եվրոսպորտ 1",
     "titleHy": "Եվրոսպորտ 1 — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Եվրոսպորտ 1-ի մարզական հեռարձակումները ուղիղ եթերում։",
-    "keywordsHy": "Եվրոսպորտ 1 առցանց, սպորտի ուղիղ եթեր"
+    "keywordsHy": "Եվրոսպորտ 1 առցանց, սպորտի ուղիղ եթեր",
+    "iframeFile": "eurosport1.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7012,
@@ -201,7 +234,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Եվրոսպորտ 2",
     "titleHy": "Եվրոսպորտ 2 — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Եվրոսպորտ 2-ի մարզական հեռարձակումները ուղիղ եթերում։",
-    "keywordsHy": "Եվրոսպորտ 2 առցանց, սպորտային ալիքներ"
+    "keywordsHy": "Եվրոսպորտ 2 առցանց, սպորտային ալիքներ",
+    "iframeFile": "eurosport2.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7013,
@@ -218,7 +254,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Օկկո Սպորտ",
     "titleHy": "Օկկո Սպորտ — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Օկկո Սպորտ ալիքի ուղիղ մարզական հեռարձակումները։",
-    "keywordsHy": "Օկկո Սպորտ առցանց, մարզական հեռարձակումներ"
+    "keywordsHy": "Օկկո Սպորտ առցանց, մարզական հեռարձակումներ",
+    "iframeFile": "okko.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7014,
@@ -235,7 +274,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Օկկո Ֆուտբոլ",
     "titleHy": "Օկկո Ֆուտբոլ — ֆուտբոլի ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Օկկո Ֆուտբոլի ուղիղ հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "Օկկո Ֆուտբոլ առցանց, ֆուտբոլ"
+    "keywordsHy": "Օկկո Ֆուտբոլ առցանց, ֆուտբոլ",
+    "iframeFile": "okko-ftbl.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7015,
@@ -252,7 +294,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Ձիասպորտային աշխարհ",
     "titleHy": "Ձիասպորտային աշխարհ — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Ձիասպորտի և մրցումների հեռարձակումներ՝ ուղիղ եթերում։",
-    "keywordsHy": "ձիասպորտ առցանց, ձիարշավներ, ուղիղ եթեր"
+    "keywordsHy": "ձիասպորտ առցանց, ձիարշավներ, ուղիղ եթեր",
+    "iframeFile": "konnimir.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7016,
@@ -269,7 +314,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Viju Sport",
     "titleHy": "Viju Sport — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Viju Sport ալիքի մարզական հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "Viju Sport առցանց, սպորտային հեռարձակում"
+    "keywordsHy": "Viju Sport առցանց, սպորտային հեռարձակում",
+    "iframeFile": "viasat.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7017,
@@ -286,7 +334,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Qazsport",
     "titleHy": "Qazsport — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Qazsport ալիքի ուղիղ մարզական հեռարձակումները։",
-    "keywordsHy": "Qazsport առցանց, Ղազախստանի սպորտ"
+    "keywordsHy": "Qazsport առցանց, Ղազախստանի սպորտ",
+    "iframeFile": "kazsport.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7018,
@@ -303,7 +354,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Վոլեյբոլ",
     "titleHy": "Վոլեյբոլ — մարզական ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք վոլեյբոլի մարզական հեռարձակումները առցանց։",
-    "keywordsHy": "վոլեյբոլ առցանց, վոլեյբոլի ուղիղ եթեր"
+    "keywordsHy": "վոլեյբոլ առցանց, վոլեյբոլի ուղիղ եթեր",
+    "iframeFile": "voleybol.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7019,
@@ -320,7 +374,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Ֆուտբոլ",
     "titleHy": "Ֆուտբոլ — ուղիղ հեռարձակում | MatchPro",
     "descriptionHy": "Դիտեք ֆուտբոլային հանդիպումների հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "ֆուտբոլ առցանց, ֆուտբոլի ուղիղ եթեր"
+    "keywordsHy": "ֆուտբոլ առցանց, ֆուտբոլի ուղիղ եթեր",
+    "iframeFile": "footballru.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7020,
@@ -337,7 +394,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "KHL",
     "titleHy": "KHL — հոկեյի ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք KHL-ի հոկեյի հանդիպումները ուղիղ եթերում։",
-    "keywordsHy": "KHL առցանց, հոկեյի ուղիղ եթեր"
+    "keywordsHy": "KHL առցանց, հոկեյի ուղիղ եթեր",
+    "iframeFile": "khl.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7021,
@@ -354,7 +414,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Astrakhan Sport",
     "titleHy": "Astrakhan Sport — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Astrakhan Sport ալիքի մարզական հեռարձակումները։",
-    "keywordsHy": "Astrakhan Sport առցանց, սպորտային ալիք"
+    "keywordsHy": "Astrakhan Sport առցանց, սպորտային ալիք",
+    "iframeFile": "astrakhan.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7022,
@@ -371,7 +434,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Ուդար",
     "titleHy": "Ուդար — մարզական ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Ուդար մարզական ալիքի մարտական սպորտի հաղորդումները։",
-    "keywordsHy": "Ուդար առցանց, MMA, մարտական սպորտ"
+    "keywordsHy": "Ուդար առցանց, MMA, մարտական սպորտ",
+    "iframeFile": "UDARHD.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7023,
@@ -388,7 +454,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Բռնցքամարտ",
     "titleHy": "Բռնցքամարտ — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք բռնցքամարտի և այլ մարզական իրադարձությունների հեռարձակումները։",
-    "keywordsHy": "բռնցքամարտ առցանց, մենամարտեր, սպորտ"
+    "keywordsHy": "բռնցքամարտ առցանց, մենամարտեր, սպորտ",
+    "iframeFile": "BoksHD.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7024,
@@ -405,7 +474,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Բոյեց",
     "titleHy": "Բոյեց — մարզական ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Բոյեց ալիքի մարտական սպորտի հեռարձակումները։",
-    "keywordsHy": "Բոյեց առցանց, MMA, բռնցքամարտ"
+    "keywordsHy": "Բոյեց առցանց, MMA, բռնցքամարտ",
+    "iframeFile": "boyets.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7025,
@@ -422,7 +494,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Fast Sports Armenia",
     "titleHy": "Fast Sports Armenia — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Fast Sports Armenia-ի մարզական հաղորդումները և ուղիղ հեռարձակումները։",
-    "keywordsHy": "Fast Sports Armenia առցանց, սպորտ Հայաստան"
+    "keywordsHy": "Fast Sports Armenia առցանց, սպորտ Հայաստան",
+    "iframeFile": "fastsports.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7026,
@@ -439,7 +514,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "TV Sport HD",
     "titleHy": "TV Sport HD — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք TV Sport HD ալիքի ուղիղ հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "TV Sport HD առցանց, սպորտի ուղիղ եթեր"
+    "keywordsHy": "TV Sport HD առցանց, սպորտի ուղիղ եթեր",
+    "iframeFile": "channel-7026-tvsport.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7027,
@@ -456,7 +534,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Բելառուս 5",
     "titleHy": "Բելառուս 5 — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Բելառուս 5-ի մարզական հեռարձակումները ուղիղ եթերում։",
-    "keywordsHy": "Բելառուս 5 առցանց, սպորտ"
+    "keywordsHy": "Բելառուս 5 առցանց, սպորտ",
+    "iframeFile": "belarus5.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7028,
@@ -473,7 +554,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Բելառուս 5 Ինտերնետ",
     "titleHy": "Բելառուս 5 Ինտերնետ — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Բելառուս 5 Ինտերնետ ալիքի մարզական հաղորդումները։",
-    "keywordsHy": "Բելառուս 5 Ինտերնետ առցանց"
+    "keywordsHy": "Բելառուս 5 Ինտերնետ առցանց",
+    "iframeFile": "belarus5internet.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7029,
@@ -490,7 +574,10 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Մատչ Ստրանա",
     "titleHy": "Մատչ Ստրանա — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Մատչ Ստրանա ալիքի մարզական հեռարձակումները։",
-    "keywordsHy": "Մատչ Ստրանա առցանց, սպորտ"
+    "keywordsHy": "Մատչ Ստրանա առցանց, սպորտ",
+    "iframeFile": "upl1.html",
+    "published": true,
+    "indexable": true
   },
   {
     "id": 7030,
@@ -507,6 +594,9 @@ window.MATCHPRO_CHANNELS = [
     "nameHy": "Vital Drive",
     "titleHy": "Vital Drive — ուղիղ եթեր | MatchPro",
     "descriptionHy": "Դիտեք Vital Drive ալիքի ուղիղ հեռարձակումները MatchPro-ում։",
-    "keywordsHy": "Vital Drive առցանց, սպորտային ալիք"
+    "keywordsHy": "Vital Drive առցանց, սպորտային ալիք",
+    "iframeFile": "upl2.html",
+    "published": true,
+    "indexable": true
   }
 ];
