@@ -14,9 +14,9 @@
   <div class="login-card">
     <div class="brand"><div class="brand-mark">MP</div><div><h1>MatchPro Control</h1><p>Ալիքների և էջերի կառավարում</p></div></div>
     <h2>Մուտք գործել</h2>
-    <p>Մուտքը հաստատվում է GitHub-ի միջոցով․ փոփոխությունները պահպանվում են անմիջապես ռեպոզիտորիայում։</p>
+    <p>Մուտքը ստուգվում է հենց vip01live/matchpro ռեպոզիտորիայի միջոցով․ փոփոխությունները պահպանվում են GitHub-ում։</p>
     <form id="login-form">
-      <div class="field"><label for="username">GitHub օգտանուն</label><input id="username" name="username" value="vip01live" autocomplete="username" required></div>
+      <div class="field"><label for="username">Ռեպոզիտորիայի սեփականատեր</label><input id="username" name="username" value="vip01live" autocomplete="username" required></div>
       <div class="field"><label for="token">GitHub Token (գաղտնաբառի փոխարեն)</label><input id="token" name="token" type="password" autocomplete="current-password" placeholder="github_pat_…" required></div>
       <button class="btn primary" id="login-button" type="submit" style="width:100%">Մուտք գործել →</button>
       <div id="login-error" class="error"></div>
@@ -146,7 +146,12 @@
     try { data = await response.json(); } catch (_) { data = {}; }
     if (!response.ok) {
       var detail = data && (data.message || data.errors && data.errors[0] && data.errors[0].message);
-      throw new Error('GitHub API (' + response.status + '): ' + (detail || response.statusText || 'request failed'));
+      var endpoint = (method || 'GET') + ' ' + new URL(url).pathname;
+      var message = 'GitHub API (' + response.status + ') [' + endpoint + ']: ' + (detail || response.statusText || 'request failed');
+      if (response.status === 403 && /Resource not accessible by personal access token|Resource not accessible by integration/i.test(String(detail || ''))) {
+        message += '\n\nToken-ի իրավունքը բավարար չէ։ GitHub Token Settings-ում ընտրեք Resource owner: vip01live, Repository access: Only select repositories → matchpro, Repository permissions → Contents: Read and write, Metadata: Read-only։ Եթե token-ը պահանջում է հաստատում, հաստատեք այն GitHub-ում։';
+      }
+      throw new Error(message);
     }
     return data;
   }
@@ -200,20 +205,34 @@
     showLoginError('');
     var username = $('username').value.trim();
     var suppliedToken = $('token').value.trim();
-    if (!username || !suppliedToken) { showLoginError('Լրացրեք օգտանունը և token-ը։'); return; }
+    if (!username || !suppliedToken) { showLoginError('Լրացրեք ռեպոզիտորիայի սեփականատիրոջ անունը և token-ը։'); return; }
+    if (username.toLowerCase() !== OWNER.toLowerCase()) {
+      showLoginError('Ռեպոզիտորիայի սեփականատերը պետք է լինի vip01live։ Token-ը պետք է թույլատրված լինի հենց vip01live/matchpro ռեպոզիտորիայում։');
+      return;
+    }
     setBusy(true);
     try {
       token = suppliedToken;
-      var me = await request('https://api.github.com/user', 'GET');
-      if (String(me.login || '').toLowerCase() !== username.toLowerCase()) throw new Error('GitHub օգտանունը չի համապատասխանում token-ի տիրոջը։');
-      var repo = await repoRequest('', 'GET');
-      if (!repo.permissions || repo.permissions.push !== true) throw new Error('Այս հաշիվը չունի matchpro ռեպոզիտորիայում փոփոխություններ կատարելու իրավունք։');
-      githubUser = me.login;
+      // Validate token access against the exact repository the panel edits.
+      // This avoids relying on the separate /user endpoint; repository access is the real requirement.
+      var repo;
+      try {
+        repo = await repoRequest('', 'GET');
+      } catch (error) {
+        if (/GitHub API \(403\)|GitHub API \(404\)/.test(String(error.message || ''))) {
+          throw new Error('Token-ը չի կարող մուտք գործել vip01live/matchpro ռեպոզիտորիա։\n\nԲացեք GitHub Token Settings-ը և ստուգեք՝ Resource owner = vip01live, Repository access = Only select repositories → matchpro, Contents = Read and write, Metadata = Read-only։ Համոզվեք նաև, որ token-ը ակտիվ է և, եթե պահանջվում է, հաստատված է։\n\nՏեխնիկական մանրամասներ՝ ' + error.message);
+        }
+        throw error;
+      }
+      if (!repo.permissions || repo.permissions.push !== true) {
+        throw new Error('Այս GitHub հաշիվը չունի vip01live/matchpro ռեպոզիտորիայում փոփոխություններ կատարելու իրավունք։ Token ստեղծեք հենց այն հաշվից, որն ունի այդ ռեպոզիտորիայում push իրավունք։');
+      }
+      githubUser = username;
       await loadState();
       $('login-screen').classList.add('hidden');
       $('app-screen').classList.remove('hidden');
       $('token').value = '';
-      notify('Մուտքը հաջողվեց։ Միացված է @' + githubUser + ' հաշիվը։');
+      notify('Մուտքը հաջողվեց։ Միացված է ' + OWNER + '/' + REPO + ' ռեպոզիտորիային։');
     } catch (error) {
       token = '';
       showLoginError(error.message || 'Մուտքը չհաջողվեց։');
