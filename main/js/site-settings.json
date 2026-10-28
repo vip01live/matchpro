@@ -10,8 +10,9 @@
   "adblock": {
     "enabled": false
   },
-  "defaultRedirectUrl": "https://lkhq.cc/60dc1304",
+  "defaultRedirectUrl": "https://yvnbet.com",
   "favicon": "/media/fv/favicon-32x32.png",
+  "logo": "/media/logo.png",
   "home": {
     "hy": {
       "title": "Մարզական ալիքներ՝ ուղիղ եթերում | MatchPro",
@@ -34,6 +35,5 @@
       "intro": "The best matches — live",
       "info": "Choose your preferred sports channel and follow available football, hockey, basketball and other live broadcasts in one place. MatchPro helps you find the channel you want quickly."
     }
-  },
-  "logo": "/media/logo.png"
+  }
 }
