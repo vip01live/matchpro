@@ -6,10 +6,17 @@
   var validLangs = ['hy', 'ru', 'en'];
   function readSavedLang() {
     try { var s = localStorage.getItem('matchpro-app-lang'); if (validLangs.indexOf(s) >= 0) return s; } catch (_) {}
-    return 'hy';
+    return '';
+  }
+  function browserLang() {
+    var b=(navigator.language||'').toLowerCase();
+    if(b.indexOf('hy')===0)return 'hy';
+    if(/^(ru|be|kk|ky|uz)(-|$)/.test(b))return 'ru';
+    return 'en';
   }
   var requested = (params.get('lang') || '').toLowerCase();
-  var currentLang = validLangs.indexOf(requested) >= 0 ? requested : readSavedLang();
+  var savedLang = readSavedLang();
+  var currentLang = validLangs.indexOf(requested) >= 0 ? requested : (savedLang || browserLang());
   var root = './';
   var grid = document.getElementById('channels');
   var playerSection = document.getElementById('player-section');
@@ -161,4 +168,23 @@
   render();
   var id = new URLSearchParams(location.search).get('id');
   if (channels.some(function (x) { return String(x.id) === String(id); })) openChannel(id);
+  if(validLangs.indexOf(requested)<0&&!savedLang){
+    var controller=typeof AbortController!=='undefined'?new AbortController():null;
+    var timer=controller?setTimeout(function(){controller.abort()},1300):null;
+    fetch('https://ipapi.co/country/',{cache:'no-store',signal:controller?controller.signal:undefined})
+      .then(function(response){if(!response.ok)throw new Error('Country lookup failed');return response.text()})
+      .then(function(country){
+        if(timer)clearTimeout(timer);
+        if(validLangs.indexOf((new URLSearchParams(location.search).get('lang')||'').toLowerCase())>=0||readSavedLang())return;
+        country=String(country||'').trim().toUpperCase();
+        var lang=country==='AM'?'hy':(['RU','BY','KZ','KG','UZ'].indexOf(country)>=0?'ru':'en');
+        saveLang(lang);
+        if(lang===currentLang)return;
+        currentLang=lang;render();
+        var activeId=new URLSearchParams(location.search).get('id');
+        if(activeId&&channels.some(function(x){return String(x.id)===String(activeId)&&x.published!==false;}))openChannel(activeId);
+        else history.replaceState(null,'','?lang='+currentLang);
+      })
+      .catch(function(){if(timer)clearTimeout(timer)});
+  }
 })();
