@@ -53,6 +53,7 @@ jobs:
               "/app/",
               "/assets/",
               "/iframe/",
+              "/uploads/",
           )
 
           def rewrite(text: str) -> str:
