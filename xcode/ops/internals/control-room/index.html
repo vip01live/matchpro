@@ -548,7 +548,7 @@
     ['hy','ru','en'].forEach(function(lang){siteSettings.home[lang]=Object.assign({},defs.home[lang],siteSettings.home[lang]||{})});
     $('maintenanceEnabled').checked=!!siteSettings.maintenance.enabled;$('adblockEnabled').checked=siteSettings.adblock.enabled!==false;$('defaultRedirectUrl').value=siteSettings.defaultRedirectUrl||'';$('faviconPath').value=siteSettings.favicon||defs.favicon;
     $('maintenanceTextHy').value=siteSettings.maintenance.message.hy||'';$('maintenanceTextRu').value=siteSettings.maintenance.message.ru||'';$('maintenanceTextEn').value=siteSettings.maintenance.message.en||'';
-    ['hy','ru','en'].forEach(function(lang){var s=lang.toUpperCase(),h=siteSettings.home[lang];$('homeTitle'+s).value=h.title||'';$('homeDescription'+s).value=h.description||'';$('homeKeywords'+s).value=h.keywords||'';$('homeIntro'+s).value=h.intro||'';$('homeInfo'+s).value=h.info||''});
+    ['hy','ru','en'].forEach(function(lang){var s=lang.charAt(0).toUpperCase()+lang.slice(1),h=siteSettings.home[lang];$('homeTitle'+s).value=h.title||'';$('homeDescription'+s).value=h.description||'';$('homeKeywords'+s).value=h.keywords||'';$('homeIntro'+s).value=h.intro||'';$('homeInfo'+s).value=h.info||''});
   }
   async function saveSettings(event){
     if(event)event.preventDefault();if(busy)return;$('settings-error').textContent='';
@@ -556,7 +556,7 @@
     if(redirect&&!safeUrl(redirect,false)){$('settings-error').textContent='Ընդհանուր վերահղման URL-ը սխալ է։';return}
     settings.maintenance={enabled:$('maintenanceEnabled').checked,message:{hy:$('maintenanceTextHy').value.trim(),ru:$('maintenanceTextRu').value.trim(),en:$('maintenanceTextEn').value.trim()}};
     settings.adblock={enabled:$('adblockEnabled').checked};settings.defaultRedirectUrl=redirect;settings.favicon=$('faviconPath').value.trim()||'/media/fv/favicon-32x32.png';settings.home={};
-    ['hy','ru','en'].forEach(function(lang){var s=lang.toUpperCase();settings.home[lang]={title:$('homeTitle'+s).value.trim(),description:$('homeDescription'+s).value.trim(),keywords:$('homeKeywords'+s).value.trim(),intro:$('homeIntro'+s).value.trim(),info:$('homeInfo'+s).value.trim()}});
+    ['hy','ru','en'].forEach(function(lang){var s=lang.charAt(0).toUpperCase()+lang.slice(1);settings.home[lang]={title:$('homeTitle'+s).value.trim(),description:$('homeDescription'+s).value.trim(),keywords:$('homeKeywords'+s).value.trim(),intro:$('homeIntro'+s).value.trim(),info:$('homeInfo'+s).value.trim()}});
     var iconFile=$('faviconFile').files&&$('faviconFile').files[0];if(iconFile&&iconFile.size>2*1024*1024){$('settings-error').textContent='Favicon-ի ֆայլը պետք է լինի առավելագույնը 2 ՄԲ։';return}
     setBusy(true);try{var changes={'main/js/site-settings.json':JSON.stringify(settings,null,2)+'\n'};
       if(iconFile){var ext=fileExtension(iconFile,'png'),path='media/fv/admin-favicon-'+Date.now()+'.'+ext;settings.favicon='/'+path;changes['main/js/site-settings.json']=JSON.stringify(settings,null,2)+'\n';changes[path]={content:await fileBase64(iconFile),encoding:'base64'};$('faviconPath').value=settings.favicon}
