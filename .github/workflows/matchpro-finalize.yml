@@ -23,3 +23,12 @@ jobs:
 
       - name: Validate site structure and local resources
         run: node tools/validate-site.mjs
+
+      - name: Validate admin CMS and media handling
+        run: node tools/validate-admin.mjs
+
+      - name: Validate server-side backend syntax
+        run: node --check backend/cloudflare-worker.mjs && node --check backend/hash-admin-password.mjs
+
+      - name: Test server-side authentication and GitHub proxy
+        run: node --test backend/cloudflare-worker.test.mjs

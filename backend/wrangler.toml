@@ -1,0 +1,8 @@
+name = "matchpro-admin-api"
+main = "cloudflare-worker.mjs"
+compatibility_date = "2026-10-28"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGIN = "https://vip01live.github.io"
+ALLOWED_REFERER_PREFIX = "https://vip01live.github.io/matchpro/xcode/ops/internals/control-room/"

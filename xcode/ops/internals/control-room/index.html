@@ -23,6 +23,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 </style>
+<meta name="referrer" content="no-referrer-when-downgrade">
 </head>
 <body>
 <section id="login-screen" class="login-page">
@@ -36,7 +37,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       <button class="btn primary" id="login-button" type="submit" style="width:100%">Մուտք գործել →</button>
       <div id="login-error" class="error"></div>
     </form>
-    <div class="hint"><strong>Կարևոր սահմանափակում</strong><br>Գաղտնաբառը պաշտպանում է միայն այս բրաուզերում կոդավորված GitHub կապը։ Իրական սերվերային մուտքի պաշտպանությունը պահանջում է backend․ GitHub Pages-ը ինքնուրույն չի ապահովում սերվերային login։</div>
+    <div class="hint"><strong>Կարևոր սահմանափակում</strong><br>GitHub Pages-ը ինքնուրույն չի ապահովում սերվերային login։ Backend-ը տեղակայելուց հետո մուտքը կատարվելու է օգտանունով և գաղտնաբառով՝ առանց GitHub token-ը բրաուզերում պահելու։</div>
   </div>
 </section>
 
@@ -178,7 +179,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     </form>
     <div id="security-panel" class="hidden">
       <div class="lang-card"><div class="lang-head"><span class="flag">SEC</span> Անվտանգություն և մուտքի կառավարում</div>
-        <div class="notice"><strong>Կարևոր սահմանափակում․</strong> այս նախագիծը տեղակայված է GitHub Pages-ում։ Այստեղ գաղտնաբառը միայն այս բրաուզերում պահված GitHub token-ը կոդավորելու բանալի է, ոչ թե իրական սերվերային authentication։ Token-ը չի տեղադրվում հրապարակվող JavaScript-ում, բայց այն օգտագործվում է հենց բրաուզերից։ Իրական username/password մուտքի և պաշտպանված սերվերային գործողությունների համար անհրաժեշտ է backend, որը ներկայումս տեղակայված չէ։</div>
+        <div id="security-auth-status" class="notice"><strong>Կարևոր սահմանափակում․</strong> GitHub Pages-ի legacy login-ը սերվերային authentication չէ։ Backend-ը տեղակայված չէ, քանի դեռ Cloudflare Worker-ի secrets-ը և API հասցեն չեն կարգավորվել։</div>
         <p class="subtle-note">Մի օգտագործեք հանրային կամ ուրիշների հետ կիսվող սարք։ Logout-ը ջնջում է ընթացիկ էջի token-ը հիշողությունից, բայց տեղային կոդավորված token-ը մնում է այս բրաուզերում՝ մինչև բրաուզերի տվյալների մաքրումը։</p>
         <button id="change-password-button" class="btn outline">Փոխել այս բրաուզերի գաղտնաբառը</button>
         <div id="password-change-area" class="hidden" style="margin-top:16px"><div class="field"><label for="newAdminPassword">Նոր գաղտնաբառ՝ 12+ նիշ</label><input id="newAdminPassword" type="password" minlength="12" autocomplete="new-password"></div><button id="save-password-button" class="btn primary">Պահպանել նոր գաղտնաբառը</button></div>
@@ -192,6 +193,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 </div>
 <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
+<script src="/main/js/admin-backend-config.js"></script>
 <script>
 (function () {
   'use strict';
@@ -203,6 +205,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     if (location.pathname.indexOf('/matchpro/') === 0) return location.origin + '/matchpro';
     return location.origin;
   })();
+  var ADMIN_API_BASE = String(window.MATCHPRO_ADMIN_API_BASE || '').trim().replace(/\/+$/, '');
+  var serverSessionToken = '';
   var token = '';
   var githubUser = '';
   var channels = [];
@@ -276,21 +280,35 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   function readIframeUrl(source) { var marker='var encodedSource="',at=source.indexOf(marker);if(at>=0){var begin=at+marker.length,end=source.indexOf('"',begin);if(end>begin){try{return base64ToUtf8(source.slice(begin,end));}catch(_){}}}var doc=new DOMParser().parseFromString(source,'text/html'),encoded=doc.querySelector('iframe[data-matchpro-encoded-url]');if(encoded){try{return base64ToUtf8(encoded.getAttribute('data-matchpro-encoded-url'));}catch(_){}}var frame=doc.querySelector('iframe[src]');return frame?(frame.getAttribute('src')||''):''; }
   function defaultSiteSettings() { return {maintenance:{enabled:false,message:{hy:'Կայքում իրականացվում են տեխնիկական աշխատանքներ։ Խնդրում ենք փորձել ավելի ուշ։',ru:'На сайте ведутся технические работы. Пожалуйста, зайдите позже.',en:'We are performing maintenance. Please come back later.'}},adblock:{enabled:false},defaultRedirectUrl:'https://lkhq.cc/60dc1304',favicon:'/media/fv/favicon-32x32.png',logo:'/media/logo.png',home:{hy:{title:'Մարզական ալիքներ՝ ուղիղ եթերում | MatchPro',description:'Դիտեք ֆուտբոլի, հոկեյի, բասկետբոլի և այլ մարզաձևերի ուղիղ հեռարձակումները MatchPro-ում։',keywords:'մարզական ալիքներ առցանց, ուղիղ եթեր, ֆուտբոլ, հոկեյ, բասկետբոլ, MatchPro',intro:'Լավագույն մարզական իրադարձությունները՝ ուղիղ եթերում',info:'Ընտրեք ձեր նախընտրած մարզական ալիքը և հետևեք ֆուտբոլի, հոկեյի, բասկետբոլի ու այլ մարզաձևերի հասանելի հեռարձակումներին մեկ վայրում։ MatchPro-ում կարող եք արագ գտնել հետաքրքրող ալիքը և դիտել ուղիղ եթերը.'},ru:{title:'Спортивные каналы онлайн в прямом эфире | MatchPro',description:'Смотрите доступные спортивные трансляции футбола, хоккея, баскетбола и других видов спорта на MatchPro.',keywords:'спортивные каналы онлайн, прямой эфир, футбол, хоккей, баскетбол, MatchPro',intro:'Лучшие матчи — в прямом эфире',info:'Выбирайте спортивные каналы и следите за доступными футбольными, хоккейными, баскетбольными и другими трансляциями в одном месте.'},en:{title:'Sports Channels Live Online | MatchPro',description:'Watch available live sports broadcasts, including football, hockey, basketball and more on MatchPro.',keywords:'sports channels online, live stream, football, hockey, basketball, MatchPro',intro:'The best matches — live',info:'Choose your preferred sports channel and follow available football, hockey, basketball and other live broadcasts in one place.'}}}; }
   async function request(url, method, body) {
-    var options = {method: method || 'GET', headers: {'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}};
-    if (token) options.headers.Authorization = 'Bearer ' + token;
+    var options = {method:method || 'GET',headers:{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}};
+    var requestUrl = url;
+    if (ADMIN_API_BASE) {
+      var target;
+      try { target = new URL(url); } catch (_) { throw new Error('GitHub API հասցեն անվավեր է։'); }
+      var repoPath = '/repos/' + OWNER + '/' + REPO;
+      if (target.origin !== 'https://api.github.com' || (target.pathname !== repoPath && target.pathname.indexOf(repoPath + '/') !== 0)) {
+        throw new Error('Backend-ը թույլատրում է միայն ' + OWNER + '/' + REPO + ' ռեպոզիտորիայի գործողությունները։');
+      }
+      if (!serverSessionToken) throw new Error('Backend session-ը բացակայում է կամ ժամկետանց է։ Կրկին մուտք գործեք։');
+      options.headers.Authorization = 'Bearer ' + serverSessionToken;
+      requestUrl = ADMIN_API_BASE + '/api/github' + target.pathname + target.search;
+    } else if (token) {
+      options.headers.Authorization = 'Bearer ' + token;
+    }
     if (body !== undefined) {
       options.headers['Content-Type'] = 'application/json';
       options.body = JSON.stringify(body);
     }
-    var response = await fetch(url, options);
+    var response = await fetch(requestUrl, options);
     var data;
     try { data = await response.json(); } catch (_) { data = {}; }
     if (!response.ok) {
+      if (ADMIN_API_BASE && response.status === 401) serverSessionToken = '';
       var detail = data && (data.message || data.errors && data.errors[0] && data.errors[0].message);
       var endpoint = (method || 'GET') + ' ' + new URL(url).pathname;
       var message = 'GitHub API (' + response.status + ') [' + endpoint + ']: ' + (detail || response.statusText || 'request failed');
       if (response.status === 403 && /Resource not accessible by personal access token|Resource not accessible by integration/i.test(String(detail || ''))) {
-        message += '\n\nToken-ի իրավունքը բավարար չէ։ GitHub Token Settings-ում ընտրեք Resource owner: vip01live, Repository access: Only select repositories → matchpro, Repository permissions → Contents: Read and write, Metadata: Read-only։ Եթե token-ը պահանջում է հաստատում, հաստատեք այն GitHub-ում։';
+        message += '\n\nBackend-ի GitHub token-ի համար սահմանեք Contents: Read and write և Metadata: Read-only իրավունքները միայն vip01live/matchpro ռեպոզիտորիայում։';
       }
       throw new Error(message);
     }
@@ -347,41 +365,60 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     if (busy) return;
     showLoginError('');
     var username = $('username').value.trim();
-    var suppliedToken = $('token').value.trim();
     var password = $('adminPassword').value;
-    if (!username || !password || password.length < 12) { showLoginError('Լրացրեք սեփականատիրոջ անունը և առնվազն 12 նիշանոց գաղտնաբառը։'); return; }
-    if (username.toLowerCase() !== ADMIN_USERNAME) {
-      showLoginError('Ադմինի անունը պետք է լինի admin։ GitHub-ի ռեպոզիտորիայի սեփականատերը կարգավորված է առանձին։');
+    var suppliedToken = ADMIN_API_BASE ? '' : $('token').value.trim();
+    if (!username || !password || password.length < 12) {
+      showLoginError('Լրացրեք օգտանունը և առնվազն 12 նիշանոց գաղտնաբառը։');
+      return;
+    }
+    if (!ADMIN_API_BASE && username.toLowerCase() !== ADMIN_USERNAME) {
+      showLoginError('Legacy ռեժիմում օգտանունը պետք է լինի admin։ Իրական username/password login-ի համար տեղակայեք backend-ը։');
       return;
     }
     setBusy(true);
     try {
-      if (suppliedToken) token = suppliedToken; else { try { token = await readEncryptedToken(password); } catch (_) { throw new Error('Գաղտնաբառը սխալ է կամ պահպանված token-ը հնարավոր չէ բացել։ Եթե մոռացել ես, տեղադրիր նոր GitHub token։'); } if (!token) throw new Error('Առաջին մուտքի համար տեղադրիր GitHub token-ը։'); }
-      // Validate token access against the exact repository the panel edits.
-      // This avoids relying on the separate /user endpoint; repository access is the real requirement.
-      var repo;
-      try {
-        repo = await repoRequest('', 'GET');
-      } catch (error) {
-        if (/GitHub API \(403\)|GitHub API \(404\)/.test(String(error.message || ''))) {
-          throw new Error('Token-ը չի կարող մուտք գործել vip01live/matchpro ռեպոզիտորիա։\n\nԲացեք GitHub Token Settings-ը և ստուգեք՝ Resource owner = vip01live, Repository access = Only select repositories → matchpro, Contents = Read and write, Metadata = Read-only։ Համոզվեք նաև, որ token-ը ակտիվ է և, եթե պահանջվում է, հաստատված է։\n\nՏեխնիկական մանրամասներ՝ ' + error.message);
+      if (ADMIN_API_BASE) {
+        var authResponse = await fetch(ADMIN_API_BASE + '/api/login', {
+          method:'POST',
+          headers:{'Accept':'application/json','Content-Type':'application/json'},
+          body:JSON.stringify({username:username,password:password})
+        });
+        var authData;
+        try { authData = await authResponse.json(); } catch (_) { authData = {}; }
+        if (!authResponse.ok) throw new Error(authData.message || 'Backend մուտքը չհաջողվեց (' + authResponse.status + ')։');
+        serverSessionToken = String(authData.token || '');
+        if (!serverSessionToken) throw new Error('Backend-ը session token չի վերադարձրել։');
+        token = '';
+        githubUser = username;
+      } else {
+        if (suppliedToken) token = suppliedToken;
+        else {
+          try { token = await readEncryptedToken(password); }
+          catch (_) { throw new Error('Գաղտնաբառը սխալ է կամ պահպանված token-ը հնարավոր չէ բացել։'); }
+          if (!token) throw new Error('GitHub token է պահանջվում, քանի դեռ backend-ը տեղակայված չէ։');
         }
-        throw error;
+        var repo;
+        try { repo = await repoRequest('', 'GET'); }
+        catch (error) {
+          if (/GitHub API \(403\)|GitHub API \(404\)/.test(String(error.message || ''))) {
+            throw new Error('Token-ը չի կարող մուտք գործել vip01live/matchpro։ Ստուգեք Repository access = matchpro, Contents = Read and write, Metadata = Read-only։\n\n' + error.message);
+          }
+          throw error;
+        }
+        if (!repo.permissions || repo.permissions.push !== true) throw new Error('GitHub token-ի սեփականատերը չունի vip01live/matchpro ռեպոզիտորիայում փոփոխություններ կատարելու իրավունք։');
+        githubUser = username;
       }
-      if (!repo.permissions || repo.permissions.push !== true) {
-        throw new Error('Այս GitHub հաշիվը չունի vip01live/matchpro ռեպոզիտորիայում փոփոխություններ կատարելու իրավունք։ Token ստեղծեք հենց այն հաշվից, որն ունի այդ ռեպոզիտորիայում push իրավունք։');
-      }
-      githubUser = username;
       await loadState();
       await loadSettings();
-      if (suppliedToken) await storeEncryptedToken(token,password);
+      if (suppliedToken && !ADMIN_API_BASE) await storeEncryptedToken(token,password);
       $('login-screen').classList.add('hidden');
       $('app-screen').classList.remove('hidden');
       $('token').value = '';
       setView('dashboard');
-      notify('Մուտքը հաջողվեց։ Միացված է ' + OWNER + '/' + REPO + ' ռեպոզիտորիային։');
+      notify(ADMIN_API_BASE ? 'Մուտքը հաջողվեց։ CMS-ը միացված է սերվերային backend-ին։' : 'Մուտքը հաջողվեց։ Միացված է ' + OWNER + '/' + REPO + ' ռեպոզիտորիային։');
     } catch (error) {
       token = '';
+      serverSessionToken = '';
       showLoginError(error.message || 'Մուտքը չհաջողվեց։');
     } finally { setBusy(false); }
   }
@@ -739,6 +776,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   async function changeAdminPassword(){var p=$('newAdminPassword').value;if(p.length<12){notify('Նոր գաղտնաբառը պետք է ունենա առնվազն 12 նիշ։',true);return}try{await storeEncryptedToken(token,p);$('adminPassword').value=p;$('newAdminPassword').value='';$('password-change-area').classList.add('hidden');notify('Այս բրաուզերի գաղտնաբառը փոխվեց։')}catch(error){notify(error.message||'Չհաջողվեց փոխել գաղտնաբառը։',true)}}
   function logout() {
     token = '';
+    serverSessionToken = '';
     githubUser = '';
     channels = [];
     selectedId = null;
@@ -752,6 +790,15 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     showLoginError('');
   }
 
+  if (ADMIN_API_BASE) {
+    var connectionDetails = document.querySelector('.connection-details');
+    if (connectionDetails) connectionDetails.classList.add('hidden');
+    var loginHint = document.querySelector('.login-card .hint');
+    if (loginHint) loginHint.textContent = 'Սերվերային login-ը ակտիվ կլինի, երբ Cloudflare Worker-ը տեղակայվի և API հասցեն կարգավորվի։';
+    $('security-auth-status').textContent = 'Backend URL-ը կարգավորված է։ Մուտքի իրական վիճակը հաստատվում է միայն սերվերի հաջող login-ից հետո։';
+    $('change-password-button').classList.add('hidden');
+    $('password-change-area').classList.add('hidden');
+  }
   document.querySelectorAll('[data-lang-tab]').forEach(function(button){button.addEventListener('click',function(){activateLanguageTab(button.dataset.langTab,button.dataset.langScope)})});
   $('login-form').addEventListener('submit', login);
   $('site-settings-form').addEventListener('submit',saveSettings);
