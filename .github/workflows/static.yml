@@ -52,6 +52,7 @@ jobs:
               "/media/",
               "/app/",
               "/assets/",
+              "/iframe/",
           )
 
           def rewrite(text: str) -> str:

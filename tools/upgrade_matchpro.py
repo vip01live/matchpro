@@ -1,107 +1,177 @@
-from pathlib import Path
+from __future__ import annotations
+
 import html
+import json
+import os
 import re
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SITE_URL = 'https://matchpro.xo.je'
-CHANNELS_FILE = ROOT / 'main' / 'js' / 'channels.js'
+SITE_URL = os.environ.get("MATCHPRO_SITE_URL", "https://matchprotv.vercel.app").rstrip("/")
+CHANNELS_FILE = ROOT / "main" / "js" / "channels.js"
 
 
-def read_channels():
-    text = CHANNELS_FILE.read_text(encoding='utf-8')
-    out = {}
-    pattern = re.compile(r"\{id:(\d+),file:'([^']+)',nameRu:'([^']*)',nameEn:'([^']*)',logo:'([^']*)',titleRu:'([^']*)',titleEn:'([^']*)',descriptionRu:'([^']*)',descriptionEn:'([^']*)',keywordsRu:'([^']*)',keywordsEn:'([^']*)'\}")
-    for m in pattern.finditer(text):
-        out[m.group(2)] = {'id':m.group(1),'file':m.group(2),'nameRu':m.group(3),'nameEn':m.group(4),'logo':m.group(5),'titleRu':m.group(6),'titleEn':m.group(7),'descriptionRu':m.group(8),'descriptionEn':m.group(9),'keywordsRu':m.group(10),'keywordsEn':m.group(11)}
-    return out
+def read_channels() -> dict[str, dict]:
+    source = CHANNELS_FILE.read_text(encoding="utf-8")
+    match = re.search(r"window\.MATCHPRO_CHANNELS\s*=\s*(\[.*\])\s*;\s*$", source, re.S)
+    if not match:
+        raise ValueError("Could not parse main/js/channels.js as a JSON-compatible channel registry.")
+    channels = json.loads(match.group(1))
+    return {item["file"]: item for item in channels}
 
 
-def upsert_meta(text, name, content):
-    pattern = re.compile(r'<meta\s+name=["\']' + re.escape(name) + r'["\'][^>]*>', re.I)
+def set_meta(source: str, name: str, content: str) -> str:
     tag = f'<meta name="{name}" content="{html.escape(content, quote=True)}">'
-    if pattern.search(text): return pattern.sub(tag, text, count=1)
-    return re.sub(r'</head>', '    ' + tag + '\n</head>', text, count=1, flags=re.I)
+    pattern = re.compile(r'<meta\b(?=[^>]*\bname=["\']' + re.escape(name) + r'["\'])[^>]*>', re.I)
+    if pattern.search(source):
+        return pattern.sub(tag, source, count=1)
+    return re.sub(r"</head\s*>", "    " + tag + "\n</head>", source, count=1, flags=re.I)
 
 
-def upsert_property(text, prop, content):
-    pattern = re.compile(r'<meta\s+property=["\']' + re.escape(prop) + r'["\'][^>]*>', re.I)
+def set_property(source: str, prop: str, content: str) -> str:
     tag = f'<meta property="{prop}" content="{html.escape(content, quote=True)}">'
-    if pattern.search(text): return pattern.sub(tag, text, count=1)
-    return re.sub(r'</head>', '    ' + tag + '\n</head>', text, count=1, flags=re.I)
+    pattern = re.compile(r'<meta\b(?=[^>]*\bproperty=["\']' + re.escape(prop) + r'["\'])[^>]*>', re.I)
+    if pattern.search(source):
+        return pattern.sub(tag, source, count=1)
+    return re.sub(r"</head\s*>", "    " + tag + "\n</head>", source, count=1, flags=re.I)
 
 
-def upsert_link(text, rel, href, extra=''):
-    m = re.search(r'hreflang=["\']([^"\']+)["\']', extra, re.I)
-    if m:
-        pattern = re.compile(r'<link\s+[^>]*rel=["\']' + re.escape(rel) + r'["\'][^>]*hreflang=["\']' + re.escape(m.group(1)) + r'["\'][^>]*>', re.I)
+def set_link(source: str, rel: str, href: str, hreflang: str | None = None) -> str:
+    if hreflang:
+        pattern = re.compile(
+            r'<link\b(?=[^>]*\brel=["\']' + re.escape(rel) + r'["\'])'
+            r'(?=[^>]*\bhreflang=["\']' + re.escape(hreflang) + r'["\'])[^>]*>',
+            re.I,
+        )
+        tag = f'<link rel="{rel}" href="{html.escape(href, quote=True)}" hreflang="{hreflang}">'
     else:
-        pattern = re.compile(r'<link\s+[^>]*rel=["\']' + re.escape(rel) + r'["\'][^>]*>', re.I)
-    tag = f'<link rel="{rel}" href="{html.escape(href, quote=True)}"{extra}>'
-    if pattern.search(text): return pattern.sub(tag, text, count=1)
-    return re.sub(r'</head>', '    ' + tag + '\n</head>', text, count=1, flags=re.I)
+        pattern = re.compile(r'<link\b(?=[^>]*\brel=["\']' + re.escape(rel) + r'["\'])[^>]*>', re.I)
+        tag = f'<link rel="{rel}" href="{html.escape(href, quote=True)}">'
+    if pattern.search(source):
+        return pattern.sub(tag, source, count=1)
+    return re.sub(r"</head\s*>", "    " + tag + "\n</head>", source, count=1, flags=re.I)
 
 
-def ensure_asset(text, tag):
-    if tag in text: return text
-    return re.sub(r'</head>', '    ' + tag + '\n</head>', text, count=1, flags=re.I)
+def ensure_asset(source: str, tag: str) -> str:
+    if tag in source:
+        return source
+    return re.sub(r"</head\s*>", "    " + tag + "\n</head>", source, count=1, flags=re.I)
 
 
-def replace_footer(text):
-    text = re.sub(r'<a[^>]*href=["\']https://t\.me/nappsam["\'][^>]*>\s*Powered by NAPPS\s*</a>', 'Powered by <a href="https://t.me/skyxcoding" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">SkyXCode</a>', text, flags=re.I)
-    text = re.sub(r'Powered by NAPPS', 'Powered by <a href="https://t.me/skyxcoding" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">SkyXCode</a>', text, flags=re.I)
-    text = re.sub(r'©\s*202[0-9]\s*MatchPro', '© <span id="year"></span> MatchPro', text, flags=re.I)
-    text = re.sub(r'(<header[^>]*>\s*<a\s+)href=["\'][^"\']+["\']', r'\1href="./"', text, count=1, flags=re.I|re.S)
-    return text
+def replace_footer(source: str) -> str:
+    source = re.sub(
+        r'<a[^>]*href=["\']https://t\.me/nappsam["\'][^>]*>\s*Powered by NAPPS\s*</a>',
+        'Powered by <a href="https://t.me/skyxcoding" target="_blank" rel="noopener noreferrer">SkyXCode</a>',
+        source,
+        flags=re.I,
+    )
+    source = re.sub(r"Powered by NAPPS", "Powered by SkyXCode", source, flags=re.I)
+    source = re.sub(r"©\s*202[0-9]\s*MatchPro", '© <span id="year"></span> MatchPro', source, flags=re.I)
+    source = re.sub(r"(<header[^>]*>\s*<a\s+)href=[\"'][^\"']+[\"']", r'\1href="./"', source, count=1, flags=re.I | re.S)
+    return source
 
 
-def process_page(path, item=None):
-    text = path.read_text(encoding='utf-8', errors='ignore')
-    text = re.sub(r'\s*<base\s+href=[^>]*>\s*', '\n', text, flags=re.I)
-    text = re.sub(r'<html([^>]*)lang=["\']hy["\']([^>]*)>', r'<html\1lang="ru"\2>', text, flags=re.I)
-    if re.search(r'<html[^>]*lang=', text, re.I) is None:
-        text = re.sub(r'<html([^>]*)>', r'<html\1 lang="ru">', text, count=1, flags=re.I)
+def set_html_language(source: str, language: str = "hy") -> str:
+    if re.search(r"<html\b[^>]*\blang=", source, re.I):
+        return re.sub(r'(<html\b[^>]*\blang=["\'])[^"\']*(["\'])', rf"\g<1>{language}\2", source, count=1, flags=re.I)
+    return re.sub(r"<html\b", f'<html lang="{language}"', source, count=1, flags=re.I)
+
+
+def process_page(path: Path, item: dict | None = None) -> None:
+    source = path.read_text(encoding="utf-8", errors="ignore")
+    source = re.sub(r"\s*<base\s+href=[^>]*>\s*", "\n", source, flags=re.I)
+    source = set_html_language(source, "hy")
 
     if item:
-        text = re.sub(r'<title>.*?</title>', f'<title>{html.escape(item["titleRu"])}</title>', text, count=1, flags=re.I|re.S)
-        for n,v in [('description',item['descriptionRu']),('keywords',item['keywordsRu']),('robots','index, follow, max-image-preview:large'),('googlebot','index, follow')]: text=upsert_meta(text,n,v)
-        for p,v in [('og:title',item['titleRu']),('og:description',item['descriptionRu']),('og:type','website'),('og:image',item['logo']),('og:url',f'/?id={item["id"]}&lang=ru')]: text=upsert_property(text,p,v)
-        text = upsert_link(text,'canonical',f'./?id={item["id"]}&lang=ru')
-        text = upsert_link(text,'alternate',f'./?id={item["id"]}&lang=ru',' hreflang="ru"')
-        text = upsert_link(text,'alternate',f'./?id={item["id"]}&lang=en',' hreflang="en"')
-        text = re.sub(r'<body([^>]*)>', rf'<body\1 data-matchpro-channel-id="{item["id"]}">', text, count=1, flags=re.I)
+        channel_id = str(item["id"])
+        title = item.get("titleHy") or item.get("titleRu") or item.get("titleEn") or "Մարզական ալիքներ | MatchPro"
+        description = item.get("descriptionHy") or item.get("descriptionRu") or item.get("descriptionEn") or ""
+        keywords = item.get("keywordsHy") or item.get("keywordsRu") or item.get("keywordsEn") or ""
+        url = f"{SITE_URL}/?id={channel_id}&lang=hy"
+        source = re.sub(r"<title>.*?</title>", f"<title>{html.escape(title)}</title>", source, count=1, flags=re.I | re.S)
+        for name, value in [
+            ("description", description),
+            ("keywords", keywords),
+            ("robots", "index, follow, max-image-preview:large"),
+            ("googlebot", "index, follow"),
+        ]:
+            source = set_meta(source, name, value)
+        for prop, value in [
+            ("og:title", title),
+            ("og:description", description),
+            ("og:type", "website"),
+            ("og:image", item.get("logo", "")),
+            ("og:url", url),
+        ]:
+            source = set_property(source, prop, value)
+        source = set_link(source, "canonical", url)
+        for language in ("hy", "ru", "en"):
+            source = set_link(source, "alternate", f"{SITE_URL}/?id={channel_id}&lang={language}", language)
+        def replace_body_tag(match: re.Match) -> str:
+            attributes = re.sub(r'\sdata-matchpro-channel-id=["\'][^"\']*["\']', '', match.group(1), flags=re.I)
+            return '<body' + attributes + f' data-matchpro-channel-id="{html.escape(channel_id, quote=True)}">'
+
+        source = re.sub(r"<body\b([^>]*)>", replace_body_tag, source, count=1, flags=re.I)
     else:
-        text = re.sub(r'<title>.*?</title>','<title>Спортивные каналы онлайн в прямом эфире | MatchPro</title>',text,count=1,flags=re.I|re.S)
-        for n,v in [('description','Смотрите спортивные каналы и прямые трансляции онлайн на разных устройствах.'),('keywords','спортивные каналы онлайн, прямой эфир, спорт онлайн, футбол, хоккей, баскетбол'),('robots','index, follow, max-image-preview:large'),('googlebot','index, follow')]: text=upsert_meta(text,n,v)
-        for p,v in [('og:title','Спортивные каналы онлайн в прямом эфире | MatchPro'),('og:description','Смотрите спортивные каналы и прямые трансляции онлайн.'),('og:type','website'),('og:url','./')]: text=upsert_property(text,p,v)
-        text = upsert_link(text,'canonical','./')
-        text = upsert_link(text,'alternate','./?lang=ru',' hreflang="ru"')
-        text = upsert_link(text,'alternate','./?lang=en',' hreflang="en"')
+        title = "Մարզական ալիքներ՝ ուղիղ եթերում | MatchPro"
+        description = "Դիտեք ֆուտբոլի, հոկեյի, բասկետբոլի և այլ մարզաձևերի ուղիղ հեռարձակումները MatchPro-ում։"
+        keywords = "մարզական ալիքներ առցանց, ուղիղ եթեր, ֆուտբոլ, հոկեյ, բասկետբոլ, MatchPro"
+        source = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", source, count=1, flags=re.I | re.S)
+        for name, value in [
+            ("description", description),
+            ("keywords", keywords),
+            ("robots", "index, follow, max-image-preview:large"),
+            ("googlebot", "index, follow"),
+        ]:
+            source = set_meta(source, name, value)
+        for prop, value in [
+            ("og:title", title),
+            ("og:description", description),
+            ("og:type", "website"),
+            ("og:url", SITE_URL + "/"),
+        ]:
+            source = set_property(source, prop, value)
+        source = set_link(source, "canonical", SITE_URL + "/")
+        for language in ("hy", "ru", "en"):
+            source = set_link(source, "alternate", f"{SITE_URL}/?lang={language}", language)
 
-    text = ensure_asset(text,'<link rel="stylesheet" href="/main/900-css/matchpro.css">')
-    text = ensure_asset(text,'<script src="/main/js/player-config.js" defer></script>')
-    text = ensure_asset(text,'<script src="/main/js/channels.js" defer></script>')
-    text = ensure_asset(text,'<script src="/main/js/matchpro.js" defer></script>')
-    text = ensure_asset(text,'<script src="/main/js/matchpro-enhance.js" defer></script>')
-    text = replace_footer(text)
-    path.write_text(text,encoding='utf-8')
+    source = ensure_asset(source, '<link rel="stylesheet" href="/main/900-css/matchpro.css">')
+    source = ensure_asset(source, '<script src="/main/js/player-config.js" defer></script>')
+    source = ensure_asset(source, '<script src="/main/js/channels.js" defer></script>')
+    source = ensure_asset(source, '<script src="/main/js/matchpro.js" defer></script>')
+    source = ensure_asset(source, '<script src="/main/js/matchpro-enhance.js" defer></script>')
+    source = replace_footer(source)
+    path.write_text(source, encoding="utf-8")
 
 
-def write_sitemap(channels):
-    urls=[SITE_URL+'/']
+def write_sitemap(channels: dict[str, dict]) -> None:
+    urls = [SITE_URL + "/"]
     for item in channels.values():
-        urls += [f'{SITE_URL}/?id={item["id"]}&lang=ru',f'{SITE_URL}/?id={item["id"]}&lang=en']
-    body=['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    body += ['  <url><loc>'+html.escape(u,quote=False)+'</loc></url>' for u in urls]
-    body.append('</urlset>')
-    (ROOT/'sitemap.xml').write_text('\n'.join(body)+'\n',encoding='utf-8')
+        for language in ("hy", "ru", "en"):
+            urls.append(f'{SITE_URL}/?id={item["id"]}&lang={language}')
+    body = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    body.extend("  <url><loc>" + html.escape(url, quote=False) + "</loc></url>" for url in urls)
+    body.append("</urlset>")
+    sitemap = "\n".join(body) + "\n"
+    (ROOT / "sitemap.xml").write_text(sitemap, encoding="utf-8")
+    (ROOT / "sitemap-matchprotv.xml").write_text(sitemap, encoding="utf-8")
 
 
-def main():
-    channels=read_channels()
-    for path in ROOT.glob('*.html'):
-        if path.name.lower()=='404.html': continue
-        process_page(path,channels.get(path.name))
+def main() -> None:
+    channels = read_channels()
+    for path in ROOT.glob("*.html"):
+        if path.name.lower() in {"403.html", "404.html", "500.html", "copyright-en.html", "copyright-ru.html", "copyright-hy.html", "p2p-player.html"}:
+            continue
+        process_page(path, channels.get(path.name))
     write_sitemap(channels)
-    (ROOT/'robots.txt').write_text('User-agent: *\nAllow: /\n\nSitemap: '+SITE_URL+'/sitemap.xml\n',encoding='utf-8')
+    (ROOT / "robots.txt").write_text(
+        "User-agent: *\nAllow: /\n\nSitemap: " + SITE_URL + "/sitemap.xml\n",
+        encoding="utf-8",
+    )
 
-if __name__=='__main__': main()
+
+if __name__ == "__main__":
+    main()
