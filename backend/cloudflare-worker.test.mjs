@@ -31,8 +31,17 @@ test('issues a short-lived session and restricts the GitHub proxy to this reposi
   const proxied=await worker.fetch(req('/api/github/repos/vip01live/matchpro',{headers:{Authorization:'Bearer '+data.token}}),env);
   assert.equal(proxied.status,200);assert.deepEqual(await proxied.json(),{permissions:{push:true}});
   assert.equal(urlSeen,'https://api.github.com/repos/vip01live/matchpro');assert.equal(authSeen,'Bearer test-github-token');
+  const treeSha='a'.repeat(40);
+  const tree=await worker.fetch(req('/api/github/repos/vip01live/matchpro/git/trees/'+treeSha+'?recursive=1',{headers:{Authorization:'Bearer '+data.token}}),env);
+  assert.equal(tree.status,200);
+  assert.equal(urlSeen,'https://api.github.com/repos/vip01live/matchpro/git/trees/'+treeSha+'?recursive=1');
+  const invalidTree=await worker.fetch(req('/api/github/repos/vip01live/matchpro/git/trees/not-a-sha',{headers:{Authorization:'Bearer '+data.token}}),env);
+  assert.equal(invalidTree.status,403);
+
   const denied=await worker.fetch(req('/api/github/repos/other/repository',{headers:{Authorization:'Bearer '+data.token}}),env);
   assert.equal(denied.status,403);
+  const otherTree=await worker.fetch(req('/api/github/repos/other/repository/git/trees/'+treeSha,{headers:{Authorization:'Bearer '+data.token}}),env);
+  assert.equal(otherTree.status,403);
  } finally {globalThis.fetch=previous;}
 });
 test('requires a valid session for every proxied request',async()=>{
