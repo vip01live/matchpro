@@ -49,11 +49,11 @@ def versioned_asset(value):
 
 def set_html_attr(tag, name, value):
     escaped = attr(value)
-    quoted = re.compile(r"(\\s" + re.escape(name) + r"\\s*=\\s*)([\"'])(.*?)\\2", re.I | re.S)
+    quoted = re.compile(r"(\s" + re.escape(name) + r"\s*=\s*)([\"'])(.*?)\2", re.I | re.S)
     match = quoted.search(tag)
     if match:
         return tag[:match.start()] + match.group(1) + '"' + escaped + '"' + tag[match.end():]
-    unquoted = re.compile(r"(\\s" + re.escape(name) + r"\\s*=\\s*)([^\\s>]+)", re.I)
+    unquoted = re.compile(r"(\s" + re.escape(name) + r"\s*=\s*)([^\s>]+)", re.I)
     match = unquoted.search(tag)
     if match:
         return tag[:match.start()] + match.group(1) + '"' + escaped + '"' + tag[match.end():]
@@ -67,11 +67,11 @@ def set_html_attr(tag, name, value):
 def apply_branding(source, logo, favicon):
     logo_url = versioned_asset(logo or "/media/logo.png")
     favicon_url = versioned_asset(favicon or "/media/fv/favicon-32x32.png")
-    header_pattern = re.compile(r"(<header\\b[^>]*>)(.*?)(</header\\s*>)", re.I | re.S)
+    header_pattern = re.compile(r"(<header\b[^>]*>)(.*?)(</header\s*>)", re.I | re.S)
 
     def update_header(match):
         inner = match.group(2)
-        image = re.search(r"<img\\b[^>]*>", inner, re.I | re.S)
+        image = re.search(r"<img\b[^>]*>", inner, re.I | re.S)
         if not image:
             return match.group(0)
         tag = image.group(0)
@@ -84,27 +84,27 @@ def apply_branding(source, logo, favicon):
     source = header_pattern.sub(update_header, source)
 
     if favicon_url:
-        tags = list(re.finditer(r"<link\\b[^>]*>", source, re.I | re.S))
+        tags = list(re.finditer(r"<link\b[^>]*>", source, re.I | re.S))
         for match in reversed(tags):
-            rel = re.search(r"\\brel\\s*=\\s*([\"'])(.*?)\\1", match.group(0), re.I | re.S)
+            rel = re.search(r"\brel\s*=\s*([\"'])(.*?)\1", match.group(0), re.I | re.S)
             if rel and ("icon" in rel.group(2).lower() or "apple-touch-icon" in rel.group(2).lower()):
                 tag = set_html_attr(match.group(0), "href", favicon_url)
                 source = source[:match.start()] + tag + source[match.end():]
 
     if logo_url:
         preload = '<link id="matchpro-logo-preload" rel="preload" as="image" href="' + attr(logo_url) + '" fetchpriority="high">'
-        preload_pattern = re.compile(r"<link\\b(?=[^>]*\\bid\\s*=\\s*([\"'])matchpro-logo-preload\\1)[^>]*>", re.I | re.S)
+        preload_pattern = re.compile(r"<link\b(?=[^>]*\bid\s*=\s*([\"'])matchpro-logo-preload\1)[^>]*>", re.I | re.S)
         updated = replace_tag(source, preload_pattern, preload)
         if updated is not None:
             source = updated
         else:
-            source = re.sub(r"</head\\s*>", lambda _: preload + "\\n</head>", source, count=1, flags=re.I)
+            source = re.sub(r"</head\s*>", lambda _: preload + "\n</head>", source, count=1, flags=re.I)
     return source
 
 
 def apply_home_channel_grid(source, channels, language):
     pattern = re.compile(
-        r"(<section\\b(?=[^>]*\\bclass\\s*=\\s*([\"'])[^\\"']*\\bchannel-grid\\b[^\\"']*\\2)[^>]*>).*?(</section\\s*>)",
+        r"""(<section\b(?=[^>]*\bclass\s*=\s*["'][^"']*\bchannel-grid\b[^"']*["'])[^>]*>).*?(</section\s*>)""",
         re.I | re.S,
     )
     visible = [channel for channel in channels if channel.get("published") is not False]
@@ -120,7 +120,7 @@ def apply_home_channel_grid(source, channels, language):
         if not channel_id or not logo:
             continue
         loading = "eager" if index < 4 else "lazy"
-        href = "./?id=" + channel_id + "&amp;lang=" + str(language)
+        href = "./?id=" + channel_id + "&lang=" + str(language)
         cards.append(
             '<a class="channel" href="' + attr(href) + '"><img src="' + attr(logo) +
             '" alt="' + attr(name) + '" loading="' + loading +
@@ -128,7 +128,7 @@ def apply_home_channel_grid(source, channels, language):
         )
     if not cards:
         return source
-    return pattern.sub(lambda match: match.group(1) + "".join(cards) + match.group(3), source, count=1)
+    return pattern.sub(lambda match: match.group(1) + "".join(cards) + match.group(2), source, count=1)
 
 
 def version_channel_assets(channels):
@@ -157,11 +157,11 @@ def ensure_navigation_transitions(source):
   ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
 }
 </style>"""
-    pattern = re.compile(r"<style\\b(?=[^>]*\\bid\\s*=\\s*([\"'])matchpro-navigation-transitions\\1)[^>]*>.*?</style\\s*>", re.I | re.S)
+    pattern = re.compile(r"<style\b(?=[^>]*\bid\s*=\s*([\"'])matchpro-navigation-transitions\1)[^>]*>.*?</style\s*>", re.I | re.S)
     updated = replace_tag(source, pattern, css)
     if updated is not None:
         return updated
-    return re.sub(r"</head\\s*>", lambda _: css + "\\n</head>", source, count=1, flags=re.I)
+    return re.sub(r"</head\s*>", lambda _: css + "\n</head>", source, count=1, flags=re.I)
 
 
 def absolute_url(value, domain):
