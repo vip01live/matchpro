@@ -17,7 +17,7 @@ if(start>=0&&end>start){
  check(!missing.length,'missing static DOM IDs: '+missing.join(', '));
  for(const view of ['dashboard','channels','ads','branding','content','maintenance','security','seo','pages'])check(markup.includes('data-view="'+view+'"'),'missing navigation view '+view);
  for(const panel of ['ads','branding','content','maintenance','seo','pages'])check(markup.includes('data-settings-panel="'+panel+'"'),'missing settings panel '+panel);
- for(const id of ['dashboard-view','channels-view','security-panel','security-auth-status','site-settings-form','channel-form','siteName','siteBaseUrl','defaultLanguage','homeTwitterCardHy','homeOgTitleRu','pagePath','pageTitle','pageH1','pageTwitterCard','pageOgImage','pageTwitterImage','page-assets-list','page-text-list','page-custom-meta-rows','save-page-button'])check(ids.includes(id),'missing required element '+id);
+ for(const id of ['dashboard-view','channels-view','security-panel','security-auth-status','site-settings-form','channel-form','siteName','siteBaseUrl','defaultLanguage','homeTwitterCardHy','homeOgTitleRu','pagePath','pageTitle','pageH1','pageTwitterCard','pageOgImage','pageTwitterImage','page-assets-list','page-elements-list','page-text-list','page-custom-meta-rows','show-create-page-button','page-create-area','pageNewSlug','newTitleHy','newTitleRu','newTitleEn','create-page-button','save-page-button'])check(ids.includes(id),'missing required element '+id);
  const validLocal=(raw)=>{const v=String(raw||'').trim();if(!v||v.startsWith('#')||v.startsWith('//')||/^(?:https?:|data:|mailto:|tel:|javascript:|blob:)/i.test(v))return true;const target=v.split('#')[0].split('?')[0];return fs.existsSync(path.join(root,target.startsWith('/')?target.slice(1):target));};
  for(const m of markup.matchAll(/\b(?:src|href)\s*=\s*["']([^"']+)["']/gi))check(validLocal(m[1]),'missing local admin asset '+m[1]);
  check(!inline.includes('data-view="info"'),'old single Settings view remains');
@@ -37,6 +37,8 @@ check(read('main/js/admin-backend-config.js').includes('MATCHPRO_ADMIN_API_BASE'
 const runtime=read('main/js/matchpro.js');
 try{new Function(runtime);}catch(e){errors.push('public runtime syntax: '+e.message);}
 check(runtime.includes("meta('twitter:card'"),'public X/Twitter card metadata handling missing');
+check(admin.includes('function createEditablePage'),'multilingual page creation is missing');
+check(admin.includes('function isSafeCssValue'),'safe layout controls are missing');
 check(read('index.html').includes('<h1 class="intro-text">'),'homepage semantic H1 missing');
 check(read('index.html').includes('name="twitter:card"'),'homepage static Twitter card metadata missing');
 const channelSource=read('main/js/channels.js');
