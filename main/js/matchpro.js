@@ -44,6 +44,8 @@ function seo(){
  prop('og:site_name',identity.name||'MatchPro');prop('og:url',channel?url:(home.ogUrl||url));
  prop('og:image',image?resolvePublicUrl(image):'');prop('og:image:alt',channel?(channel.name||'MatchPro channel'):(home.ogImageAlt||''));
  const localeMap={hy:'hy_AM',ru:'ru_RU',en:'en_US'};prop('og:locale',channel?localeMap[lang]:(home.ogLocale||localeMap[lang]));
+ Array.prototype.slice.call(document.head.querySelectorAll('meta[property="og:locale:alternate"]')).forEach(function(item){item.remove()});
+ if(!channel){var alternates=Array.isArray(home.ogLocaleAlternates)?home.ogLocaleAlternates:(typeof home.ogLocaleAlternates==='string'?home.ogLocaleAlternates.split(',').map(function(x){return x.trim()}).filter(Boolean):['hy','ru','en'].filter(function(x){return x!==lang}).map(function(x){return localeMap[x]}));alternates.forEach(function(value){if(!/^[A-Za-z]{2,3}(?:[-_][A-Za-z0-9]{2,8})*$/.test(value))return;var tag=document.createElement('meta');tag.setAttribute('property','og:locale:alternate');tag.setAttribute('content',value);document.head.appendChild(tag)})}
  meta('twitter:card',channel?'summary_large_image':(home.twitterCard||'summary_large_image'));
  meta('twitter:title',twitterTitle);meta('twitter:description',twitterDescription);meta('twitter:image',twitterImage?resolvePublicUrl(twitterImage):'');
  meta('twitter:image:alt',channel?(channel.name||'MatchPro channel'):(home.twitterImageAlt||home.ogImageAlt||''));
