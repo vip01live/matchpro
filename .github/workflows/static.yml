@@ -31,11 +31,14 @@ jobs:
 
       - name: Validate CMS metadata generator
         run: |
-          python -m py_compile tools/apply-cms-metadata.py
+          python -m py_compile tools/apply-cms-metadata.py tools/validate-site-performance.py
           python -m json.tool main/js/site-settings.json > /dev/null
 
       - name: Apply CMS metadata to published HTML
         run: python tools/apply-cms-metadata.py
+
+      - name: Validate optimized image and navigation output
+        run: python tools/validate-site-performance.py
 
       # MatchPro was originally built for a domain root (/main, /media, ...).
       # GitHub Pages serves this repository under /matchpro/, so rewrite only

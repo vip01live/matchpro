@@ -202,6 +202,7 @@ async function saveVisual(){
   var ext=file.type==='image/jpeg'?'jpg':file.type==='image/webp'?'webp':'png',asset='uploads/'+(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2))+'.'+ext;
   values.src='/'+asset;changes[asset]={content:btoa(binary),encoding:'base64'};$('cms-visual-src').value=values.src;
  }
+ if(selectedElement&&selectedElement.tagName==='IMG'&&selectedElement.closest&&selectedElement.closest('header')&&values.src){st.logo=values.src;}
  st.contentOverrides[key][lang][selectedSelector]=values;changes['main/js/site-settings.json']=JSON.stringify(st,null,2)+'\n';
  loading=true;$('cms-visual-save').disabled=true;
  try{await api.commitChanges(changes,'Update MatchPro visual content');settings=st;api.setSettings(st);$('cms-visual-file').value='';applyVisual();api.notify('Տարրի փոփոխությունը պահպանվեց։ Կայքում կերևա deploy-ից հետո։')}

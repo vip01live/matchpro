@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Generate static SEO metadata for MatchPro pages during the Pages build."""
 from pathlib import Path
+import hashlib
 import html
 import json
 import re
+from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 
 ROOT = Path(".")
 SETTINGS_PATH = ROOT / "main/js/site-settings.json"
@@ -24,14 +26,158 @@ def parse_channel_array():
 def attr(value):
     return html.escape(str(value or ""), quote=True)
 
+def versioned_asset(value):
+    """Return local image URLs with a content hash so replaced files cannot stay stale in browser/CDN caches."""
+    raw = str(value or "").strip()
+    if not raw or re.match(r"^(?:https?:)?//|^(?:data:|blob:)", raw, re.I):
+        return raw
+    parts = urlsplit(raw)
+    if parts.scheme or parts.netloc or not parts.path:
+        return raw
+    local_path = parts.path.lstrip("/")
+    candidate = ROOT / local_path
+    if not candidate.is_file() and local_path.startswith("matchpro/"):
+        candidate = ROOT / local_path[len("matchpro/"):]
+    if not candidate.is_file():
+        return raw
+    digest = hashlib.sha256(candidate.read_bytes()).hexdigest()[:12]
+    query = [(key, item) for key, item in parse_qsl(parts.query, keep_blank_values=True) if key != "v"]
+    query.append(("v", digest))
+    path = parts.path if parts.path.startswith("/") else "/" + parts.path
+    return urlunsplit(("", "", path, urlencode(query), parts.fragment))
+
+
+def set_html_attr(tag, name, value):
+    escaped = attr(value)
+    quoted = re.compile(r"(\s" + re.escape(name) + r"\s*=\s*)([\"'])(.*?)\2", re.I | re.S)
+    match = quoted.search(tag)
+    if match:
+        return tag[:match.start()] + match.group(1) + '"' + escaped + '"' + tag[match.end():]
+    unquoted = re.compile(r"(\s" + re.escape(name) + r"\s*=\s*)([^\s>]+)", re.I)
+    match = unquoted.search(tag)
+    if match:
+        return tag[:match.start()] + match.group(1) + '"' + escaped + '"' + tag[match.end():]
+    if tag.rstrip().endswith("/>"):
+        index = tag.rfind("/>")
+        return tag[:index] + " " + name + '="' + escaped + '"' + tag[index:]
+    index = tag.rfind(">")
+    return tag[:index] + " " + name + '="' + escaped + '"' + tag[index:]
+
+
+def apply_branding(source, logo, favicon):
+    logo_url = versioned_asset(logo or "/media/logo.png")
+    favicon_url = versioned_asset(favicon or "/media/fv/favicon-32x32.png")
+    header_pattern = re.compile(r"(<header\b[^>]*>)(.*?)(</header\s*>)", re.I | re.S)
+
+    def update_header(match):
+        inner = match.group(2)
+        image = re.search(r"<img\b[^>]*>", inner, re.I | re.S)
+        if not image:
+            return match.group(0)
+        tag = image.group(0)
+        for name, value in (("src", logo_url), ("alt", "MatchPro"), ("loading", "eager"),
+                            ("decoding", "async"), ("fetchpriority", "high")):
+            tag = set_html_attr(tag, name, value)
+        inner = inner[:image.start()] + tag + inner[image.end():]
+        return match.group(1) + inner + match.group(3)
+
+    source = header_pattern.sub(update_header, source)
+
+    if favicon_url:
+        tags = list(re.finditer(r"<link\b[^>]*>", source, re.I | re.S))
+        for match in reversed(tags):
+            rel = re.search(r"\brel\s*=\s*([\"'])(.*?)\1", match.group(0), re.I | re.S)
+            if rel and ("icon" in rel.group(2).lower() or "apple-touch-icon" in rel.group(2).lower()):
+                tag = set_html_attr(match.group(0), "href", favicon_url)
+                source = source[:match.start()] + tag + source[match.end():]
+
+    if logo_url:
+        preload = '<link id="matchpro-logo-preload" rel="preload" as="image" href="' + attr(logo_url) + '" fetchpriority="high">'
+        preload_pattern = re.compile(r"<link\b(?=[^>]*\bid\s*=\s*([\"'])matchpro-logo-preload\1)[^>]*>", re.I | re.S)
+        updated = replace_tag(source, preload_pattern, preload)
+        if updated is not None:
+            source = updated
+        else:
+            source = re.sub(r"</head\s*>", lambda _: preload + "\n</head>", source, count=1, flags=re.I)
+    return source
+
+
+def apply_home_channel_grid(source, channels, language):
+    pattern = re.compile(
+        r"""(<section\b(?=[^>]*\bclass\s*=\s*["'][^"']*\bchannel-grid\b[^"']*["'])[^>]*>).*?(</section\s*>)""",
+        re.I | re.S,
+    )
+    visible = [channel for channel in channels if channel.get("published") is not False]
+    if not visible:
+        return source
+    suffix = {"hy": "Hy", "ru": "Ru", "en": "En"}.get(language, "En")
+    cards = []
+    for index, channel in enumerate(visible):
+        channel_id = str(channel.get("id", ""))
+        name = (channel.get("name" + suffix) or channel.get("nameHy") or
+                channel.get("nameRu") or channel.get("nameEn") or "Sports channel")
+        logo = versioned_asset(channel.get("logo", ""))
+        if not channel_id or not logo:
+            continue
+        loading = "eager" if index < 4 else "lazy"
+        href = "./?id=" + channel_id + "&lang=" + str(language)
+        cards.append(
+            '<a class="channel" href="' + attr(href) + '"><img src="' + attr(logo) +
+            '" alt="' + attr(name) + '" loading="' + loading +
+            '" decoding="async"></a>'
+        )
+    if not cards:
+        return source
+    return pattern.sub(lambda match: match.group(1) + "".join(cards) + match.group(2), source, count=1)
+
+
+def version_channel_assets(channels):
+    """Version channel logo URLs in the generated Pages artifact without changing committed source files."""
+    for channel in channels:
+        if channel.get("logo"):
+            channel["logo"] = versioned_asset(channel["logo"])
+    source = CHANNELS_PATH.read_text(encoding="utf-8")
+    start, end = source.find("["), source.rfind("]")
+    if start < 0 or end < start:
+        raise ValueError("Cannot rewrite main/js/channels.js")
+    updated = source[:start] + json.dumps(channels, ensure_ascii=False, indent=2) + source[end + 1:]
+    if updated != source:
+        CHANNELS_PATH.write_text(updated, encoding="utf-8")
+    return channels
+
+
+def ensure_navigation_transitions(source):
+    css = """<style id="matchpro-navigation-transitions">
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: matchpro-view-out 120ms ease both; }
+::view-transition-new(root) { animation: matchpro-view-in 180ms ease both; }
+@keyframes matchpro-view-out { to { opacity: 0; } }
+@keyframes matchpro-view-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+}
+</style>"""
+    pattern = re.compile(r"<style\b(?=[^>]*\bid\s*=\s*([\"'])matchpro-navigation-transitions\1)[^>]*>.*?</style\s*>", re.I | re.S)
+    updated = replace_tag(source, pattern, css)
+    if updated is not None:
+        return updated
+    return re.sub(r"</head\s*>", lambda _: css + "\n</head>", source, count=1, flags=re.I)
+
+
 def absolute_url(value, domain):
     value = str(value or "").strip()
     if not value:
         return ""
+    value = versioned_asset(value)
     if re.match(r"^https?://", value, re.I):
         return value
     base = str(domain or DOMAIN_FALLBACK)
-    return base.rstrip("/") + "/" + value.lstrip("/")
+    base_parts = urlsplit(base)
+    value_parts = urlsplit(value)
+    base_path = base_parts.path.rstrip("/")
+    if base_path and (value_parts.path == base_path or value_parts.path.startswith(base_path + "/")):
+        return urlunsplit((base_parts.scheme, base_parts.netloc, value_parts.path, value_parts.query, value_parts.fragment))
+    return urljoin(base.rstrip("/") + "/", value.lstrip("/"))
 
 def replace_tag(source, pattern, replacement):
     matches = list(pattern.finditer(source))
@@ -176,7 +322,7 @@ def apply_metadata(source, data, identity, language, canonical):
 
 def main():
     settings = json.loads(SETTINGS_PATH.read_text(encoding="utf-8"))
-    channels = parse_channel_array()
+    channels = version_channel_assets(parse_channel_array())
     identity = settings.get("identity") or {}
     domain = str(identity.get("domain") or DOMAIN_FALLBACK)
     default_language = identity.get("defaultLanguage") or "en"
@@ -193,6 +339,10 @@ def main():
             continue
         source = path.read_text(encoding="utf-8")
         original = source
+        source = apply_branding(source, settings.get("logo"), settings.get("favicon"))
+        source = ensure_navigation_transitions(source)
+        if filename == "index.html":
+            source = apply_home_channel_grid(source, channels, default_language)
 
         if filename == "index.html":
             language = default_language

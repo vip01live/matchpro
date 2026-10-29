@@ -33,7 +33,7 @@ jobs:
 
       - name: Validate Python and JSON syntax
         run: |
-          python -m py_compile tools/apply-cms-metadata.py
+          python -m py_compile tools/apply-cms-metadata.py tools/validate-site-performance.py
           python -m json.tool main/js/site-settings.json > /dev/null
 
       - name: Validate existing site and admin structure
@@ -44,6 +44,7 @@ jobs:
       - name: Generate metadata in a temporary build copy
         run: |
           python tools/apply-cms-metadata.py
+          python tools/validate-site-performance.py
           python - <<'PY'
           from pathlib import Path
           import re
