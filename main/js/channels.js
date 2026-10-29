@@ -440,7 +440,10 @@ window.MATCHPRO_CHANNELS = [
     "keywordsHy": "Ուդար առցանց, MMA, մարտական սպորտ",
     "iframeFile": "UDARHD.html",
     "published": true,
-    "indexable": true
+    "indexable": true,
+    "adMode": "redirect",
+    "redirectUrl": "",
+    "videoAdUrl": ""
   },
   {
     "id": 7023,
