@@ -17,9 +17,12 @@ function language(){
  return ['hy','ru','en'].indexOf(d)>=0?d:'en';
 }
 function upsertMeta(kind,name,value){
- if(value===undefined||value===null||String(value)==='')return;
  var selector=kind==='property'?'meta[property="'+name+'"]':'meta[name="'+name+'"]';
  var found=document.head.querySelectorAll(selector),el=found[0];
+ if(value===undefined||value===null||String(value)===''){
+  for(var j=0;j<found.length;j++)found[j].remove();
+  return;
+ }
  if(!el){el=document.createElement('meta');el.setAttribute(kind,name);document.head.appendChild(el)}
  el.setAttribute('content',String(value));
  for(var i=1;i<found.length;i++)found[i].remove();
