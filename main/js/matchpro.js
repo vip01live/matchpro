@@ -22,7 +22,32 @@ function meta(name,value){if(!value)return;let e=document.head.querySelector('me
 function prop(name,value){if(!value)return;let e=document.head.querySelector('meta[property="'+name+'"]');if(!e){e=document.createElement('meta');e.property=name;document.head.appendChild(e)}e.content=value}
 function canonical(url){let e=document.head.querySelector('link[rel="canonical"]');if(!e){e=document.createElement('link');e.rel='canonical';document.head.appendChild(e)}e.href=url}
 function idUrl(id){return '/?id='+encodeURIComponent(id)+'&lang='+lang}
-function seo(){const url=channel?origin+'/?id='+channel.id+'&lang='+lang:origin+'/?lang='+lang;if(channel){document.title=channelField(channel,'title');meta('description',channelField(channel,'description'));meta('keywords',channelField(channel,'keywords'));prop('og:title',document.title);prop('og:description',channelField(channel,'description'));prop('og:type','website');if(channel.logo)prop('og:image',new URL(channel.logo,origin).href)}else document.title=tr.home;prop('og:url',url);canonical(url)}
+function seo(){
+ const settings=window.MATCHPRO_SITE_SETTINGS||{},identity=settings.siteIdentity||{},home=(settings.home&&settings.home[lang])||{};
+ const base=String(identity.baseUrl||origin).replace(/\\/+$/,'');
+ const url=channel?origin+'/?id='+channel.id+'&lang='+lang:(home.canonical||origin+'/?lang='+lang);
+ const pageTitle=channel?channelField(channel,'title'):(home.title||tr.home);
+ const description=channel?channelField(channel,'description'):(home.description||'');
+ const keywords=channel?channelField(channel,'keywords'):(home.keywords||'');
+ const image=channel?(channel.logo?new URL(channel.logo,origin).href):(home.ogImage||identity.shareImage||'');
+ const ogTitle=channel?pageTitle:(home.ogTitle||pageTitle);
+ const ogDescription=channel?description:(home.ogDescription||description);
+ const twitterTitle=channel?pageTitle:(home.twitterTitle||ogTitle);
+ const twitterDescription=channel?description:(home.twitterDescription||ogDescription);
+ const twitterImage=channel?image:(home.twitterImage||image);
+ document.title=pageTitle;meta('description',description);meta('keywords',keywords);
+ meta('robots',channel&&(channel.published===false||channel.indexable===false)?'noindex,nofollow':(home.robots||'index, follow, max-image-preview:large'));
+ meta('googlebot',channel&&(channel.published===false||channel.indexable===false)?'noindex,nofollow':(home.robots||'index, follow'));
+ prop('og:title',ogTitle);prop('og:description',ogDescription);prop('og:type',channel?'website':(home.ogType||'website'));
+ prop('og:site_name',identity.name||'MatchPro');prop('og:url',channel?url:(home.ogUrl||url));
+ prop('og:image',image?new URL(image,base+'/').href:'');prop('og:image:alt',channel?(channel.name||'MatchPro channel'):(home.ogImageAlt||''));
+ prop('og:locale',channel?({hy:'hy_AM',ru:'ru_RU',en:'en_US'}[lang]):(home.ogLocale||({hy:'hy_AM',ru:'ru_RU',en:'en_US'}[lang])));
+ meta('twitter:card',channel?'summary_large_image':(home.twitterCard||'summary_large_image'));
+ meta('twitter:title',twitterTitle);meta('twitter:description',twitterDescription);meta('twitter:image',twitterImage?new URL(twitterImage,base+'/').href:'');
+ meta('twitter:image:alt',channel?(channel.name||'MatchPro channel'):(home.twitterImageAlt||home.ogImageAlt||''));
+ meta('twitter:site',home.twitterSite||'');meta('twitter:creator',home.twitterCreator||'');
+ canonical(url);
+}
 function renderHome(){if(requestedId||(pageFile!=='index.html'&&pageFile!==''))return;const grid=document.querySelector('.channel-grid');if(!grid)return;grid.innerHTML='';channels.filter(x=>x.published!==false).forEach(x=>{const a=document.createElement('a');a.className='channel';a.href=idUrl(x.id);const i=document.createElement('img');i.src=x.logo;i.loading='lazy';i.decoding='async';i.alt=channelField(x,'name');a.appendChild(i);grid.appendChild(a)})}
 function renderRelated(){document.querySelectorAll('.related-grid').forEach(g=>{g.innerHTML='';channels.filter(x=>x.published!==false).forEach(x=>{if(channel&&String(x.id)===String(channel.id))return;const a=document.createElement('a');a.className='channel';a.href=idUrl(x.id);const i=document.createElement('img');i.src=x.logo;i.loading='lazy';i.decoding='async';i.alt=channelField(x,'name');a.appendChild(i);g.appendChild(a)})})}
 function text(){const intro=document.querySelector('.intro-text');if(intro)intro.textContent=tr.intro;const info=document.querySelector('.info-text');if(info)info.textContent=tr.info;const related=document.querySelector('.related-title');if(related)related.textContent=tr.related;const name=document.querySelector('.channel-name');if(name&&channel)name.innerHTML=tr.watch+'<span>'+channelField(channel,'name')+'</span>';const desc=document.querySelector('.channel-description');if(desc&&channel)desc.textContent=channelField(channel,'description');document.querySelectorAll('footer').forEach(f=>{f.querySelectorAll('.matchpro-footer-links,.matchpro-powered,.matchpro-copyright').forEach(e=>e.remove());let y=f.querySelector('#year');if(y)y.textContent=new Date().getFullYear();let links=document.createElement('div');links.className='matchpro-footer-links';let home=document.createElement('a');home.href='/?lang='+lang;home.textContent=tr.homeLink;let sep=document.createElement('span');sep.textContent='•';let c=document.createElement('a');c.className='matchpro-copyright';c.textContent=tr.copyright;c.href=lang==='hy'?'./copyright-hy.html':lang==='en'?'./copyright-en.html':'./copyright-ru.html';links.append(home,sep,c);f.appendChild(links);let p=document.createElement('p');p.className='matchpro-powered';p.innerHTML=tr.powered+' <a href="https://t.me/skyxcoding" target="_blank" rel="noopener noreferrer">SkyXCode</a>';f.appendChild(p)})}
