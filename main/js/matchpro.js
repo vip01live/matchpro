@@ -24,12 +24,12 @@ function canonical(url){let e=document.head.querySelector('link[rel="canonical"]
 function idUrl(id){return '/?id='+encodeURIComponent(id)+'&lang='+lang}
 function seo(){
  const settings=window.MATCHPRO_SITE_SETTINGS||{},identity=settings.siteIdentity||{},home=(settings.home&&settings.home[lang])||{};
- const base=String(identity.baseUrl||origin).replace(/\\/+$/,'');
+ let base=String(identity.baseUrl||origin);while(base.endsWith('/'))base=base.slice(0,-1);
  const url=channel?origin+'/?id='+channel.id+'&lang='+lang:(home.canonical||origin+'/?lang='+lang);
  const pageTitle=channel?channelField(channel,'title'):(home.title||tr.home);
  const description=channel?channelField(channel,'description'):(home.description||'');
  const keywords=channel?channelField(channel,'keywords'):(home.keywords||'');
- const image=channel?(channel.logo?new URL(channel.logo,origin).href):(home.ogImage||identity.shareImage||'');
+ const image=channel?(channel.logo?new URL(channel.logo,origin).href:''):(home.ogImage||identity.shareImage||'');
  const ogTitle=channel?pageTitle:(home.ogTitle||pageTitle);
  const ogDescription=channel?description:(home.ogDescription||description);
  const twitterTitle=channel?pageTitle:(home.twitterTitle||ogTitle);
@@ -41,7 +41,7 @@ function seo(){
  prop('og:title',ogTitle);prop('og:description',ogDescription);prop('og:type',channel?'website':(home.ogType||'website'));
  prop('og:site_name',identity.name||'MatchPro');prop('og:url',channel?url:(home.ogUrl||url));
  prop('og:image',image?new URL(image,base+'/').href:'');prop('og:image:alt',channel?(channel.name||'MatchPro channel'):(home.ogImageAlt||''));
- prop('og:locale',channel?({hy:'hy_AM',ru:'ru_RU',en:'en_US'}[lang]):(home.ogLocale||({hy:'hy_AM',ru:'ru_RU',en:'en_US'}[lang])));
+ const localeMap={hy:'hy_AM',ru:'ru_RU',en:'en_US'};prop('og:locale',channel?localeMap[lang]:(home.ogLocale||localeMap[lang]));
  meta('twitter:card',channel?'summary_large_image':(home.twitterCard||'summary_large_image'));
  meta('twitter:title',twitterTitle);meta('twitter:description',twitterDescription);meta('twitter:image',twitterImage?new URL(twitterImage,base+'/').href:'');
  meta('twitter:image:alt',channel?(channel.name||'MatchPro channel'):(home.twitterImageAlt||home.ogImageAlt||''));
