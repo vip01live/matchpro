@@ -41,6 +41,12 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 #page-search,#page-text-search{width:100%;min-height:42px;padding:10px 12px;border:1px solid var(--line,#263449);border-radius:10px;background:var(--input,#0b1320);color:inherit}
 @media(max-width:760px){.page-text-row{grid-template-columns:1fr}.page-custom-meta-row{grid-template-columns:1fr}.seo-snippet-title{font-size:17px}}
 
+
+.page-assets-list{display:grid;gap:12px;margin-top:12px}
+.page-asset-card{padding:14px;border:1px solid var(--line,#263449);border-radius:12px;background:rgba(255,255,255,.018);min-width:0}
+.page-asset-heading{font-size:12px;font-weight:750;color:var(--muted,#9aa9bb);overflow-wrap:anywhere;margin-bottom:10px}
+.page-asset-preview{display:block;max-width:240px;max-height:120px;object-fit:contain;margin-top:10px;border-radius:8px;background:#0a0d14}
+
 </style>
 <meta name="referrer" content="no-referrer-when-downgrade">
 </head>
@@ -320,6 +326,11 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
             <p class="subtle-note">Only approved metadata tags are allowed. Arbitrary scripts and HTML injection are intentionally not supported.</p>
             <div id="page-custom-meta-rows"></div>
             <button type="button" id="add-page-custom-meta" class="btn outline">＋ Add custom meta tag</button>
+          </div>
+          <div class="lang-card">
+            <div class="lang-head"><span class="flag">MEDIA</span> Նկարներ և հղումներ</div>
+            <p class="subtle-note">Կառավարիր առկա HTML էջում նկարների հասցեներն ու alt տեքստերը, ինչպես նաև հղումների URL-ները, վերնագրերը և բացման եղանակը։ Նոր ֆայլ չի վերբեռնվում, եթե հասցեն պարզապես փոխում ես։</p>
+            <div id="page-assets-list" class="page-assets-list"></div>
           </div>
           <div class="lang-card">
             <div class="lang-head"><span class="flag">TEXT</span> Էջի տեքստեր</div>
@@ -926,6 +937,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   var pageEditorSource='';
   var pageEditorDoc=null;
   var pageTextRows=[];
+  var pageAssetRows=[];
   var pageCustomMetaOriginal=[];
   var reservedPageMetaNames=['description','keywords','robots','googlebot','author','theme-color','viewport','referrer','twitter:card','twitter:title','twitter:description','twitter:image','twitter:image:alt','twitter:site','twitter:creator','og:title','og:description','og:type','og:url','og:image','og:image:alt','og:site_name','og:locale','og:locale:alternate'];
 
@@ -1045,6 +1057,51 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     });
     return result.slice(0,300);
   }
+
+  function collectPageAssetRows(doc){
+    var result=[];
+    Array.prototype.slice.call(doc.querySelectorAll('img')).forEach(function(el){
+      if(el.closest('head,script,style,noscript,template')||el.hasAttribute('aria-hidden'))return;
+      result.push({kind:'image',tag:'img',selector:pageCssPath(el),src:el.getAttribute('src')||'',alt:el.getAttribute('alt')||'',title:el.getAttribute('title')||''});
+    });
+    Array.prototype.slice.call(doc.querySelectorAll('a[href]')).forEach(function(el){
+      if(el.closest('head,script,style,noscript,template')||el.hasAttribute('aria-hidden'))return;
+      result.push({kind:'link',tag:'a',selector:pageCssPath(el),href:el.getAttribute('href')||'',title:el.getAttribute('title')||'',target:el.getAttribute('target')||'',rel:el.getAttribute('rel')||''});
+    });
+    return result.slice(0,250);
+  }
+  function appendAssetInput(container,labelText,value,callback,type){
+    var field=document.createElement('div');field.className='field';
+    var label=document.createElement('label');label.textContent=labelText;field.appendChild(label);
+    var input=document.createElement('input');input.type=type||'text';input.value=value||'';input.addEventListener('input',function(){callback(input.value)});field.appendChild(input);
+    container.appendChild(field);
+  }
+  function renderPageAssetRows(){
+    var list=$('page-assets-list');if(!list)return;list.textContent='';
+    pageAssetRows.forEach(function(item,index){
+      var card=document.createElement('div');card.className='page-asset-card';
+      var header=document.createElement('div');header.className='page-asset-heading';header.textContent=(item.kind==='image'?'IMAGE':'LINK')+' · '+item.selector;card.appendChild(header);
+      if(item.kind==='image'){
+        var grid=document.createElement('div');grid.className='form-grid settings-grid';
+        appendAssetInput(grid,'Image URL / src',item.src,function(v){item.src=v});
+        appendAssetInput(grid,'Alternative text / alt',item.alt,function(v){item.alt=v});
+        appendAssetInput(grid,'Image title',item.title,function(v){item.title=v});
+        card.appendChild(grid);
+        if(item.src){var preview=document.createElement('img');preview.className='page-asset-preview';preview.alt=item.alt||'';try{preview.src=absolutePublicUrl(item.src,(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.baseUrl)||SITE_BASE)}catch(_){}card.appendChild(preview);}
+      } else {
+        var gridLink=document.createElement('div');gridLink.className='form-grid settings-grid';
+        appendAssetInput(gridLink,'Link URL / href',item.href,function(v){item.href=v});
+        appendAssetInput(gridLink,'Link title',item.title,function(v){item.title=v});
+        var targetField=document.createElement('div');targetField.className='field';var targetLabel=document.createElement('label');targetLabel.textContent='Open link';targetField.appendChild(targetLabel);
+        var target=document.createElement('select');[['','Default'],['_self','Same tab'],['_blank','New tab']].forEach(function(pair){var option=document.createElement('option');option.value=pair[0];option.textContent=pair[1];target.appendChild(option)});target.value=item.target||'';target.addEventListener('change',function(){item.target=target.value});targetField.appendChild(target);gridLink.appendChild(targetField);
+        appendAssetInput(gridLink,'rel attribute',item.rel,function(v){item.rel=v});
+        card.appendChild(gridLink);
+      }
+      list.appendChild(card);
+    });
+    if(!pageAssetRows.length){var empty=document.createElement('p');empty.className='subtle-note';empty.textContent='Այս էջում խմբագրելի նկարներ կամ հղումներ չեն գտնվել։';list.appendChild(empty)}
+  }
+
   function filterPageOptions(){
     var term=($('page-search').value||'').toLowerCase();
     Array.prototype.slice.call($('pagePath').options).forEach(function(option,index){
@@ -1131,6 +1188,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     $('pageTwitterCreator').value=readPageMeta(doc,'twitter:creator',false);
     $('page-custom-meta-rows').textContent='';
     readCustomMetaFromDoc(doc).forEach(addPageCustomMetaRow);
+    pageAssetRows=collectPageAssetRows(doc);
+    renderPageAssetRows();
     pageTextRows=collectPageTextRows(doc);
     renderPageTextRows();
     updatePageSeoPreview();
@@ -1239,6 +1298,26 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       var key=type+':'+lower;if(customSeen[key])throw new Error('Կրկնվող custom meta tag՝ '+name);customSeen[key]=true;
       var m=doc.createElement('meta');m.setAttribute(type,name);m.setAttribute('content',content);doc.head.appendChild(m);
     });
+
+    pageAssetRows.forEach(function(item){
+      var el;try{el=doc.querySelector(item.selector)}catch(_){el=null}if(!el)return;
+      if(item.kind==='image'){
+        var src=String(item.src||'').trim();
+        if(src&&!safeUrl(src,true))throw new Error('Նկարի URL-ը սխալ է՝ '+src);
+        if(src)el.setAttribute('src',src);else el.removeAttribute('src');
+        el.setAttribute('alt',String(item.alt||'').trim());
+        if(String(item.title||'').trim())el.setAttribute('title',String(item.title).trim());else el.removeAttribute('title');
+      }else{
+        var href=String(item.href||'').trim();
+        if(href&&!/^(?:#|mailto:|tel:)/i.test(href)&&!safeUrl(href,true))throw new Error('Հղման URL-ը սխալ է՝ '+href);
+        if(/^(?:javascript|data|vbscript):/i.test(href))throw new Error('Վտանգավոր հղումը չի թույլատրվում։');
+        if(href)el.setAttribute('href',href);else el.removeAttribute('href');
+        if(String(item.title||'').trim())el.setAttribute('title',String(item.title).trim());else el.removeAttribute('title');
+        if(item.target==='_blank'){el.setAttribute('target','_blank');var rel=new Set(String(item.rel||'').split(/\\s+/).filter(Boolean));rel.add('noopener');rel.add('noreferrer');el.setAttribute('rel',Array.from(rel).join(' '));}
+        else {if(item.target==='_self')el.setAttribute('target','_self');else el.removeAttribute('target');if(String(item.rel||'').trim())el.setAttribute('rel',String(item.rel).trim());else el.removeAttribute('rel');}
+      }
+    });
+
     var pageTextControls=Array.prototype.slice.call($('page-text-list').querySelectorAll('[data-page-text-index]'));
     pageTextControls.forEach(function(control){var item=pageTextRows[Number(control.dataset.pageTextIndex)];if(!item)return;var target;try{target=doc.querySelector(item.selector)}catch(_){target=null}if(target&&target.children.length===0&&target.textContent!==control.value)target.textContent=control.value});
     if(path==='index.html'||path==='app/index.html')updateSettingsFromHomepagePage(doc);
