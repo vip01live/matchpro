@@ -9,6 +9,8 @@ function stored(key){try{return localStorage.getItem(key)||''}catch(_){return''}
 function language(){
  var q=(new URLSearchParams(location.search).get('lang')||'').toLowerCase();
  if(['hy','ru','en'].indexOf(q)>=0)return q;
+ var file=(location.pathname.split('/').pop()||'').toLowerCase(),fileLang=file.match(/-(hy|ru|en)\.html?$/);
+ if(fileLang)return fileLang[1];
  var s=stored('matchpro-language');if(['hy','ru','en'].indexOf(s)>=0)return s;
  var b=(navigator.language||'').toLowerCase();
  if(b.indexOf('hy')===0)return'hy';
