@@ -62,6 +62,7 @@ function renderPageCards(){
  });
 }
 function showCMSView(view){
+ if(api&&api.setView)api.setView(view);
  var map={pages:'cms-pages-view',seo:'cms-seo-view',visual:'cms-visual-view'};
  Object.keys(map).forEach(function(k){$(map[k]).classList.toggle('hidden',k!==view)});
  document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b.dataset.view===view)});
@@ -130,7 +131,7 @@ async function saveSeo(){
   st.seo=st.seo||{};st.seo.pages=st.seo.pages||{};st.seo.pages[key]=st.seo.pages[key]||{};st.seo.pages[key][lang]=values;
  }
  loading=true;$('cms-seo-save').disabled=true;$('cms-seo-save').textContent='Պահպանվում է…';
- try{await api.commitChanges({'main/js/site-settings.json':JSON.stringify(st,null,2)+'\n'},'Update MatchPro SEO and social metadata');settings=st;api.notify('SEO/meta տվյալները պահպանվեցին։ Հրապարակված HTML-ը կթարմացվի GitHub Pages deploy-ից հետո։');updateSeoPreview()}
+ try{await api.commitChanges({'main/js/site-settings.json':JSON.stringify(st,null,2)+'\n'},'Update MatchPro SEO and social metadata');settings=st;api.setSettings(st);api.notify('SEO/meta տվյալները պահպանվեցին։ Հրապարակված HTML-ը կթարմացվի GitHub Pages deploy-ից հետո։');updateSeoPreview()}
  catch(e){err.textContent=e.message||'Չհաջողվեց պահպանել SEO տվյալները։'}
  finally{loading=false;$('cms-seo-save').disabled=false;$('cms-seo-save').textContent='Պահպանել SEO-ն'}
 }
@@ -203,7 +204,7 @@ async function saveVisual(){
  }
  st.contentOverrides[key][lang][selectedSelector]=values;changes['main/js/site-settings.json']=JSON.stringify(st,null,2)+'\n';
  loading=true;$('cms-visual-save').disabled=true;
- try{await api.commitChanges(changes,'Update MatchPro visual content');settings=st;$('cms-visual-file').value='';applyVisual();api.notify('Տարրի փոփոխությունը պահպանվեց։ Կայքում կերևա deploy-ից հետո։')}
+ try{await api.commitChanges(changes,'Update MatchPro visual content');settings=st;api.setSettings(st);$('cms-visual-file').value='';applyVisual();api.notify('Տարրի փոփոխությունը պահպանվեց։ Կայքում կերևա deploy-ից հետո։')}
  catch(e){$('cms-visual-error').textContent=e.message||'Պահպանումը չհաջողվեց'}
  finally{loading=false;$('cms-visual-save').disabled=false}
 }
