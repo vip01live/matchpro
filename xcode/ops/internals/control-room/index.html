@@ -683,7 +683,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     if(name==='maintenance')activateLanguageTab('hy','maintenance');
     if(name==='seo')activateLanguageTab((siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.defaultLanguage)||'ru','seo-home');
     var globalActions=$('settings-global-actions');if(globalActions)globalActions.classList.toggle('hidden',name==='pages');
-    var pageFields=$('page-editor-fields');if(pageFields&&name!=='pages')pageFields.classList.add('hidden');
+    var pageFields=$('page-editor-fields');if(pageFields)pageFields.classList.toggle('hidden',name!=='pages'||!pageEditorPath);
   }
 
   function setView(view) {
