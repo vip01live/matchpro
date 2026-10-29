@@ -57,13 +57,13 @@ def set_title(source, value):
     return re.sub(r"</head\s*>", lambda _: tag + "\n</head>", source, count=1, flags=re.I)
 
 def set_meta(source, kind, name, value):
-    if value is None or str(value) == "":
-        return source
     pattern = re.compile(
         r"<meta\b(?=[^>]*\b" + re.escape(kind) +
         r"\s*=\s*([\"'])" + re.escape(name) + r"\1)[^>]*>",
         re.I
     )
+    if value is None or str(value) == "":
+        return pattern.sub("", source)
     tag = '<meta ' + kind + '="' + attr(name) + '" content="' + attr(value) + '">'
     updated = replace_tag(source, pattern, tag)
     if updated is not None:
