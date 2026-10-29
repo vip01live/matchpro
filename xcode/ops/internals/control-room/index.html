@@ -1187,12 +1187,12 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   }
   function isSafeCssValue(value,kind){
     var v=String(value||'').trim();if(!v)return true;
-    if(/[;{}<>]|url\\s*\\(|expression|javascript:/i.test(v))return false;
-    if(kind==='color')return /^(?:#[0-9a-f]{3,8}|[a-z]{1,30}|rgba?\\([0-9.,%\\s]+\\)|hsla?\\([0-9.,%\\s]+\\)|transparent|currentcolor|inherit|initial|unset)$/i.test(v);
+    if(/[;{}<>]|url\s*\(|expression|javascript:/i.test(v))return false;
+    if(kind==='color')return /^(?:#[0-9a-f]{3,8}|[a-z]{1,30}|rgba?\([0-9.,%\s]+\)|hsla?\([0-9.,%\s]+\)|transparent|currentcolor|inherit|initial|unset)$/i.test(v);
     if(kind==='align')return ['start','end','left','right','center','justify','match-parent','inherit','initial','unset'].indexOf(v.toLowerCase())>=0;
     if(kind==='weight')return ['normal','bold','bolder','lighter','100','200','300','400','500','600','700','800','900','inherit','initial','unset'].indexOf(v.toLowerCase())>=0;
     if(kind==='display')return ['','default','none','block','inline','inline-block','flex','grid','inline-flex','inline-grid','table','list-item','contents'].indexOf(v.toLowerCase())>=0;
-    if(kind==='length'||kind==='spacing')return /^(?:auto|inherit|initial|unset|normal|0|-?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr))(?:\\s+(?:auto|inherit|initial|unset|normal|0|-?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr))){0,3}$/i.test(v);
+    if(kind==='length'||kind==='spacing')return /^(?:auto|inherit|initial|unset|normal|0|-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr))(?:\s+(?:auto|inherit|initial|unset|normal|0|-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr))){0,3}$/i.test(v);
     return false;
   }
   function renderPageElementRows(){
@@ -1200,7 +1200,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     pageElementRows.forEach(function(item,index){
       var card=document.createElement('div');card.className='page-element-row';
       var head=document.createElement('div');head.className='page-element-head';
-      var title=document.createElement('div');title.className='page-element-title';title.textContent=item.tag.toUpperCase()+(item.id?' #'+item.id:'')+(item.className?' .'+item.className.split(/\\s+/).join('.'): '');
+      var title=document.createElement('div');title.className='page-element-title';title.textContent=item.tag.toUpperCase()+(item.id?' #'+item.id:'')+(item.className?' .'+item.className.split(/\s+/).join('.'): '');
       var move=document.createElement('div');move.className='page-element-moves';
       [['↑',-1],['↓',1]].forEach(function(pair){var b=document.createElement('button');b.type='button';b.className='btn outline';b.textContent=pair[0];b.title=pair[1]<0?'Move element up':'Move element down';b.addEventListener('click',function(){pageElementMove={selector:item.selector,direction:pair[1]};document.querySelectorAll('.page-element-row').forEach(function(x){x.classList.remove('move-selected')});card.classList.add('move-selected');$('page-editor-error').textContent='Ընտրված է '+item.tag+' տարրի տեղափոխումը։ Սեղմիր «Պահպանել էջի փոփոխությունները»՝ կիրառելու համար։'});move.appendChild(b)});
       head.append(title,move);card.appendChild(head);
@@ -1442,7 +1442,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
         if(/^(?:javascript|data|vbscript):/i.test(href))throw new Error('Վտանգավոր հղումը չի թույլատրվում։');
         if(href)el.setAttribute('href',href);else el.removeAttribute('href');
         if(String(item.title||'').trim())el.setAttribute('title',String(item.title).trim());else el.removeAttribute('title');
-        if(item.target==='_blank'){el.setAttribute('target','_blank');var rel=new Set(String(item.rel||'').split(/\\s+/).filter(Boolean));rel.add('noopener');rel.add('noreferrer');el.setAttribute('rel',Array.from(rel).join(' '));}
+        if(item.target==='_blank'){el.setAttribute('target','_blank');var rel=new Set(String(item.rel||'').split(/\s+/).filter(Boolean));rel.add('noopener');rel.add('noreferrer');el.setAttribute('rel',Array.from(rel).join(' '));}
         else {if(item.target==='_self')el.setAttribute('target','_self');else el.removeAttribute('target');if(String(item.rel||'').trim())el.setAttribute('rel',String(item.rel).trim());else el.removeAttribute('rel');}
       }
     });
