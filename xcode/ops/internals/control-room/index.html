@@ -294,7 +294,26 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   function iframeFileFor(channel) { return channel.iframeFile || ('channel-' + channel.id + '-' + slugify(channel.nameEn || channel.file || 'channel') + '.html'); }
   function buildIframeHtml(playerUrl,title) { var encoded=utf8ToBase64(playerUrl);return '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer"><title>'+escapeHtml(title||'Channel player')+'</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}iframe{display:block;width:100%;height:100%;border:0}</style></head><body><script>(function(){var encodedSource="'+encoded+'";var binary=atob(encodedSource);var bytes=new Uint8Array(binary.length);for(var i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);var frame=document.createElement("iframe");frame.src=new TextDecoder("utf-8").decode(bytes);frame.title='+JSON.stringify(title||'Channel player')+';frame.allow="autoplay; encrypted-media; fullscreen; picture-in-picture";frame.allowFullscreen=true;frame.referrerPolicy="no-referrer";document.body.appendChild(frame);})();' + '</' + 'script></body></html>\n'; }
   function readIframeUrl(source) { var marker='var encodedSource="',at=source.indexOf(marker);if(at>=0){var begin=at+marker.length,end=source.indexOf('"',begin);if(end>begin){try{return base64ToUtf8(source.slice(begin,end));}catch(_){}}}var doc=new DOMParser().parseFromString(source,'text/html'),encoded=doc.querySelector('iframe[data-matchpro-encoded-url]');if(encoded){try{return base64ToUtf8(encoded.getAttribute('data-matchpro-encoded-url'));}catch(_){}}var frame=doc.querySelector('iframe[src]');return frame?(frame.getAttribute('src')||''):''; }
-  function defaultSiteSettings() { return {maintenance:{enabled:false,message:{hy:'Կայքում իրականացվում են տեխնիկական աշխատանքներ։ Խնդրում ենք փորձել ավելի ուշ։',ru:'На сайте ведутся технические работы. Пожалуйста, зайдите позже.',en:'We are performing maintenance. Please come back later.'}},adblock:{enabled:false},defaultRedirectUrl:'https://lkhq.cc/60dc1304',favicon:'/media/fv/favicon-32x32.png',logo:'/media/logo.png',home:{hy:{title:'Մարզական ալիքներ՝ ուղիղ եթերում | MatchPro',description:'Դիտեք ֆուտբոլի, հոկեյի, բասկետբոլի և այլ մարզաձևերի ուղիղ հեռարձակումները MatchPro-ում։',keywords:'մարզական ալիքներ առցանց, ուղիղ եթեր, ֆուտբոլ, հոկեյ, բասկետբոլ, MatchPro',intro:'Լավագույն մարզական իրադարձությունները՝ ուղիղ եթերում',info:'Ընտրեք ձեր նախընտրած մարզական ալիքը և հետևեք ֆուտբոլի, հոկեյի, բասկետբոլի ու այլ մարզաձևերի հասանելի հեռարձակումներին մեկ վայրում։ MatchPro-ում կարող եք արագ գտնել հետաքրքրող ալիքը և դիտել ուղիղ եթերը.'},ru:{title:'Спортивные каналы онлайн в прямом эфире | MatchPro',description:'Смотрите доступные спортивные трансляции футбола, хоккея, баскетбола и других видов спорта на MatchPro.',keywords:'спортивные каналы онлайн, прямой эфир, футбол, хоккей, баскетбол, MatchPro',intro:'Лучшие матчи — в прямом эфире',info:'Выбирайте спортивные каналы и следите за доступными футбольными, хоккейными, баскетбольными и другими трансляциями в одном месте.'},en:{title:'Sports Channels Live Online | MatchPro',description:'Watch available live sports broadcasts, including football, hockey, basketball and more on MatchPro.',keywords:'sports channels online, live stream, football, hockey, basketball, MatchPro',intro:'The best matches — live',info:'Choose your preferred sports channel and follow available football, hockey, basketball and other live broadcasts in one place.'}}}; }
+  function defaultSiteSettings() {
+    function home(title,description,keywords,intro,info,locale) {
+      return {
+        title:title,description:description,keywords:keywords,intro:intro,info:info,
+        canonical:'',robots:'index, follow, max-image-preview:large',
+        ogTitle:title,ogDescription:description,ogType:'website',ogUrl:'',ogImage:'/media/share-image.png',ogImageAlt:'MatchPro sports channels',ogLocale:locale,
+        twitterCard:'summary_large_image',twitterTitle:title,twitterDescription:description,twitterImage:'/media/share-image.png',twitterImageAlt:'MatchPro sports channels',twitterSite:'',twitterCreator:''
+      };
+    }
+    return {
+      siteIdentity:{name:'MatchPro',shortName:'MatchPro',tagline:'Sports channels live online',baseUrl:'https://vip01live.github.io/matchpro',defaultLanguage:'ru',shareImage:'/media/share-image.png',author:'MatchPro'},
+      maintenance:{enabled:false,message:{hy:'Կայքում իրականացվում են տեխնիկական աշխատանքներ։ Խնդրում ենք փորձել ավելի ուշ։',ru:'На сайте ведутся технические работы. Пожалуйста, зайдите позже.',en:'We are performing maintenance. Please come back later.'}},
+      adblock:{enabled:false},defaultRedirectUrl:'https://lkhq.cc/60dc1304',favicon:'/media/fv/favicon-32x32.png',logo:'/media/logo.png',customMeta:[],
+      home:{
+        hy:home('Մարզական ալիքներ՝ ուղիղ եթերում | MatchPro','Դիտեք ֆուտբոլի, հոկեյի, բասկետբոլի և այլ մարզաձևերի ուղիղ հեռարձակումները MatchPro-ում։','մարզական ալիքներ առցանց, ուղիղ եթեր, ֆուտբոլ, հոկեյ, բասկետբոլ, MatchPro','Լավագույն մարզական իրադարձությունները՝ ուղիղ եթերում','Ընտրեք ձեր նախընտրած մարզական ալիքը և հետևեք ֆուտբոլի, հոկեյի, բասկետբոլի ու այլ մարզաձևերի հասանելի հեռարձակումներին մեկ վայրում։ MatchPro-ում կարող եք արագ գտնել հետաքրքրող ալիքը և դիտել ուղիղ եթերը.','hy_AM'),
+        ru:home('Спортивные каналы онлайн в прямом эфире | MatchPro','Смотрите доступные спортивные трансляции футбола, хоккея, баскетбола и других видов спорта на MatchPro.','спортивные каналы онлайн, прямой эфир, футбол, хоккей, баскетбол, MatchPro','Лучшие матчи — в прямом эфире','Выбирайте спортивные каналы и следите за доступными футбольными, хоккейными, баскетбольными и другими трансляциями в одном месте. MatchPro помогает быстро находить интересующие вас каналы.','ru_RU'),
+        en:home('Sports Channels Live Online | MatchPro','Watch available live sports broadcasts, including football, hockey, basketball and more on MatchPro.','sports channels online, live stream, football, hockey, basketball, MatchPro','The best matches — live','Choose your preferred sports channel and follow available football, hockey, basketball and other live broadcasts in one place. MatchPro helps you find the channel you want quickly.','en_US')
+      }
+    };
+  }
   async function request(url, method, body) {
     var options = {method:method || 'GET',headers:{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}};
     var requestUrl = url;
@@ -490,10 +509,13 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     });
     if(name==='content')activateLanguageTab('hy','home');
     if(name==='maintenance')activateLanguageTab('hy','maintenance');
+    if(name==='seo')activateLanguageTab((siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.defaultLanguage)||'ru','seo-home');
+    var globalActions=$('settings-global-actions');if(globalActions)globalActions.classList.toggle('hidden',name==='pages');
+    var pageFields=$('page-editor-fields');if(pageFields&&name!=='pages')pageFields.classList.add('hidden');
   }
 
   function setView(view) {
-    var settingsViews = ['ads', 'branding', 'content', 'maintenance'];
+    var settingsViews = ['ads', 'branding', 'content', 'maintenance', 'seo', 'pages'];
     var isSettings = settingsViews.indexOf(view) >= 0;
     var isSecurity = view === 'security';
     document.querySelectorAll('[data-view]').forEach(function (button) {
@@ -737,6 +759,340 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       notify('Չհաջողվեց հեռացնել ալիքը․ ' + error.message, true);
     } finally { setBusy(false); }
   }
+
+  var editableHtmlPaths=[];
+  var pageEditorPath='';
+  var pageEditorSource='';
+  var pageEditorDoc=null;
+  var pageTextRows=[];
+  var pageCustomMetaOriginal=[];
+  var reservedPageMetaNames=['description','keywords','robots','googlebot','author','theme-color','viewport','referrer','twitter:card','twitter:title','twitter:description','twitter:image','twitter:image:alt','twitter:site','twitter:creator','og:title','og:description','og:type','og:url','og:image','og:image:alt','og:site_name','og:locale','og:locale:alternate'];
+
+  function pagePublicUrl(path){
+    var base=(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.baseUrl)||SITE_BASE;
+    base=String(base).replace(/\/+$/,'');
+    if(path==='index.html')return base+'/';
+    if(path==='app/index.html')return base+'/app/';
+    if(/(^|\/)index\.html$/i.test(path))return base+'/'+path.replace(/(^|\/)index\.html$/i,'$1');
+    return base+'/'+String(path||'').replace(/^\/+/, '');
+  }
+  function readPageMeta(doc,name,property){
+    var escaped=String(name).replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+    var item=doc.head&&doc.head.querySelector('meta['+(property?'property':'name')+'="'+escaped+'"]');
+    return item?item.getAttribute('content')||'':'';
+  }
+  function writePageMeta(doc,name,value,property,removeWhenEmpty){
+    var selector='meta['+(property?'property':'name')+'="'+String(name).replace(/"/g,'\\"')+'"]';
+    var items=Array.prototype.slice.call(doc.head.querySelectorAll(selector));
+    var cleaned=String(value==null?'':value).trim();
+    if(!cleaned&&removeWhenEmpty){items.forEach(function(item){item.remove()});return}
+    var item=items.shift();
+    items.forEach(function(duplicate){duplicate.remove()});
+    if(!item){item=doc.createElement('meta');item.setAttribute(property?'property':'name',name);doc.head.appendChild(item)}
+    item.setAttribute('content',cleaned);
+  }
+  function writeCanonical(doc,value){
+    var items=Array.prototype.slice.call(doc.head.querySelectorAll('link[rel="canonical"]'));
+    var href=String(value||'').trim();
+    if(!href){items.forEach(function(item){item.remove()});return}
+    var item=items.shift();
+    items.forEach(function(duplicate){duplicate.remove()});
+    if(!item){item=doc.createElement('link');item.rel='canonical';doc.head.appendChild(item)}
+    item.href=href;
+  }
+  function patchHomepageDocument(source,settings,path){
+    var doc=new DOMParser().parseFromString(source,'text/html');
+    var identity=settings.siteIdentity||{};
+    var lang=['hy','ru','en'].indexOf(identity.defaultLanguage)>=0?identity.defaultLanguage:'ru';
+    var home=(settings.home&&settings.home[lang])||{};
+    var base=String(identity.baseUrl||SITE_BASE).replace(/\/+$/,'');
+    var pageUrl=home.canonical||base+'/?lang='+lang;
+    doc.documentElement.lang=lang;
+    doc.title=home.title||identity.name||'MatchPro';
+    writePageMeta(doc,'description',home.description,true===false,true);
+    writePageMeta(doc,'description',home.description,false,false);
+    writePageMeta(doc,'keywords',home.keywords,false,true);
+    writePageMeta(doc,'author',identity.author||identity.name||'MatchPro',false,true);
+    writePageMeta(doc,'robots',home.robots||'index, follow, max-image-preview:large',false,false);
+    writePageMeta(doc,'googlebot',home.robots||'index, follow',false,false);
+    writeCanonical(doc,pageUrl);
+    var ogTitle=home.ogTitle||home.title||identity.name||'MatchPro';
+    var ogDescription=home.ogDescription||home.description||'';
+    var ogImage=home.ogImage||identity.shareImage||'/media/share-image.png';
+    var twitterImage=home.twitterImage||ogImage;
+    writePageMeta(doc,'og:title',ogTitle,true,false);
+    writePageMeta(doc,'og:description',ogDescription,true,true);
+    writePageMeta(doc,'og:type',home.ogType||'website',true,false);
+    writePageMeta(doc,'og:url',home.ogUrl||pageUrl,true,false);
+    writePageMeta(doc,'og:image',absolutePublicUrl(ogImage,base),true,true);
+    writePageMeta(doc,'og:image:alt',home.ogImageAlt||'',true,true);
+    writePageMeta(doc,'og:site_name',identity.name||'MatchPro',true,false);
+    writePageMeta(doc,'og:locale',home.ogLocale||({hy:'hy_AM',ru:'ru_RU',en:'en_US'}[lang]),true,false);
+    ['hy','ru','en'].filter(function(x){return x!==lang}).forEach(function(other){writePageMeta(doc,'og:locale:alternate',({hy:'hy_AM',ru:'ru_RU',en:'en_US'}[other]),true,true)});
+    writePageMeta(doc,'twitter:card',home.twitterCard||'summary_large_image',false,false);
+    writePageMeta(doc,'twitter:title',home.twitterTitle||ogTitle,false,false);
+    writePageMeta(doc,'twitter:description',home.twitterDescription||ogDescription,false,true);
+    writePageMeta(doc,'twitter:image',absolutePublicUrl(twitterImage,base),false,true);
+    writePageMeta(doc,'twitter:image:alt',home.twitterImageAlt||home.ogImageAlt||'',false,true);
+    writePageMeta(doc,'twitter:site',home.twitterSite||'',false,true);
+    writePageMeta(doc,'twitter:creator',home.twitterCreator||'',false,true);
+    var heading=doc.querySelector('.intro-text');
+    if(heading){
+      if(heading.tagName.toLowerCase()!=='h1'){
+        var h1=doc.createElement('h1');
+        Array.prototype.slice.call(heading.attributes).forEach(function(a){h1.setAttribute(a.name,a.value)});
+        h1.innerHTML=heading.innerHTML;
+        heading.replaceWith(h1);heading=h1;
+      }
+      heading.textContent=home.intro||heading.textContent||'';
+    }else if(home.intro){
+      var newHeading=doc.createElement('h1');newHeading.className='intro-text';newHeading.textContent=home.intro;
+      (doc.querySelector('main')||doc.body).prepend(newHeading);
+    }
+    var info=doc.querySelector('.info-text');if(info&&home.info)info.textContent=home.info;
+    var logo=doc.querySelector('header img');if(logo&&settings.logo){logo.setAttribute('src',settings.logo);logo.setAttribute('alt',identity.name||'MatchPro')}
+    var alternate=doc.head.querySelectorAll('link[rel="alternate"][hreflang]');
+    Array.prototype.slice.call(alternate).forEach(function(item){if(['hy','ru','en','hy-AM','ru-RU','en-US'].includes(item.hreflang))item.remove()});
+    ['hy','ru','en'].forEach(function(l){var a=doc.createElement('link');a.rel='alternate';a.hreflang=l;a.href=base+'/?lang='+l;doc.head.appendChild(a)});
+    return '<!doctype html>\n'+doc.documentElement.outerHTML+'\n';
+  }
+  function absolutePublicUrl(value,base){
+    var raw=String(value||'').trim();if(!raw)return '';
+    if(/^https?:\/\//i.test(raw))return raw;
+    if(/^(?:data:|javascript:|blob:)/i.test(raw))throw new Error('Metadata image URLs must be public HTTP(S) or local asset paths.');
+    try{return new URL(raw.replace(/^\/+/,''),String(base||SITE_BASE).replace(/\/+$/,'')+'/').href}catch(_){return raw}
+  }
+  function pageCssPath(element){
+    var parts=[],node=element;
+    while(node&&node.nodeType===1){
+      var tag=node.tagName.toLowerCase(),index=1,parent=node.parentElement;
+      if(parent){var siblings=Array.prototype.filter.call(parent.children,function(e){return e.tagName===node.tagName});index=siblings.indexOf(node)+1}
+      parts.unshift(tag+':nth-of-type('+index+')');
+      if(tag==='html')break;
+      node=parent;
+    }
+    return parts.join(' > ');
+  }
+  function collectPageTextRows(doc){
+    var result=[],selector='h1,h2,h3,h4,h5,h6,p,button,a,label,li,span,div,small,strong,em,summary,figcaption';
+    Array.prototype.slice.call(doc.querySelectorAll(selector)).forEach(function(el){
+      if(el.children.length||el.closest('head,script,style,noscript,template')||el.hasAttribute('aria-hidden'))return;
+      var value=(el.textContent||'').trim();
+      if(!value||value.length>3500)return;
+      if(/^[\s\d.,:;|/_-]+$/.test(value))return;
+      result.push({selector:pageCssPath(el),tag:el.tagName.toLowerCase(),value:value});
+    });
+    return result.slice(0,300);
+  }
+  function filterPageOptions(){
+    var term=($('page-search').value||'').toLowerCase();
+    Array.prototype.slice.call($('pagePath').options).forEach(function(option,index){
+      if(index===0){option.hidden=false;return}
+      option.hidden=!!term&&option.textContent.toLowerCase().indexOf(term)<0;
+    });
+  }
+  async function loadEditablePages(){
+    $('page-editor-error').textContent='';
+    $('refresh-pages-button').disabled=true;
+    try{
+      var ref=await repoRequest('/git/ref/heads/main','GET');
+      var commit=await repoRequest('/git/commits/'+ref.object.sha,'GET');
+      var tree=await repoRequest('/git/trees/'+commit.tree.sha+'?recursive=1','GET');
+      var excluded=/^(?:403\.html|404\.html|500\.html|app\/(?:403|404|500)\.html|xcode\/|iframe\/|app\/iframe\/|app\/\.settings\/|main\/_internal\/)/i;
+      editableHtmlPaths=(tree.tree||[]).filter(function(item){
+        return item.type==='blob'&&/\.html?$/i.test(item.path)&&!excluded.test(item.path);
+      }).map(function(item){return item.path}).sort(function(a,b){return a.localeCompare(b)});
+      var select=$('pagePath'),previous=select.value;
+      select.textContent='';
+      var placeholder=document.createElement('option');placeholder.value='';placeholder.textContent=editableHtmlPaths.length?'Select an existing HTML page…':'No editable HTML pages found';select.appendChild(placeholder);
+      editableHtmlPaths.forEach(function(path){var option=document.createElement('option');option.value=path;option.textContent=path;select.appendChild(option)});
+      if(editableHtmlPaths.indexOf(previous)>=0)select.value=previous;
+      else if(editableHtmlPaths.indexOf('index.html')>=0)select.value='index.html';
+      filterPageOptions();
+      if(select.value&&pageEditorPath===select.value&&pageEditorSource){$('page-editor-error').textContent='Էջերի ցանկը թարմացվեց։';}
+      else $('page-editor-error').textContent='Գտնվել է '+editableHtmlPaths.length+' խմբագրելի HTML էջ։ Ընտրիր էջ՝ խմբագրումը սկսելու համար։';
+    }finally{$('refresh-pages-button').disabled=false}
+  }
+  function addPageCustomMetaRow(item){
+    item=item||{type:'name',name:'',content:''};
+    var row=document.createElement('div');row.className='page-custom-meta-row';
+    var typeField=document.createElement('div');typeField.className='field';
+    var typeLabel=document.createElement('label');typeLabel.textContent='Attribute';typeField.appendChild(typeLabel);
+    var type=document.createElement('select');type.innerHTML='<option value="name">name</option><option value="property">property</option>';type.value=item.type==='property'?'property':'name';typeField.appendChild(type);
+    var nameField=document.createElement('div');nameField.className='field';
+    var nameLabel=document.createElement('label');nameLabel.textContent='Name';nameField.appendChild(nameLabel);
+    var name=document.createElement('input');name.value=item.name||'';name.placeholder='custom-meta-name';nameField.appendChild(name);
+    var contentField=document.createElement('div');contentField.className='field';
+    var contentLabel=document.createElement('label');contentLabel.textContent='Content';contentField.appendChild(contentLabel);
+    var content=document.createElement('input');content.value=item.content||'';content.placeholder='Tag value';contentField.appendChild(content);
+    var remove=document.createElement('button');remove.type='button';remove.className='btn danger';remove.textContent='Remove';remove.addEventListener('click',function(){row.remove()});
+    row.append(typeField,nameField,contentField,remove);$('page-custom-meta-rows').appendChild(row);
+  }
+  function readCustomMetaFromDoc(doc){
+    pageCustomMetaOriginal=[];
+    var list=[];
+    Array.prototype.slice.call(doc.head.querySelectorAll('meta[name],meta[property]')).forEach(function(meta){
+      var type=meta.hasAttribute('property')?'property':'name';
+      var name=String(meta.getAttribute(type)||'').trim(),lower=name.toLowerCase();
+      if(!name||reservedPageMetaNames.indexOf(lower)>=0)return;
+      if(type==='name'&&['charset','viewport'].indexOf(lower)>=0)return;
+      list.push({type:type,name:name,content:meta.getAttribute('content')||''});
+      pageCustomMetaOriginal.push({type:type,name:name});
+    });
+    return list;
+  }
+  function fillPageEditor(doc,source){
+    pageEditorDoc=doc;pageEditorSource=source;pageEditorPath=$('pagePath').value;
+    $('page-editor-fields').classList.remove('hidden');
+    $('pageTitle').value=doc.title||'';
+    $('pageH1').value=(doc.querySelector('h1')&&doc.querySelector('h1').textContent.trim())||'';
+    $('pageDescription').value=readPageMeta(doc,'description',false);
+    $('pageKeywords').value=readPageMeta(doc,'keywords',false);
+    $('pageCanonical').value=(doc.head.querySelector('link[rel="canonical"]')||{}).href||'';
+    $('pageRobots').value=readPageMeta(doc,'robots',false)||'index, follow, max-image-preview:large';
+    $('pageGooglebot').value=readPageMeta(doc,'googlebot',false);
+    $('pageAuthor').value=readPageMeta(doc,'author',false);
+    $('pageThemeColor').value=readPageMeta(doc,'theme-color',false);
+    $('pageOgTitle').value=readPageMeta(doc,'og:title',true);
+    $('pageOgDescription').value=readPageMeta(doc,'og:description',true);
+    $('pageOgType').value=readPageMeta(doc,'og:type',true)||'website';
+    $('pageOgUrl').value=readPageMeta(doc,'og:url',true);
+    $('pageOgImage').value=readPageMeta(doc,'og:image',true);
+    $('pageOgImageAlt').value=readPageMeta(doc,'og:image:alt',true);
+    $('pageOgSiteName').value=readPageMeta(doc,'og:site_name',true);
+    $('pageOgLocale').value=readPageMeta(doc,'og:locale',true);
+    $('pageTwitterCard').value=readPageMeta(doc,'twitter:card',false)||'summary_large_image';
+    $('pageTwitterTitle').value=readPageMeta(doc,'twitter:title',false);
+    $('pageTwitterDescription').value=readPageMeta(doc,'twitter:description',false);
+    $('pageTwitterImage').value=readPageMeta(doc,'twitter:image',false);
+    $('pageTwitterImageAlt').value=readPageMeta(doc,'twitter:image:alt',false);
+    $('pageTwitterSite').value=readPageMeta(doc,'twitter:site',false);
+    $('pageTwitterCreator').value=readPageMeta(doc,'twitter:creator',false);
+    $('page-custom-meta-rows').textContent='';
+    readCustomMetaFromDoc(doc).forEach(addPageCustomMetaRow);
+    pageTextRows=collectPageTextRows(doc);
+    renderPageTextRows();
+    updatePageSeoPreview();
+    $('page-editor-error').textContent='Բացվեց՝ '+pageEditorPath+'։ Հայտնաբերվել է '+pageTextRows.length+' խմբագրելի տեքստային տարր։';
+  }
+  function renderPageTextRows(){
+    var list=$('page-text-list');list.textContent='';
+    pageTextRows.forEach(function(item,index){
+      var row=document.createElement('div');row.className='page-text-row';row.dataset.pageTextRow=String(index);
+      var label=document.createElement('label');label.textContent=item.tag.toUpperCase()+' · '+item.value.slice(0,95);label.htmlFor='page-text-'+index;
+      var input=document.createElement(item.value.length>150?'textarea':'input');input.id='page-text-'+index;input.value=item.value;input.dataset.pageTextIndex=String(index);
+      if(input.tagName==='TEXTAREA')input.rows=Math.min(5,Math.max(2,Math.ceil(item.value.length/90)));
+      input.addEventListener('input',function(){item.value=this.value;label.textContent=item.tag.toUpperCase()+' · '+this.value.slice(0,95)});
+      row.append(label,input);list.appendChild(row);
+    });
+    filterPageTextRows();
+  }
+  function filterPageTextRows(){
+    var term=String($('page-text-search').value||'').toLowerCase();
+    Array.prototype.slice.call($('page-text-list').children).forEach(function(row){
+      row.hidden=!!term&&row.textContent.toLowerCase().indexOf(term)<0;
+    });
+  }
+  function updateHomeSeoPreview(){
+    var tab=document.querySelector('[data-lang-scope="seo-home"][data-lang-tab].active');
+    var lang=tab?tab.dataset.langTab:((siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.defaultLanguage)||'ru');
+    var suffix=lang.charAt(0).toUpperCase()+lang.slice(1);
+    var title=$('homeTitle'+suffix)?$('homeTitle'+suffix).value:'';
+    var desc=$('homeDescription'+suffix)?$('homeDescription'+suffix).value:'';
+    var twitterTitle=$('homeTwitterTitle'+suffix)?$('homeTwitterTitle'+suffix).value:'';
+    var twitterDesc=$('homeTwitterDescription'+suffix)?$('homeTwitterDescription'+suffix).value:'';
+    var image=$('homeTwitterImage'+suffix)?$('homeTwitterImage'+suffix).value:'';
+    $('home-seo-preview-url').textContent=$('siteBaseUrl').value||SITE_BASE;
+    $('home-seo-preview-title').textContent=title||$('siteName').value||'MatchPro';
+    $('home-seo-preview-description').textContent=desc||'No meta description configured.';
+    $('home-twitter-preview-title').textContent=twitterTitle||title||$('siteName').value||'MatchPro';
+    $('home-twitter-preview-description').textContent=twitterDesc||desc||'No X/Twitter description configured.';
+    var pic=$('home-twitter-preview-image');if(image){pic.src=absolutePublicUrl(image,$('siteBaseUrl').value||SITE_BASE);pic.classList.remove('hidden')}else{pic.removeAttribute('src');pic.classList.add('hidden')}
+  }
+  function updatePageSeoPreview(){
+    if(!$('pageTitle'))return;
+    $('page-seo-preview-url').textContent=$('pageCanonical').value||($('pagePath').value?pagePublicUrl($('pagePath').value):'');
+    $('page-seo-preview-title').textContent=$('pageTitle').value||'Untitled page';
+    $('page-seo-preview-description').textContent=$('pageDescription').value||'No meta description configured.';
+    $('page-twitter-preview-title').textContent=$('pageTwitterTitle').value||$('pageOgTitle').value||$('pageTitle').value||'Untitled page';
+    $('page-twitter-preview-description').textContent=$('pageTwitterDescription').value||$('pageOgDescription').value||$('pageDescription').value||'No X/Twitter description configured.';
+    var img=$('pageTwitterImage'),preview=$('page-twitter-preview-image');
+    var url=img.value||$('pageOgImage').value;
+    if(url){try{preview.src=absolutePublicUrl(url,(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.baseUrl)||SITE_BASE);preview.classList.remove('hidden')}catch(_){preview.removeAttribute('src');preview.classList.add('hidden')}}else{preview.removeAttribute('src');preview.classList.add('hidden')}
+  }
+  async function loadSelectedPage(){
+    var path=$('pagePath').value;if(!path)throw new Error('Նախ ընտրիր HTML էջը։');
+    $('page-editor-error').textContent='Բեռնվում է '+path+'…';
+    var source=await readTextFile(path);
+    var doc=new DOMParser().parseFromString(source,'text/html');
+    fillPageEditor(doc,source);
+  }
+  function updateSettingsFromHomepagePage(doc){
+    var identity=Object.assign({},siteSettings.siteIdentity||{});
+    var language=['hy','ru','en'].indexOf(identity.defaultLanguage)>=0?identity.defaultLanguage:'ru';
+    var h=Object.assign({},siteSettings.home[language]||{});
+    h.title=$('pageTitle').value.trim();
+    h.description=$('pageDescription').value.trim();
+    h.keywords=$('pageKeywords').value.trim();
+    h.intro=$('pageH1').value.trim();
+    h.canonical=$('pageCanonical').value.trim();
+    h.robots=$('pageRobots').value.trim();
+    h.ogTitle=$('pageOgTitle').value.trim();h.ogDescription=$('pageOgDescription').value.trim();h.ogType=$('pageOgType').value;
+    h.ogUrl=$('pageOgUrl').value.trim();h.ogImage=$('pageOgImage').value.trim();h.ogImageAlt=$('pageOgImageAlt').value.trim();h.ogLocale=$('pageOgLocale').value.trim();
+    h.twitterCard=$('pageTwitterCard').value;h.twitterTitle=$('pageTwitterTitle').value.trim();h.twitterDescription=$('pageTwitterDescription').value.trim();h.twitterImage=$('pageTwitterImage').value.trim();h.twitterImageAlt=$('pageTwitterImageAlt').value.trim();h.twitterSite=$('pageTwitterSite').value.trim();h.twitterCreator=$('pageTwitterCreator').value.trim();
+    var info=doc.querySelector('.info-text');if(info)h.info=info.textContent.trim();
+    if(doc.querySelector('.intro-text'))h.intro=doc.querySelector('.intro-text').textContent.trim();
+    siteSettings.siteIdentity=identity;siteSettings.home=siteSettings.home||{};siteSettings.home[language]=h;
+  }
+  async function saveSelectedPage(){
+    var path=$('pagePath').value;
+    if(!path||path!==pageEditorPath||!pageEditorSource)throw new Error('Նախ բացիր խմբագրելու էջը։');
+    var doc=new DOMParser().parseFromString(pageEditorSource,'text/html');
+    if(!doc.head)throw new Error('Ընտրված էջում HTML head-ը բացակայում է։');
+    var title=$('pageTitle').value.trim();
+    if(!title)throw new Error('HTML title-ը դատարկ լինել չի կարող։');
+    doc.title=title;
+    var h1Text=$('pageH1').value.trim(),h1=doc.querySelector('h1');
+    if(h1){h1.textContent=h1Text}else if(h1Text){h1=doc.createElement('h1');h1.textContent=h1Text;(doc.querySelector('main')||doc.body).prepend(h1)}
+    writePageMeta(doc,'description',$('pageDescription').value,false,true);
+    writePageMeta(doc,'keywords',$('pageKeywords').value,false,true);
+    writePageMeta(doc,'robots',$('pageRobots').value,false,false);
+    writePageMeta(doc,'googlebot',$('pageGooglebot').value||$('pageRobots').value,false,true);
+    writePageMeta(doc,'author',$('pageAuthor').value,false,true);
+    writePageMeta(doc,'theme-color',$('pageThemeColor').value,false,true);
+    var canonical=$('pageCanonical').value.trim();
+    if(canonical&&!/^https?:\/\//i.test(canonical))throw new Error('Canonical URL-ը պետք է լինի ամբողջական http(s) URL։');
+    writeCanonical(doc,canonical);
+    var og={title:$('pageOgTitle').value,description:$('pageOgDescription').value,type:$('pageOgType').value,url:$('pageOgUrl').value||canonical,image:$('pageOgImage').value,alt:$('pageOgImageAlt').value,site:$('pageOgSiteName').value,locale:$('pageOgLocale').value};
+    [['og:title',og.title],['og:description',og.description],['og:type',og.type],['og:url',og.url],['og:image',og.image],['og:image:alt',og.alt],['og:site_name',og.site],['og:locale',og.locale]].forEach(function(item){var v=item[1];if(item[0]==='og:image'&&v)v=absolutePublicUrl(v,(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.baseUrl)||SITE_BASE);writePageMeta(doc,item[0],v,true,true)});
+    var tw={card:$('pageTwitterCard').value,title:$('pageTwitterTitle').value,description:$('pageTwitterDescription').value,image:$('pageTwitterImage').value,alt:$('pageTwitterImageAlt').value,site:$('pageTwitterSite').value,creator:$('pageTwitterCreator').value};
+    [['twitter:card',tw.card],['twitter:title',tw.title||og.title||title],['twitter:description',tw.description||og.description||$('pageDescription').value],['twitter:image',tw.image||og.image],['twitter:image:alt',tw.alt||og.alt],['twitter:site',tw.site],['twitter:creator',tw.creator]].forEach(function(item){var v=item[1];if(item[0]==='twitter:image'&&v)v=absolutePublicUrl(v,(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.baseUrl)||SITE_BASE);writePageMeta(doc,item[0],v,false,true)});
+    pageCustomMetaOriginal.forEach(function(old){Array.prototype.slice.call(doc.head.querySelectorAll('meta['+old.type+'="'+String(old.name).replace(/"/g,'\\"')+'"]')).forEach(function(m){m.remove()})});
+    var customSeen={};
+    Array.prototype.slice.call($('page-custom-meta-rows').children).forEach(function(row){
+      var type=row.children[0].querySelector('select').value,name=row.children[1].querySelector('input').value.trim(),content=row.children[2].querySelector('input').value.trim();
+      if(!name||!content)return;
+      if(!/^[A-Za-z][A-Za-z0-9:._-]{0,100}$/.test(name))throw new Error('Custom meta tag-ի անունը անվավեր է՝ '+name);
+      var lower=name.toLowerCase();
+      if(reservedPageMetaNames.indexOf(lower)>=0)throw new Error('«'+name+'» կառավարվում է առանձին դաշտով և չի կարելի կրկնել Custom Meta-ում։');
+      var key=type+':'+lower;if(customSeen[key])throw new Error('Կրկնվող custom meta tag՝ '+name);customSeen[key]=true;
+      var m=doc.createElement('meta');m.setAttribute(type,name);m.setAttribute('content',content);doc.head.appendChild(m);
+    });
+    var pageTextControls=Array.prototype.slice.call($('page-text-list').querySelectorAll('[data-page-text-index]'));
+    pageTextControls.forEach(function(control){var item=pageTextRows[Number(control.dataset.pageTextIndex)];if(!item)return;var target;try{target=doc.querySelector(item.selector)}catch(_){target=null}if(target&&target.children.length===0&&target.textContent!==control.value)target.textContent=control.value});
+    if(path==='index.html'||path==='app/index.html')updateSettingsFromHomepagePage(doc);
+    var output='<!doctype html>\n'+doc.documentElement.outerHTML+'\n';
+    var changes={};changes[path]=output;
+    if(path==='index.html'||path==='app/index.html')changes['main/js/site-settings.json']=JSON.stringify(siteSettings,null,2)+'\n';
+    $('save-page-button').disabled=true;
+    try{
+      await commitChanges(changes,[],'Edit MatchPro page '+path);
+      pageEditorSource=output;pageEditorDoc=doc;
+      notify('Էջի տեքստերն ու metadata-ն պահպանվեցին։ Ստուգիր deploy-ի կարգավիճակը Actions բաժնում։');
+      fillPageEditor(new DOMParser().parseFromString(output,'text/html'),output);
+    }finally{$('save-page-button').disabled=false}
+  }
+
   async function loadSettings(){
     var defs=defaultSiteSettings();
     try {
@@ -745,10 +1101,12 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       throw new Error('Չհաջողվեց կարդալ main/js/site-settings.json-ը։ Կարգավորումները չեն փոխվել՝ տվյալների կորուստը կանխելու համար։ ' + (error.message || ''));
     }
     siteSettings=Object.assign({},defs,siteSettings||{});
+    siteSettings.siteIdentity=Object.assign({},defs.siteIdentity,siteSettings.siteIdentity||{});
     siteSettings.maintenance=Object.assign({},defs.maintenance,siteSettings.maintenance||{});
     siteSettings.maintenance.message=Object.assign({},defs.maintenance.message,siteSettings.maintenance.message||{});
     siteSettings.adblock={enabled:false};
     siteSettings.home=Object.assign({},defs.home,siteSettings.home||{});
+    siteSettings.customMeta=Array.isArray(siteSettings.customMeta)?siteSettings.customMeta:[];
     ['hy','ru','en'].forEach(function(lang){siteSettings.home[lang]=Object.assign({},defs.home[lang],siteSettings.home[lang]||{})});
     $('maintenanceEnabled').checked=!!siteSettings.maintenance.enabled;
     $('defaultRedirectUrl').value=siteSettings.defaultRedirectUrl||'';
@@ -756,6 +1114,20 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     $('faviconPath').value=siteSettings.favicon||defs.favicon;
     $('site-logo-preview').src=assetUrl(siteSettings.logo||defs.logo)||assetUrl('/media/logo.png');
     $('favicon-preview').src=assetUrl(siteSettings.favicon||defs.favicon)||assetUrl('/media/fv/favicon-32x32.png');
+    var identity=siteSettings.siteIdentity;
+    $('siteName').value=identity.name||defs.siteIdentity.name;
+    $('siteShortName').value=identity.shortName||defs.siteIdentity.shortName;
+    $('siteTagline').value=identity.tagline||'';
+    $('siteBaseUrl').value=identity.baseUrl||defs.siteIdentity.baseUrl;
+    $('defaultLanguage').value=['hy','ru','en'].indexOf(identity.defaultLanguage)>=0?identity.defaultLanguage:'ru';
+    $('siteShareImage').value=identity.shareImage||defs.siteIdentity.shareImage;
+    $('siteAuthor').value=identity.author||defs.siteIdentity.author;
+    var seoFieldMap={Canonical:'canonical',Robots:'robots',OgTitle:'ogTitle',OgDescription:'ogDescription',OgType:'ogType',OgUrl:'ogUrl',OgImage:'ogImage',OgImageAlt:'ogImageAlt',OgLocale:'ogLocale',TwitterCard:'twitterCard',TwitterTitle:'twitterTitle',TwitterDescription:'twitterDescription',TwitterImage:'twitterImage',TwitterImageAlt:'twitterImageAlt',TwitterSite:'twitterSite',TwitterCreator:'twitterCreator'};
+    ['hy','ru','en'].forEach(function(lang){
+      var suffix=lang.charAt(0).toUpperCase()+lang.slice(1),h=siteSettings.home[lang]||{};
+      Object.keys(seoFieldMap).forEach(function(k){var el=$('home'+k+suffix);if(el)el.value=h[seoFieldMap[k]]==null?'':h[seoFieldMap[k]];});
+    });
+
     $('maintenanceTextHy').value=siteSettings.maintenance.message.hy||'';
     $('maintenanceTextRu').value=siteSettings.maintenance.message.ru||'';
     $('maintenanceTextEn').value=siteSettings.maintenance.message.en||'';
@@ -776,12 +1148,44 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     var settingData=Object.assign({},base);
     settingData.maintenance={enabled:$('maintenanceEnabled').checked,message:{hy:$('maintenanceTextHy').value.trim(),ru:$('maintenanceTextRu').value.trim(),en:$('maintenanceTextEn').value.trim()}};
     settingData.adblock={enabled:false};settingData.defaultRedirectUrl=redirect;settingData.logo=logoPath;settingData.favicon=iconPath;settingData.home={};
-    ['hy','ru','en'].forEach(function(lang){var s=lang.charAt(0).toUpperCase()+lang.slice(1);settingData.home[lang]={title:$('homeTitle'+s).value.trim(),description:$('homeDescription'+s).value.trim(),keywords:$('homeKeywords'+s).value.trim(),intro:$('homeIntro'+s).value.trim(),info:$('homeInfo'+s).value.trim()}});
+    var siteBaseUrl=$('siteBaseUrl').value.trim();
+    try{var parsedSiteBase=new URL(siteBaseUrl);if(!['https:','http:'].includes(parsedSiteBase.protocol))throw new Error('protocol');siteBaseUrl=parsedSiteBase.origin+parsedSiteBase.pathname.replace(/\/+$/,'');}catch(_){$('settings-error').textContent='Կայքի հիմնական URL-ը պետք է լինի վավեր http(s) հասցե։';activateSettingsTab('seo');$('siteBaseUrl').focus();return}
+    settingData.siteIdentity={
+      name:$('siteName').value.trim()||'MatchPro',
+      shortName:$('siteShortName').value.trim()||$('siteName').value.trim()||'MatchPro',
+      tagline:$('siteTagline').value.trim(),
+      baseUrl:siteBaseUrl,
+      defaultLanguage:['hy','ru','en'].indexOf($('defaultLanguage').value)>=0?$('defaultLanguage').value:'ru',
+      shareImage:$('siteShareImage').value.trim()||'/media/share-image.png',
+      author:$('siteAuthor').value.trim()||'MatchPro'
+    };
+    settingData.home=Object.assign({},base.home||defs.home);
+    var seoFieldMap={Canonical:'canonical',Robots:'robots',OgTitle:'ogTitle',OgDescription:'ogDescription',OgType:'ogType',OgUrl:'ogUrl',OgImage:'ogImage',OgImageAlt:'ogImageAlt',OgLocale:'ogLocale',TwitterCard:'twitterCard',TwitterTitle:'twitterTitle',TwitterDescription:'twitterDescription',TwitterImage:'twitterImage',TwitterImageAlt:'twitterImageAlt',TwitterSite:'twitterSite',TwitterCreator:'twitterCreator'};
+    ['hy','ru','en'].forEach(function(lang){
+      var suffix=lang.charAt(0).toUpperCase()+lang.slice(1);
+      var previous=Object.assign({},defs.home[lang],base.home&&base.home[lang]||{});
+      var homeData=Object.assign({},previous,{
+        title:$('homeTitle'+suffix).value.trim(),
+        description:$('homeDescription'+suffix).value.trim(),
+        keywords:$('homeKeywords'+suffix).value.trim(),
+        intro:$('homeIntro'+suffix).value.trim(),
+        info:$('homeInfo'+suffix).value.trim()
+      });
+      Object.keys(seoFieldMap).forEach(function(k){var el=$('home'+k+suffix);if(el)homeData[seoFieldMap[k]]=el.value.trim();});
+      settingData.home[lang]=homeData;
+    });
     setBusy(true);
     try{
       var changes={};
       if(logoFile){var logoExt=fileExtension(logoFile,'png'),logoAsset='uploads/'+uploadUuid()+'.'+logoExt;settingData.logo='/'+logoAsset;changes[logoAsset]={content:await fileBase64(logoFile),encoding:'base64'}}
       if(iconFile){var iconExt=fileExtension(iconFile,'png'),iconAsset='uploads/'+uploadUuid()+'.'+iconExt;settingData.favicon='/'+iconAsset;changes[iconAsset]={content:await fileBase64(iconFile),encoding:'base64'}}
+      for(var homePathIndex=0;homePathIndex<2;homePathIndex++){
+        var homePath=homePathIndex===0?'index.html':'app/index.html';
+        try{
+          var homeSource=await readTextFile(homePath);
+          changes[homePath]=patchHomepageDocument(homeSource,settingData,homePath);
+        }catch(homeFileError){if(homePath==='index.html')throw homeFileError;}
+      }
       changes['main/js/site-settings.json']=JSON.stringify(settingData,null,2)+'\n';
       await commitChanges(changes,[],'Update MatchPro site settings and branding');
       siteSettings=settingData;$('siteLogoPath').value=settingData.logo;$('faviconPath').value=settingData.favicon;
