@@ -61,10 +61,10 @@ function state(){
  return {page:p,language:l,data:d,identity:settings.identity||{}};
 }
 function absUrl(value){
- var v=String(value||'').trim();if(!v)return'';
+ var v=String(value||"").trim();if(!v)return"";
  if(/^https?:\/\//i.test(v))return v;
- var base=(settings&&settings.identity&&settings.identity.domain)||location.origin+'/';
- try{return new URL(v.replace(/^\/+/,''),base.replace(/\/?$/,'/')).href}catch(_){try{return new URL(v,location.href).href}catch(__){return''}}
+ var base=(settings&&settings.identity&&settings.identity.domain)||location.origin+"/";
+ try{var b=new URL(base,location.origin),basePath=b.pathname.replace(/\/+$/,"");if(v.charAt(0)==="/"&&basePath&&(v===basePath||v.indexOf(basePath+"/")===0))return new URL(v,b.origin).href;return new URL(v.replace(/^\/+/,""),b.href.replace(/\/?$/,"/")).href}catch(_){try{return new URL(v,location.href).href}catch(__){return""}}
 }
 function canonicalFor(s){
  var d=s.data,p=s.page,base=s.identity.domain||location.origin+'/';
@@ -124,7 +124,7 @@ function applyOverrides(){
   if(Object.prototype.hasOwnProperty.call(v,'text')&&el.children.length===0&&el.textContent!==String(v.text))el.textContent=String(v.text);
   if(el.tagName==='A'&&Object.prototype.hasOwnProperty.call(v,'href')&&validHref(v.href)){if(v.href)el.setAttribute('href',v.href);else el.removeAttribute('href')}
   if(el.tagName==='IMG'){
-   if(v.src&&validHref(v.src)&&el.getAttribute('src')!==v.src)el.setAttribute('src',v.src);
+   if(v.src&&validHref(v.src)){var currentSrc=el.getAttribute('src')||'',samePath=false;try{var currentUrl=new URL(currentSrc,location.href),nextUrl=new URL(v.src,location.href);samePath=currentUrl.origin===nextUrl.origin&&currentUrl.pathname===nextUrl.pathname}catch(_){}if(!samePath&&currentSrc!==v.src)el.setAttribute('src',v.src)}
    if(Object.prototype.hasOwnProperty.call(v,'alt')&&el.getAttribute('alt')!==String(v.alt))el.setAttribute('alt',String(v.alt));
   }
   if(Object.prototype.hasOwnProperty.call(v,'title')){if(v.title)el.setAttribute('title',String(v.title));else el.removeAttribute('title')}
