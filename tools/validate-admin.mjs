@@ -22,7 +22,7 @@ if(start>=0&&end>start){
  check(!inline.includes('data-view="info"'),'old single Settings view remains');
  check(inline.includes('allowedMediaFile')&&inline.includes('assetUrl'),'media validation or project path helper missing');
  check(inline.includes('ADMIN_API_BASE')&&inline.includes('/api/github'),'server-side API bridge missing');
-  check(markup.includes('src="/main/js/admin-cms.js"'),'CMS extension script is not included');
+  check(html.includes('src="/main/js/admin-cms.js"'),'CMS extension script is not included');
   check(fs.existsSync(path.join(root,'main/js/admin-cms.js')),'CMS extension script file missing');
   check(fs.existsSync(path.join(root,'main/js/cms-runtime.js')),'public CMS runtime file missing');
 }
