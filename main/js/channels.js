@@ -526,7 +526,10 @@ window.MATCHPRO_CHANNELS = [
     "keywordsHy": "TV Sport HD առցանց, սպորտի ուղիղ եթեր",
     "iframeFile": "channel-7026-tvsport.html",
     "published": true,
-    "indexable": true
+    "indexable": true,
+    "adMode": "redirect",
+    "redirectUrl": "",
+    "videoAdUrl": ""
   },
   {
     "id": 7027,
