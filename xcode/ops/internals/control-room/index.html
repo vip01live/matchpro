@@ -1271,6 +1271,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     var latestSource=await readTextFile(path);
     if(latestSource!==pageEditorSource)throw new Error('Այս էջը GitHub-ում փոփոխվել է խմբագրիչը բացելուց հետո։ Կրկին բացիր էջը, որպեսզի չվերագրես ավելի նոր փոփոխությունները։');
     var doc=new DOMParser().parseFromString(pageEditorSource,'text/html');
+    var assetTargetNodes=pageAssetRows.map(function(item){try{return doc.querySelector(item.selector)}catch(_){return null}});
+    var textTargetNodes=pageTextRows.map(function(item){try{return doc.querySelector(item.selector)}catch(_){return null}});
     if(!doc.head)throw new Error('Ընտրված էջում HTML head-ը բացակայում է։');
     var title=$('pageTitle').value.trim();
     if(!title)throw new Error('HTML title-ը դատարկ լինել չի կարող։');
@@ -1302,8 +1304,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       var m=doc.createElement('meta');m.setAttribute(type,name);m.setAttribute('content',content);doc.head.appendChild(m);
     });
 
-    pageAssetRows.forEach(function(item){
-      var el;try{el=doc.querySelector(item.selector)}catch(_){el=null}if(!el)return;
+    pageAssetRows.forEach(function(item,index){
+      var el=assetTargetNodes[index];if(!el)return;
       if(item.kind==='image'){
         var src=String(item.src||'').trim();
         if(src&&!safeUrl(src,true))throw new Error('Նկարի URL-ը սխալ է՝ '+src);
@@ -1322,7 +1324,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     });
 
     var pageTextControls=Array.prototype.slice.call($('page-text-list').querySelectorAll('[data-page-text-index]'));
-    pageTextControls.forEach(function(control){var item=pageTextRows[Number(control.dataset.pageTextIndex)];if(!item)return;var target;try{target=doc.querySelector(item.selector)}catch(_){target=null}if(target&&target.children.length===0&&target.textContent!==control.value)target.textContent=control.value});
+    pageTextControls.forEach(function(control){var index=Number(control.dataset.pageTextIndex),item=pageTextRows[index];if(!item)return;var target=textTargetNodes[index]if(target&&target.children.length===0&&target.textContent!==control.value)target.textContent=control.value});
     if(path==='index.html')updateSettingsFromHomepagePage(doc);
     var output='<!doctype html>\n'+doc.documentElement.outerHTML+'\n';
     var changes={};changes[path]=output;
