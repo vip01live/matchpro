@@ -47,6 +47,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 .page-asset-heading{font-size:12px;font-weight:750;color:var(--muted,#9aa9bb);overflow-wrap:anywhere;margin-bottom:10px}
 .page-asset-preview{display:block;max-width:240px;max-height:120px;object-fit:contain;margin-top:10px;border-radius:8px;background:#0a0d14}
 
+
+.matchpro-page-header img{max-width:190px;max-height:72px;object-fit:contain}
 </style>
 <meta name="referrer" content="no-referrer-when-downgrade">
 </head>
@@ -289,6 +291,45 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
         <div class="lang-card">
           <div class="lang-head"><span class="flag">PAGES</span> Էջերի կառավարում</div>
           <p class="subtle-note">Այս բաժինը բեռնում է repository-ի առկա HTML էջերը։ Ընտրիր էջ, խմբագրիր տեքստերը և metadata-ն, ապա պահպանիր։ Iframe player-ները և admin/internal էջերը ցուցակից բացառված են։ Բարդ ինտերակտիվ բաղադրիչների կամ արտաքին iframe-ի ներսի բովանդակության համար կարող է պահանջվել առանձին խմբագրիչ։</p>
+          <div class="actions" style="margin:14px 0"><button type="button" class="btn outline" id="show-create-page-button">＋ Ստեղծել նոր էջ</button></div>
+          <div id="page-create-area" class="lang-card hidden">
+            <div class="lang-head"><span class="flag">NEW</span> Ստեղծել բազմալեզու էջ</div>
+            <p class="subtle-note">Ստեղծվելու է մեկ հիմնական URL և երեք իրական HTML էջ՝ հայերեն, ռուսերեն և անգլերեն տարբերակներով։ Յուրաքանչյուր լեզվային էջ կունենա իր H1-ը, title-ը, description-ը, canonical-ը և սոցիալական metadata-ն։</p>
+            <div class="field"><label for="pageNewSlug">Page slug (Latin letters, numbers, hyphens)</label><input id="pageNewSlug" type="text" placeholder="about-us"></div>
+            <div class="lang-tabs" role="tablist" aria-label="New page languages">
+              <button type="button" class="lang-tab active" data-lang-scope="new-page" data-lang-tab="hy" role="tab" aria-selected="true">Հայերեն</button>
+              <button type="button" class="lang-tab" data-lang-scope="new-page" data-lang-tab="ru" role="tab" aria-selected="false">Русский</button>
+              <button type="button" class="lang-tab" data-lang-scope="new-page" data-lang-tab="en" role="tab" aria-selected="false">English</button>
+            </div>
+            <div class="lang-card" data-lang-scope="new-page" data-lang-panel="hy">
+              <div class="form-grid settings-grid">
+                <div class="field"><label for="newTitleHy">HTML title</label><input id="newTitleHy" type="text"></div>
+                <div class="field"><label for="newH1Hy">H1 heading</label><input id="newH1Hy" type="text"></div>
+                <div class="field"><label for="newDescriptionHy">Meta description</label><textarea id="newDescriptionHy" rows="3"></textarea></div>
+                <div class="field"><label for="newKeywordsHy">Meta keywords</label><input id="newKeywordsHy" type="text"></div>
+                <div class="field"><label for="newContentHy">Page content</label><textarea id="newContentHy" rows="6"></textarea></div>
+              </div>
+            </div>
+            <div class="lang-card hidden" data-lang-scope="new-page" data-lang-panel="ru">
+              <div class="form-grid settings-grid">
+                <div class="field"><label for="newTitleRu">HTML title</label><input id="newTitleRu" type="text"></div>
+                <div class="field"><label for="newH1Ru">H1 heading</label><input id="newH1Ru" type="text"></div>
+                <div class="field"><label for="newDescriptionRu">Meta description</label><textarea id="newDescriptionRu" rows="3"></textarea></div>
+                <div class="field"><label for="newKeywordsRu">Meta keywords</label><input id="newKeywordsRu" type="text"></div>
+                <div class="field"><label for="newContentRu">Page content</label><textarea id="newContentRu" rows="6"></textarea></div>
+              </div>
+            </div>
+            <div class="lang-card hidden" data-lang-scope="new-page" data-lang-panel="en">
+              <div class="form-grid settings-grid">
+                <div class="field"><label for="newTitleEn">HTML title</label><input id="newTitleEn" type="text"></div>
+                <div class="field"><label for="newH1En">H1 heading</label><input id="newH1En" type="text"></div>
+                <div class="field"><label for="newDescriptionEn">Meta description</label><textarea id="newDescriptionEn" rows="3"></textarea></div>
+                <div class="field"><label for="newKeywordsEn">Meta keywords</label><input id="newKeywordsEn" type="text"></div>
+                <div class="field"><label for="newContentEn">Page content</label><textarea id="newContentEn" rows="6"></textarea></div>
+              </div>
+            </div>
+            <div class="actions"><button type="button" id="create-page-button" class="btn primary">Ստեղծել և հրապարակել</button><button type="button" id="cancel-create-page-button" class="btn outline">Չեղարկել</button></div>
+          </div>
           <div class="form-grid settings-grid">
             <div class="field"><label for="page-search">Որոնել էջերի ցանկում</label><input id="page-search" type="search" placeholder="Filter by path"></div>
             <div class="field"><label for="pagePath">Ընտրված էջ</label><select id="pagePath"><option value="">Սեղմիր «Բեռնել էջերը»</option></select></div>
@@ -1338,6 +1379,78 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     }finally{$('save-page-button').disabled=false}
   }
 
+
+  function buildNewLocalizedPage(slug,lang,title,h1,description,keywords,content){
+    var path=slug+'-'+lang+'.html',identity=(siteSettings&&siteSettings.siteIdentity)||{};
+    var base=String(identity.baseUrl||SITE_BASE);while(base.endsWith('/'))base=base.slice(0,-1);
+    var canonical=pagePublicUrl(path);
+    var brand=String(identity.name||'MatchPro'),logo=String((siteSettings&&siteSettings.logo)||'/media/logo.png');
+    var image=absolutePublicUrl((identity.shareImage)||'/media/share-image.png',base);
+    var locale={hy:'hy_AM',ru:'ru_RU',en:'en_US'}[lang];
+    var languages={hy:'Հայերեն',ru:'Русский',en:'English'};
+    var textLinks=['hy','ru','en'].map(function(l){
+      return '<a href="./'+escapeHtml(slug+'-'+l+'.html')+'" data-page-lang="'+l+'"'+(lang===l?' aria-current="page"':'')+'>'+languages[l]+'</a>';
+    }).join('');
+    return '<!doctype html>\n<html lang="'+lang+'">\n<head>\n'+
+      '<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'+
+      '<title>'+escapeHtml(title)+'</title>\n<meta name="description" content="'+escapeHtml(description)+'">\n'+
+      (keywords?'<meta name="keywords" content="'+escapeHtml(keywords)+'">\n':'')+
+      '<meta name="robots" content="index, follow, max-image-preview:large">\n<meta name="googlebot" content="index, follow">\n'+
+      '<link rel="canonical" href="'+escapeHtml(canonical)+'">\n'+
+      '<meta property="og:title" content="'+escapeHtml(title)+'">\n<meta property="og:description" content="'+escapeHtml(description)+'">\n'+
+      '<meta property="og:type" content="website">\n<meta property="og:site_name" content="'+escapeHtml(brand)+'">\n'+
+      '<meta property="og:url" content="'+escapeHtml(canonical)+'">\n<meta property="og:image" content="'+escapeHtml(image)+'">\n'+
+      '<meta property="og:image:alt" content="'+escapeHtml(title)+'">\n<meta property="og:locale" content="'+locale+'">\n'+
+      '<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:title" content="'+escapeHtml(title)+'">\n'+
+      '<meta name="twitter:description" content="'+escapeHtml(description)+'">\n<meta name="twitter:image" content="'+escapeHtml(image)+'">\n'+
+      '<meta name="twitter:image:alt" content="'+escapeHtml(title)+'">\n'+
+      '<link rel="stylesheet" href="/main/720-css/main.css">\n<link rel="stylesheet" href="/main/900-css/matchpro.css">\n'+
+      '<style>.matchpro-page-header{padding:18px 5%;border-bottom:1px solid rgba(150,150,150,.2)}.matchpro-page-header img{display:block;max-width:190px;max-height:72px;object-fit:contain}.matchpro-page-main{max-width:1080px;margin:0 auto;padding:36px 5%;min-height:55vh}.matchpro-page-main h1{line-height:1.2;margin:0 0 24px}.matchpro-page-content{white-space:pre-wrap;line-height:1.8}.matchpro-language-switcher{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;padding:18px}.matchpro-language-switcher a[aria-current=page]{font-weight:800;text-decoration:underline}</style>\n'+
+      '<script src="/main/js/player-config.js" defer><\/script>\n'+
+      '</head>\n<body>\n<header class="matchpro-page-header"><a href="./" aria-label="'+escapeHtml(brand)+'"><img src="'+escapeHtml(logo)+'" alt="'+escapeHtml(brand)+'"></a></header>\n'+
+      '<main class="matchpro-page-main"><h1>'+escapeHtml(h1)+'</h1><div class="matchpro-page-content">'+escapeHtml(content||description)+'</div></main>\n'+
+      '<nav class="matchpro-language-switcher" aria-label="Language">'+textLinks+'</nav>\n'+
+      '<footer class="matchpro-footer"><p>© <span id="year"></span> '+escapeHtml(brand)+'</p></footer>\n'+
+      '<script>document.getElementById("year").textContent=new Date().getFullYear();document.querySelectorAll("[data-page-lang]").forEach(function(a){a.addEventListener("click",function(){try{localStorage.setItem("matchpro-language",a.dataset.pageLang)}catch(_){}})});<\/script>\n'+
+      '</body>\n</html>\n';
+  }
+  function buildLanguageLanding(slug,defaultLanguage){
+    var safeSlug=escapeHtml(slug),fallback=['hy','ru','en'].indexOf(defaultLanguage)>=0?defaultLanguage:'en';
+    return '<!doctype html>\n<html lang="'+fallback+'"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">'+
+      '<title>MatchPro — '+safeSlug+'</title><meta name="robots" content="noindex, follow"><meta name="googlebot" content="noindex, follow">'+
+      '<meta http-equiv="refresh" content="0;url=./'+safeSlug+'-'+fallback+'.html"></head><body><p>Redirecting to your language version…</p>'+
+      '<script>(function(){var allowed=["hy","ru","en"];var saved="";try{saved=localStorage.getItem("matchpro-language")||""}catch(_){}var b=(navigator.language||"").toLowerCase();var lang=allowed.indexOf(saved)>=0?saved:(b.indexOf("hy")===0?"hy":(/^(ru|be|kk|ky|uz)(-|$)/.test(b)?"ru":"'+fallback+'"));location.replace("./'+safeSlug+'-"+lang+".html"+location.search+location.hash)})();<\/script></body></html>\n';
+  }
+  async function createEditablePage(){
+    if(busy)return;
+    var slug=$('pageNewSlug').value.trim().toLowerCase();
+    if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))throw new Error('Slug-ը պետք է պարունակի միայն լատինատառ փոքրատառեր, թվեր և գծիկներ։');
+    if(['index','404','403','500'].includes(slug))throw new Error('Այս slug-ը վերապահված է։ Ընտրիր ուրիշ անուն։');
+    var langs=['hy','ru','en'],data={},defaultLang=(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.defaultLanguage)||'ru';
+    langs.forEach(function(lang){
+      var suffix=lang.charAt(0).toUpperCase()+lang.slice(1);
+      data[lang]={title:$('newTitle'+suffix).value.trim(),h1:$('newH1'+suffix).value.trim(),description:$('newDescription'+suffix).value.trim(),keywords:$('newKeywords'+suffix).value.trim(),content:$('newContent'+suffix).value.trim()};
+      if(!data[lang].title||!data[lang].h1||!data[lang].description)throw new Error('Լրացրու յուրաքանչյուր լեզվի HTML title-ը, H1-ը և meta description-ը։');
+    });
+    var paths=[slug+'.html'].concat(langs.map(function(lang){return slug+'-'+lang+'.html'}));
+    var existing=paths.filter(function(path){return editableHtmlPaths.indexOf(path)>=0});
+    if(existing.length)throw new Error('Այս էջի որոշ ֆայլեր արդեն գոյություն ունեն՝ '+existing.join(', ')+'. Ընտրիր այլ slug։');
+    $('create-page-button').disabled=true;
+    try{
+      var changes={};langs.forEach(function(lang){var path=slug+'-'+lang+'.html',d=data[lang];changes[path]=buildNewLocalizedPage(slug,lang,d.title,d.h1,d.description,d.keywords,d.content)});
+      changes[slug+'.html']=buildLanguageLanding(slug,defaultLang);
+      await commitChanges(changes,[],'Create multilingual MatchPro page '+slug);
+      $('page-create-area').classList.add('hidden');
+      $('pageNewSlug').value='';
+      langs.forEach(function(lang){var suffix=lang.charAt(0).toUpperCase()+lang.slice(1);['Title','H1','Description','Keywords','Content'].forEach(function(key){var el=$('new'+key+suffix);if(el)el.value=''})});
+      await loadEditablePages();
+      var target=slug+'-'+defaultLang+'.html';
+      $('pagePath').value=target;
+      await loadSelectedPage();
+      notify('Ստեղծվեցին և GitHub-ում պահպանվեցին էջի 3 լեզվային տարբերակները։ Հրապարակումը կավարտվի deploy-ից հետո։');
+    }finally{$('create-page-button').disabled=false}
+  }
+
   async function loadSettings(){
     var defs=defaultSiteSettings();
     try {
@@ -1466,6 +1579,9 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   $('change-password-button').addEventListener('click',function(){$('password-change-area').classList.toggle('hidden')});
   $('save-password-button').addEventListener('click',changeAdminPassword);
   document.querySelectorAll('[data-settings-tab]').forEach(function(button){button.addEventListener('click',function(){activateSettingsTab(button.dataset.settingsTab)})});
+  $('show-create-page-button').addEventListener('click',function(){$('page-create-area').classList.toggle('hidden')});
+  $('cancel-create-page-button').addEventListener('click',function(){$('page-create-area').classList.add('hidden')});
+  $('create-page-button').addEventListener('click',function(){createEditablePage().catch(function(error){$('page-editor-error').textContent=error.message||'Չհաջողվեց ստեղծել էջը։'})});
   $('refresh-pages-button').addEventListener('click',function(){loadEditablePages().catch(function(error){$('page-editor-error').textContent=error.message||'Չհաջողվեց բեռնել էջերը։'})});
   $('load-page-button').addEventListener('click',function(){loadSelectedPage().catch(function(error){$('page-editor-error').textContent=error.message||'Չհաջողվեց բացել էջը։'})});
   $('save-page-button').addEventListener('click',function(){saveSelectedPage().catch(function(error){$('page-editor-error').textContent=error.message||'Չհաջողվեց պահպանել էջը։'})});
