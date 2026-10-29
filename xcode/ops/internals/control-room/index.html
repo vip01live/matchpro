@@ -856,6 +856,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   window.MATCHPRO_ADMIN_API = {
     getChannels:function(){return channels.slice()},
     getSettings:function(){return siteSettings},
+    setSettings:function(value){siteSettings=value},
     readTextFile:readTextFile,
     listRoot:function(){return repoRequest('/contents/?ref=main','GET')},
     commitChanges:function(changes,message){return commitChanges(changes,[],message||'Update MatchPro CMS content')},
