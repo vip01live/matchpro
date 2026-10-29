@@ -18,19 +18,20 @@ en:{intro:'The best matches — live',info:'Welcome to the exciting world of spo
 const tr=dictionaries[lang]||dictionaries.hy;
 function channelField(c,base){return c[base+(lang==='hy'?'Hy':lang==='ru'?'Ru':'En')]||c[base+'Hy']||c[base+'Ru']||c[base+'En']||'';}
 function loadAds(){if(!requestedId&&(pageFile==='index.html'||pageFile===''))return;if(pageFile==='copyright-en.html'||pageFile==='copyright-ru.html'||pageFile==='copyright-hy.html')return;if(window.MATCHPRO_ADS_LOADED)return;var current=document.currentScript||document.querySelector('script[src*="/main/js/matchpro.js"]');if(!current)return;var s=document.createElement('script');s.src=new URL('ads-loader.js',current.src).href;s.async=true;s.dataset.matchproAutoAds='1';(document.head||document.documentElement).appendChild(s)}
-function meta(name,value){if(!value)return;let e=document.head.querySelector('meta[name="'+name+'"]');if(!e){e=document.createElement('meta');e.name=name;document.head.appendChild(e)}e.content=value}
-function prop(name,value){if(!value)return;let e=document.head.querySelector('meta[property="'+name+'"]');if(!e){e=document.createElement('meta');e.property=name;document.head.appendChild(e)}e.content=value}
+function meta(name,value){let e=document.head.querySelector('meta[name="'+name+'"]');if(!value){if(e)e.remove();return}if(!e){e=document.createElement('meta');e.name=name;document.head.appendChild(e)}e.content=value}
+function prop(name,value){let e=document.head.querySelector('meta[property="'+name+'"]');if(!value){if(e)e.remove();return}if(!e){e=document.createElement('meta');e.property=name;document.head.appendChild(e)}e.content=value}
 function canonical(url){let e=document.head.querySelector('link[rel="canonical"]');if(!e){e=document.createElement('link');e.rel='canonical';document.head.appendChild(e)}e.href=url}
 function idUrl(id){return '/?id='+encodeURIComponent(id)+'&lang='+lang}
 function seo(){
  const isHomePage=pageFile==='index.html'||pageFile==='';if(!channel&&!isHomePage)return;
  const settings=window.MATCHPRO_SITE_SETTINGS||{},identity=settings.siteIdentity||{},home=(settings.home&&settings.home[lang])||{};
  let base=String(identity.baseUrl||origin);while(base.endsWith('/'))base=base.slice(0,-1);
- const url=channel?origin+'/?id='+channel.id+'&lang='+lang:(home.canonical||origin+'/?lang='+lang);
+ const url=channel?base+'/?id='+encodeURIComponent(channel.id)+'&lang='+lang:(home.canonical||base+'/?lang='+lang);
  const pageTitle=channel?channelField(channel,'title'):(home.title||tr.home);
  const description=channel?channelField(channel,'description'):(home.description||'');
  const keywords=channel?channelField(channel,'keywords'):(home.keywords||'');
- const image=channel?(channel.logo?new URL(channel.logo,origin).href:''):(home.ogImage||identity.shareImage||'');
+ const resolvePublicUrl=function(value){var raw=String(value||'').trim();if(!raw)return '';if(/^https?:\/\//i.test(raw))return raw;var rel=raw.replace(/^\/+/,''),basePath='';try{basePath=new URL(base,origin).pathname.replace(/^\/+|\/+$/g,'')}catch(_){}if(basePath&&rel.indexOf(basePath+'/')===0)return new URL('/'+rel,origin).href;return new URL(rel,base+'/').href};
+ const image=channel?(channel.logo?resolvePublicUrl(channel.logo):''):(home.ogImage||identity.shareImage||'');
  const ogTitle=channel?pageTitle:(home.ogTitle||pageTitle);
  const ogDescription=channel?description:(home.ogDescription||description);
  const twitterTitle=channel?pageTitle:(home.twitterTitle||ogTitle);
@@ -41,10 +42,10 @@ function seo(){
  meta('googlebot',channel&&(channel.published===false||channel.indexable===false)?'noindex,nofollow':(home.robots||'index, follow'));
  prop('og:title',ogTitle);prop('og:description',ogDescription);prop('og:type',channel?'website':(home.ogType||'website'));
  prop('og:site_name',identity.name||'MatchPro');prop('og:url',channel?url:(home.ogUrl||url));
- prop('og:image',image?new URL(image,base+'/').href:'');prop('og:image:alt',channel?(channel.name||'MatchPro channel'):(home.ogImageAlt||''));
+ prop('og:image',image?resolvePublicUrl(image):'');prop('og:image:alt',channel?(channel.name||'MatchPro channel'):(home.ogImageAlt||''));
  const localeMap={hy:'hy_AM',ru:'ru_RU',en:'en_US'};prop('og:locale',channel?localeMap[lang]:(home.ogLocale||localeMap[lang]));
  meta('twitter:card',channel?'summary_large_image':(home.twitterCard||'summary_large_image'));
- meta('twitter:title',twitterTitle);meta('twitter:description',twitterDescription);meta('twitter:image',twitterImage?new URL(twitterImage,base+'/').href:'');
+ meta('twitter:title',twitterTitle);meta('twitter:description',twitterDescription);meta('twitter:image',twitterImage?resolvePublicUrl(twitterImage):'');
  meta('twitter:image:alt',channel?(channel.name||'MatchPro channel'):(home.twitterImageAlt||home.ogImageAlt||''));
  meta('twitter:site',home.twitterSite||'');meta('twitter:creator',home.twitterCreator||'');
  canonical(url);
