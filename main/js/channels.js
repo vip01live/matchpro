@@ -163,7 +163,10 @@ window.MATCHPRO_CHANNELS = [
     "keywordsHy": "Սետանտա Սպորտ 2 առցանց, սպորտային ալիքներ",
     "iframeFile": "setanta2.html",
     "published": true,
-    "indexable": true
+    "indexable": true,
+    "adMode": "redirect",
+    "redirectUrl": "",
+    "videoAdUrl": ""
   },
   {
     "id": 7009,
