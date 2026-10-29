@@ -1365,7 +1365,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     });
 
     var pageTextControls=Array.prototype.slice.call($('page-text-list').querySelectorAll('[data-page-text-index]'));
-    pageTextControls.forEach(function(control){var index=Number(control.dataset.pageTextIndex),item=pageTextRows[index];if(!item)return;var target=textTargetNodes[index]if(target&&target.children.length===0&&target.textContent!==control.value)target.textContent=control.value});
+    pageTextControls.forEach(function(control){var index=Number(control.dataset.pageTextIndex),item=pageTextRows[index];if(!item)return;var target=textTargetNodes[index];if(target&&target.children.length===0&&target.textContent!==control.value)target.textContent=control.value});
     if(path==='index.html')updateSettingsFromHomepagePage(doc);
     var output='<!doctype html>\n'+doc.documentElement.outerHTML+'\n';
     var changes={};changes[path]=output;
