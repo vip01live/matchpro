@@ -48,6 +48,9 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       <div class="nav-label">ԿԱՌԱՎԱՐՄԱՆ ԿԵՆՏՐՈՆ</div>
       <button class="navbtn active" data-view="dashboard"><span class="nav-icon">◫</span> Dashboard</button>
       <button class="navbtn" data-view="channels"><span class="nav-icon">▦</span> Ալիքներ</button>
+      <button class="navbtn" data-view="pages"><span class="nav-icon">▤</span> Էջերի կառավարում</button>
+      <button class="navbtn" data-view="seo"><span class="nav-icon">⌕</span> SEO և meta թեգեր</button>
+      <button class="navbtn" data-view="visual"><span class="nav-icon">✎</span> Վիզուալ խմբագրիչ</button>
       <div class="nav-label">ԿԱՅՔԻ ԿԱՐԳԱՎՈՐՈՒՄՆԵՐ</div>
       <button class="navbtn" data-view="ads"><span class="nav-icon">↗</span> Գովազդ</button>
       <button class="navbtn" data-view="branding"><span class="nav-icon">✦</span> Լոգո և favicon</button>
@@ -192,6 +195,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   </div>
 </div>
 <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<script src="/main/js/admin-cms.js" defer></script>
 
 <script src="/main/js/admin-backend-config.js"></script>
 <script>
@@ -429,6 +433,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       if (suppliedToken && !ADMIN_API_BASE) await storeEncryptedToken(token,password);
       $('login-screen').classList.add('hidden');
       $('app-screen').classList.remove('hidden');
+      window.MATCHPRO_ADMIN_SESSION_READY = true;
+      document.dispatchEvent(new CustomEvent('matchpro:admin-ready'));
       $('token').value = '';
       setView('dashboard');
       notify(ADMIN_API_BASE ? 'Մուտքը հաջողվեց։ CMS-ը միացված է սերվերային backend-ին։' : 'Մուտքը հաջողվեց։ Միացված է ' + OWNER + '/' + REPO + ' ռեպոզիտորիային։');
@@ -847,6 +853,20 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   $('delete-current-button').addEventListener('click', function () { if (editing && selectedId != null) deleteChannel(selectedId); });
   $('logout-button').addEventListener('click', logout);
   $('back-list-button').addEventListener('click', function () { setView('channels'); showForm(false); });
+  window.MATCHPRO_ADMIN_API = {
+    getChannels:function(){return channels.slice()},
+    getSettings:function(){return siteSettings},
+    setSettings:function(value){siteSettings=value},
+    readTextFile:readTextFile,
+    listRoot:function(){return repoRequest('/contents/?ref=main&per_page=100','GET')},
+    commitChanges:function(changes,message){return commitChanges(changes,[],message||'Update MatchPro CMS content')},
+    reload:async function(){await loadState();await loadSettings();return {channels:channels.slice(),settings:siteSettings}},
+    notify:notify,
+    setView:setView,
+    baseUrl:SITE_BASE,
+    escapeHtml:escapeHtml,
+    assetUrl:assetUrl
+  };
   document.querySelectorAll('[data-view]').forEach(function (button) {
     button.addEventListener('click', function () { setView(button.dataset.view); });
   });

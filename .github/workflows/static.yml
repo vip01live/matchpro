@@ -29,6 +29,14 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Validate CMS metadata generator
+        run: |
+          python -m py_compile tools/apply-cms-metadata.py
+          python -m json.tool main/js/site-settings.json > /dev/null
+
+      - name: Apply CMS metadata to published HTML
+        run: python tools/apply-cms-metadata.py
+
       # MatchPro was originally built for a domain root (/main, /media, ...).
       # GitHub Pages serves this repository under /matchpro/, so rewrite only
       # root-relative local paths in the published copy. The repository source
