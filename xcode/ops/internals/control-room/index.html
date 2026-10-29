@@ -49,6 +49,16 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 
 
 .matchpro-page-header img{max-width:190px;max-height:72px;object-fit:contain}
+
+.page-elements-list{display:grid;gap:12px;margin-top:12px}
+.page-element-row{padding:14px;border:1px solid var(--line,#263449);border-radius:12px;background:rgba(255,255,255,.018);min-width:0}
+.page-element-row.move-selected{border-color:var(--accent,#7c5cff);box-shadow:0 0 0 1px var(--accent,#7c5cff)}
+.page-element-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.page-element-title{font-size:12px;font-weight:750;color:var(--muted,#9aa9bb);overflow-wrap:anywhere}
+.page-element-moves{display:flex;gap:6px;flex-shrink:0}
+.page-element-moves .btn{padding:4px 10px;min-width:36px}
+.page-element-hidden-control{display:flex;gap:8px;align-items:center;font-size:13px;margin:8px 0 12px}
+
 </style>
 <meta name="referrer" content="no-referrer-when-downgrade">
 </head>
@@ -372,6 +382,11 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
             <div class="lang-head"><span class="flag">MEDIA</span> Նկարներ և հղումներ</div>
             <p class="subtle-note">Կառավարիր առկա HTML էջում նկարների հասցեներն ու alt տեքստերը, ինչպես նաև հղումների URL-ները, վերնագրերը և բացման եղանակը։ Նոր ֆայլ չի վերբեռնվում, եթե հասցեն պարզապես փոխում ես։</p>
             <div id="page-assets-list" class="page-assets-list"></div>
+          </div>
+          <div class="lang-card">
+            <div class="lang-head"><span class="flag">LAYOUT</span> Տարրերի տեսք և դասավորություն</div>
+            <p class="subtle-note">Ընտրիր տարրի տեսանելիությունը, գույները, տառաչափը, բացատները և դիրքը հարակից տարրերի նկատմամբ։ Դատարկ դաշտերը պահպանում են stylesheet-ի գործող արժեքները։ Տեղափոխումն իրականացվում է միայն ընտրված տարրի համար՝ պահպանման պահին։</p>
+            <div id="page-elements-list" class="page-elements-list"></div>
           </div>
           <div class="lang-card">
             <div class="lang-head"><span class="flag">TEXT</span> Էջի տեքստեր</div>
@@ -979,6 +994,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   var pageEditorDoc=null;
   var pageTextRows=[];
   var pageAssetRows=[];
+  var pageElementRows=[];
+  var pageElementMove=null;
   var pageCustomMetaOriginal=[];
   var reservedPageMetaNames=['description','keywords','robots','googlebot','author','theme-color','viewport','referrer','twitter:card','twitter:title','twitter:description','twitter:image','twitter:image:alt','twitter:site','twitter:creator','og:title','og:description','og:type','og:url','og:image','og:image:alt','og:site_name','og:locale','og:locale:alternate'];
 
@@ -1144,6 +1161,68 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     if(!pageAssetRows.length){var empty=document.createElement('p');empty.className='subtle-note';empty.textContent='Այս էջում խմբագրելի նկարներ կամ հղումներ չեն գտնվել։';list.appendChild(empty)}
   }
 
+
+  var pageStyleProperties=[
+    {key:'color',label:'Text color',kind:'color'},
+    {key:'background-color',label:'Background color',kind:'color'},
+    {key:'font-size',label:'Font size',kind:'length'},
+    {key:'font-weight',label:'Font weight',kind:'weight'},
+    {key:'text-align',label:'Text alignment',kind:'align'},
+    {key:'margin',label:'Margin',kind:'spacing'},
+    {key:'padding',label:'Padding',kind:'spacing'},
+    {key:'width',label:'Width',kind:'length'},
+    {key:'max-width',label:'Max width',kind:'length'},
+    {key:'border-radius',label:'Border radius',kind:'spacing'},
+    {key:'gap',label:'Gap',kind:'spacing'},
+    {key:'display',label:'Display mode',kind:'display'}
+  ];
+  function collectPageElementRows(doc){
+    return Array.prototype.slice.call(doc.body.querySelectorAll('*')).filter(function(el){
+      var tag=el.tagName.toLowerCase();
+      return !/^(script|style|noscript|template|meta|link|title|iframe|svg|canvas|source|track|path|defs|use)$/i.test(tag)&&!el.closest('script,style,noscript,template,svg')&&el.getAttribute('data-admin-only')!=='true';
+    }).slice(0,200).map(function(el){
+      var styles={};pageStyleProperties.forEach(function(p){styles[p.key]=el.style.getPropertyValue(p.key)||''});
+      return {selector:pageCssPath(el),tag:el.tagName.toLowerCase(),id:el.id||'',className:typeof el.className==='string'?el.className:'',hidden:!!el.hidden,styles:styles};
+    });
+  }
+  function isSafeCssValue(value,kind){
+    var v=String(value||'').trim();if(!v)return true;
+    if(/[;{}<>]|url\\s*\\(|expression|javascript:/i.test(v))return false;
+    if(kind==='color')return /^(?:#[0-9a-f]{3,8}|[a-z]{1,30}|rgba?\\([0-9.,%\\s]+\\)|hsla?\\([0-9.,%\\s]+\\)|transparent|currentcolor|inherit|initial|unset)$/i.test(v);
+    if(kind==='align')return ['start','end','left','right','center','justify','match-parent','inherit','initial','unset'].indexOf(v.toLowerCase())>=0;
+    if(kind==='weight')return ['normal','bold','bolder','lighter','100','200','300','400','500','600','700','800','900','inherit','initial','unset'].indexOf(v.toLowerCase())>=0;
+    if(kind==='display')return ['','default','none','block','inline','inline-block','flex','grid','inline-flex','inline-grid','table','list-item','contents'].indexOf(v.toLowerCase())>=0;
+    if(kind==='length'||kind==='spacing')return /^(?:auto|inherit|initial|unset|normal|0|-?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr))(?:\\s+(?:auto|inherit|initial|unset|normal|0|-?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr))){0,3}$/i.test(v);
+    return false;
+  }
+  function renderPageElementRows(){
+    var list=$('page-elements-list');if(!list)return;list.textContent='';
+    pageElementRows.forEach(function(item,index){
+      var card=document.createElement('div');card.className='page-element-row';
+      var head=document.createElement('div');head.className='page-element-head';
+      var title=document.createElement('div');title.className='page-element-title';title.textContent=item.tag.toUpperCase()+(item.id?' #'+item.id:'')+(item.className?' .'+item.className.split(/\\s+/).join('.'): '');
+      var move=document.createElement('div');move.className='page-element-moves';
+      [['↑',-1],['↓',1]].forEach(function(pair){var b=document.createElement('button');b.type='button';b.className='btn outline';b.textContent=pair[0];b.title=pair[1]<0?'Move element up':'Move element down';b.addEventListener('click',function(){pageElementMove={selector:item.selector,direction:pair[1]};document.querySelectorAll('.page-element-row').forEach(function(x){x.classList.remove('move-selected')});card.classList.add('move-selected');$('page-editor-error').textContent='Ընտրված է '+item.tag+' տարրի տեղափոխումը։ Սեղմիր «Պահպանել էջի փոփոխությունները»՝ կիրառելու համար։'});move.appendChild(b)});
+      head.append(title,move);card.appendChild(head);
+      var visibility=document.createElement('label');visibility.className='page-element-hidden-control';var check=document.createElement('input');check.type='checkbox';check.checked=item.hidden;check.addEventListener('change',function(){item.hidden=check.checked});visibility.append(check,document.createTextNode(' Hide this element'));card.appendChild(visibility);
+      var grid=document.createElement('div');grid.className='form-grid settings-grid';
+      pageStyleProperties.forEach(function(prop){
+        var field=document.createElement('div');field.className='field';var label=document.createElement('label');label.textContent=prop.label;field.appendChild(label);
+        var input;
+        if(prop.kind==='align'||prop.kind==='weight'||prop.kind==='display'){
+          input=document.createElement('select');
+          var values=prop.kind==='align'?['','left','center','right','justify','start','end','inherit']:prop.kind==='weight'?['','normal','400','500','600','700','800','bold']:['','none','block','inline','inline-block','flex','grid','inline-flex','inline-grid'];
+          values.forEach(function(v){var option=document.createElement('option');option.value=v;option.textContent=v||'Use stylesheet';input.appendChild(option)});
+        }else{input=document.createElement('input');input.type='text';input.placeholder='Use stylesheet';}
+        input.value=item.styles[prop.key]||'';input.dataset.styleKey=prop.key;
+        input.addEventListener('input',function(){item.styles[prop.key]=input.value});
+        field.appendChild(input);grid.appendChild(field);
+      });
+      card.appendChild(grid);list.appendChild(card);
+    });
+    if(!pageElementRows.length){var empty=document.createElement('p');empty.className='subtle-note';empty.textContent='Այս էջում կառավարվող տարրեր չեն գտնվել։';list.appendChild(empty)}
+  }
+
   function filterPageOptions(){
     var term=($('page-search').value||'').toLowerCase();
     Array.prototype.slice.call($('pagePath').options).forEach(function(option,index){
@@ -1232,6 +1311,9 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     readCustomMetaFromDoc(doc).forEach(addPageCustomMetaRow);
     pageAssetRows=collectPageAssetRows(doc);
     renderPageAssetRows();
+    pageElementRows=collectPageElementRows(doc);
+    pageElementMove=null;
+    renderPageElementRows();
     pageTextRows=collectPageTextRows(doc);
     renderPageTextRows();
     updatePageSeoPreview();
@@ -1314,6 +1396,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     var doc=new DOMParser().parseFromString(pageEditorSource,'text/html');
     var assetTargetNodes=pageAssetRows.map(function(item){try{return doc.querySelector(item.selector)}catch(_){return null}});
     var textTargetNodes=pageTextRows.map(function(item){try{return doc.querySelector(item.selector)}catch(_){return null}});
+    var elementTargetNodes=pageElementRows.map(function(item){try{return doc.querySelector(item.selector)}catch(_){return null}});
     if(!doc.head)throw new Error('Ընտրված էջում HTML head-ը բացակայում է։');
     var title=$('pageTitle').value.trim();
     if(!title)throw new Error('HTML title-ը դատարկ լինել չի կարող։');
@@ -1364,6 +1447,27 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       }
     });
 
+
+    pageElementRows.forEach(function(item,index){
+      var el=elementTargetNodes[index];if(!el)return;
+      pageStyleProperties.forEach(function(prop){
+        var value=String(item.styles[prop.key]||'').trim();
+        if(!isSafeCssValue(value,prop.kind))throw new Error('CSS արժեքը անվավեր է '+prop.label+' դաշտում՝ '+value);
+        if(prop.key==='display'&&item.hidden)value='';
+        if(value)el.style.setProperty(prop.key,value);else el.style.removeProperty(prop.key);
+      });
+      el.hidden=!!item.hidden;
+      if(item.hidden)el.style.removeProperty('display');
+    });
+    if(pageElementMove){
+      var moveIndex=pageElementRows.findIndex(function(item){return item.selector===pageElementMove.selector});
+      var moving=moveIndex>=0?elementTargetNodes[moveIndex]:null;
+      if(moving&&moving.parentElement){
+        if(pageElementMove.direction<0&&moving.previousElementSibling)moving.parentElement.insertBefore(moving,moving.previousElementSibling);
+        if(pageElementMove.direction>0&&moving.nextElementSibling)moving.parentElement.insertBefore(moving.nextElementSibling,moving);
+      }
+    }
+
     var pageTextControls=Array.prototype.slice.call($('page-text-list').querySelectorAll('[data-page-text-index]'));
     pageTextControls.forEach(function(control){var index=Number(control.dataset.pageTextIndex),item=pageTextRows[index];if(!item)return;var target=textTargetNodes[index];if(target&&target.children.length===0&&target.textContent!==control.value)target.textContent=control.value});
     if(path==='index.html')updateSettingsFromHomepagePage(doc);
@@ -1373,8 +1477,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     $('save-page-button').disabled=true;
     try{
       await commitChanges(changes,[],'Edit MatchPro page '+path);
-      pageEditorSource=output;pageEditorDoc=doc;
-      notify('Էջի տեքստերն ու metadata-ն պահպանվեցին։ Ստուգիր deploy-ի կարգավիճակը Actions բաժնում։');
+      pageEditorSource=output;pageEditorDoc=doc;pageElementMove=null;
+      notify('Էջի տեքստերը, հղումները, պատկերները և տեսքի կարգավորումները պահպանվեցին։ Ստուգիր deploy-ի կարգավիճակը Actions բաժնում։');
       fillPageEditor(new DOMParser().parseFromString(output,'text/html'),output);
     }finally{$('save-page-button').disabled=false}
   }
