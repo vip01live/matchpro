@@ -100,7 +100,10 @@ window.MATCHPRO_CHANNELS = [
     "keywordsHy": "Մատչ Ֆուտբոլ 2 առցանց, ֆուտբոլի ուղիղ եթեր",
     "iframeFile": "match2.html",
     "published": true,
-    "indexable": true
+    "indexable": true,
+    "adMode": "redirect",
+    "redirectUrl": "",
+    "videoAdUrl": ""
   },
   {
     "id": 7006,
