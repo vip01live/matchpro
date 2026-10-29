@@ -57,7 +57,7 @@ jobs:
           if missing:
               raise SystemExit("Homepage missing generated metadata: " + ", ".join(missing))
           for name in ("twitter:card", "twitter:title", "twitter:description", "twitter:image"):
-              count = len(re.findall(r"<meta\b[^>]*\bname=['\"]" + re.escape(name) + r"['\"]", html, re.I))
+              count = len(re.findall(r"<meta\b[^>]*\bname=[\'\"]" + re.escape(name) + r"[\'\"]", html, re.I))
               if count != 1:
                   raise SystemExit(f"Expected exactly one {name} tag, found {count}")
           print("CMS metadata smoke test passed.")
