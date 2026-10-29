@@ -1416,10 +1416,11 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   }
   function buildLanguageLanding(slug,defaultLanguage){
     var safeSlug=escapeHtml(slug),fallback=['hy','ru','en'].indexOf(defaultLanguage)>=0?defaultLanguage:'en';
-    return '<!doctype html>\n<html lang="'+fallback+'"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">'+
+    var links='<nav aria-label="Choose language"><a href="./'+safeSlug+'-hy.html">Հայերեն</a> · <a href="./'+safeSlug+'-ru.html">Русский</a> · <a href="./'+safeSlug+'-en.html">English</a></nav>';
+    return '<!doctype html>\\n<html lang="'+fallback+'"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">'+
       '<title>MatchPro — '+safeSlug+'</title><meta name="robots" content="noindex, follow"><meta name="googlebot" content="noindex, follow">'+
-      '<meta http-equiv="refresh" content="0;url=./'+safeSlug+'-'+fallback+'.html"></head><body><p>Redirecting to your language version…</p>'+
-      '<script>(function(){var allowed=["hy","ru","en"];var saved="";try{saved=localStorage.getItem("matchpro-language")||""}catch(_){}var b=(navigator.language||"").toLowerCase();var lang=allowed.indexOf(saved)>=0?saved:(b.indexOf("hy")===0?"hy":(/^(ru|be|kk|ky|uz)(-|$)/.test(b)?"ru":"'+fallback+'"));location.replace("./'+safeSlug+'-"+lang+".html"+location.search+location.hash)})();<\/script></body></html>\n';
+      '</head><body><p>Redirecting to your language version…</p>'+links+
+      '<script>(function(){var allowed=["hy","ru","en"];var saved="";try{saved=localStorage.getItem("matchpro-language")||""}catch(_){}var b=(navigator.language||"").toLowerCase();var lang=allowed.indexOf(saved)>=0?saved:(b.indexOf("hy")===0?"hy":(/^(ru|be|kk|ky|uz)(-|$)/.test(b)?"ru":"'+fallback+'"));location.replace("./'+safeSlug+'-"+lang+".html"+location.search+location.hash)})();<\\/script></body></html>\\n';
   }
   async function createEditablePage(){
     if(busy)return;
