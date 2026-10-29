@@ -99,6 +99,7 @@ function githubAllowed(method,path) {
   if(method==='GET'&&path===REPO_PATH)return true;
   if(method==='GET'&&path.startsWith(REPO_PATH+'/contents/'))return true;
   if(method==='GET'&&path===REPO_PATH+'/git/ref/heads/main')return true;
+  if(method==='GET'&&/^\/repos\/vip01live\/matchpro\/git\/trees\/[0-9a-f]{40}$/i.test(path))return true;
   if(method==='GET'&&/^\/repos\/vip01live\/matchpro\/git\/commits\/[0-9a-f]{40}$/i.test(path))return true;
   if(method==='POST'&&[REPO_PATH+'/git/blobs',REPO_PATH+'/git/trees',REPO_PATH+'/git/commits'].includes(path))return true;
   if(method==='PATCH'&&path===REPO_PATH+'/git/refs/heads/main')return true;
