@@ -1422,13 +1422,9 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       var changes={};
       if(logoFile){var logoExt=fileExtension(logoFile,'png'),logoAsset='uploads/'+uploadUuid()+'.'+logoExt;settingData.logo='/'+logoAsset;changes[logoAsset]={content:await fileBase64(logoFile),encoding:'base64'}}
       if(iconFile){var iconExt=fileExtension(iconFile,'png'),iconAsset='uploads/'+uploadUuid()+'.'+iconExt;settingData.favicon='/'+iconAsset;changes[iconAsset]={content:await fileBase64(iconFile),encoding:'base64'}}
-      for(var homePathIndex=0;homePathIndex<2;homePathIndex++){
-        var homePath=homePathIndex===0?'index.html':'app/index.html';
-        try{
-          var homeSource=await readTextFile(homePath);
-          changes[homePath]=patchHomepageDocument(homeSource,settingData,homePath);
-        }catch(homeFileError){if(homePath==='index.html')throw homeFileError;}
-      }
+      var homePath='index.html';
+      var homeSource=await readTextFile(homePath);
+      changes[homePath]=patchHomepageDocument(homeSource,settingData,homePath);
       changes['main/js/site-settings.json']=JSON.stringify(settingData,null,2)+'\n';
       await commitChanges(changes,[],'Update MatchPro site settings and branding');
       siteSettings=settingData;$('siteLogoPath').value=settingData.logo;$('faviconPath').value=settingData.favicon;
