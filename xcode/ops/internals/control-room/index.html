@@ -244,6 +244,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 <div class="field"><label for="homeOgImageHy">og:image</label><input id="homeOgImageHy" type="text" placeholder="Absolute URL or local image path"></div>
 <div class="field"><label for="homeOgImageAltHy">og:image:alt</label><input id="homeOgImageAltHy" type="text" placeholder=""></div>
 <div class="field"><label for="homeOgLocaleHy">og:locale</label><input id="homeOgLocaleHy" type="text" placeholder="hy_AM"></div>
+<div class="field"><label for="homeOgLocaleAlternatesHy">og:locale:alternate (comma-separated)</label><input id="homeOgLocaleAlternatesHy" type="text" placeholder="ru_RU, en_US"></div>
 <div class="field"><label for="homeTwitterCardHy">twitter:card</label><select id="homeTwitterCardHy"><option value="summary_large_image">summary_large_image</option><option value="summary">summary</option></select></div>
 <div class="field"><label for="homeTwitterTitleHy">twitter:title</label><input id="homeTwitterTitleHy" type="text" placeholder=""></div>
 <div class="field"><label for="homeTwitterDescriptionHy">twitter:description</label><textarea id="homeTwitterDescriptionHy" rows="2" placeholder=""></textarea></div>
@@ -263,6 +264,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 <div class="field"><label for="homeOgImageRu">og:image</label><input id="homeOgImageRu" type="text" placeholder="Absolute URL or local image path"></div>
 <div class="field"><label for="homeOgImageAltRu">og:image:alt</label><input id="homeOgImageAltRu" type="text" placeholder=""></div>
 <div class="field"><label for="homeOgLocaleRu">og:locale</label><input id="homeOgLocaleRu" type="text" placeholder="ru_RU"></div>
+<div class="field"><label for="homeOgLocaleAlternatesRu">og:locale:alternate (comma-separated)</label><input id="homeOgLocaleAlternatesRu" type="text" placeholder="hy_AM, en_US"></div>
 <div class="field"><label for="homeTwitterCardRu">twitter:card</label><select id="homeTwitterCardRu"><option value="summary_large_image">summary_large_image</option><option value="summary">summary</option></select></div>
 <div class="field"><label for="homeTwitterTitleRu">twitter:title</label><input id="homeTwitterTitleRu" type="text" placeholder=""></div>
 <div class="field"><label for="homeTwitterDescriptionRu">twitter:description</label><textarea id="homeTwitterDescriptionRu" rows="2" placeholder=""></textarea></div>
@@ -282,6 +284,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 <div class="field"><label for="homeOgImageEn">og:image</label><input id="homeOgImageEn" type="text" placeholder="Absolute URL or local image path"></div>
 <div class="field"><label for="homeOgImageAltEn">og:image:alt</label><input id="homeOgImageAltEn" type="text" placeholder=""></div>
 <div class="field"><label for="homeOgLocaleEn">og:locale</label><input id="homeOgLocaleEn" type="text" placeholder="en_US"></div>
+<div class="field"><label for="homeOgLocaleAlternatesEn">og:locale:alternate (comma-separated)</label><input id="homeOgLocaleAlternatesEn" type="text" placeholder="hy_AM, ru_RU"></div>
 <div class="field"><label for="homeTwitterCardEn">twitter:card</label><select id="homeTwitterCardEn"><option value="summary_large_image">summary_large_image</option><option value="summary">summary</option></select></div>
 <div class="field"><label for="homeTwitterTitleEn">twitter:title</label><input id="homeTwitterTitleEn" type="text" placeholder=""></div>
 <div class="field"><label for="homeTwitterDescriptionEn">twitter:description</label><textarea id="homeTwitterDescriptionEn" rows="2" placeholder=""></textarea></div>
@@ -364,7 +367,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 <div class="field"><label for="pageOgImage">og:image</label><input id="pageOgImage" type="text" placeholder="Absolute URL or local image path"></div>
 <div class="field"><label for="pageOgImageAlt">og:image:alt</label><input id="pageOgImageAlt" type="text" placeholder=""></div>
 <div class="field"><label for="pageOgSiteName">og:site_name</label><input id="pageOgSiteName" type="text" placeholder=""></div>
-<div class="field"><label for="pageOgLocale">og:locale</label><input id="pageOgLocale" type="text" placeholder="hy_AM / ru_RU / en_US"></div></div></div>
+<div class="field"><label for="pageOgLocale">og:locale</label><input id="pageOgLocale" type="text" placeholder="hy_AM / ru_RU / en_US"></div>
+<div class="field"><label for="pageOgLocaleAlternates">og:locale:alternate (comma-separated)</label><input id="pageOgLocaleAlternates" type="text" placeholder="hy_AM, ru_RU"></div></div></div>
           <div class="lang-card"><div class="lang-head"><span class="flag">X</span> X / Twitter Card metadata</div><div class="form-grid settings-grid"><div class="field"><label for="pageTwitterCard">twitter:card</label><select id="pageTwitterCard"><option value="summary_large_image">summary_large_image</option><option value="summary">summary</option></select></div>
 <div class="field"><label for="pageTwitterTitle">twitter:title</label><input id="pageTwitterTitle" type="text" placeholder=""></div>
 <div class="field"><label for="pageTwitterDescription">twitter:description</label><textarea id="pageTwitterDescription" rows="2" placeholder=""></textarea></div>
@@ -1060,7 +1064,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     writePageMeta(doc,'og:site_name',identity.name||'MatchPro',true,false);
     writePageMeta(doc,'og:locale',home.ogLocale||({hy:'hy_AM',ru:'ru_RU',en:'en_US'}[lang]),true,false);
     Array.prototype.slice.call(doc.head.querySelectorAll('meta[property="og:locale:alternate"]')).forEach(function(item){item.remove()});
-    ['hy','ru','en'].filter(function(x){return x!==lang}).forEach(function(other){var alt=doc.createElement('meta');alt.setAttribute('property','og:locale:alternate');alt.setAttribute('content',({hy:'hy_AM',ru:'ru_RU',en:'en_US'}[other]));doc.head.appendChild(alt)});
+    var alternateValues=Array.isArray(home.ogLocaleAlternates)?home.ogLocaleAlternates:(typeof home.ogLocaleAlternates==='string'?home.ogLocaleAlternates.split(',').map(function(x){return x.trim()}).filter(Boolean):['hy','ru','en'].filter(function(x){return x!==lang}).map(function(other){return ({hy:'hy_AM',ru:'ru_RU',en:'en_US'}[other])}));
+    alternateValues.forEach(function(locale){if(!/^[A-Za-z]{2,3}(?:[-_][A-Za-z0-9]{2,8})*$/.test(locale))return;var alt=doc.createElement('meta');alt.setAttribute('property','og:locale:alternate');alt.setAttribute('content',locale);doc.head.appendChild(alt)});
     writePageMeta(doc,'twitter:card',home.twitterCard||'summary_large_image',false,false);
     writePageMeta(doc,'twitter:title',home.twitterTitle||ogTitle,false,false);
     writePageMeta(doc,'twitter:description',home.twitterDescription||ogDescription,false,true);
@@ -1300,6 +1305,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     $('pageOgImageAlt').value=readPageMeta(doc,'og:image:alt',true);
     $('pageOgSiteName').value=readPageMeta(doc,'og:site_name',true);
     $('pageOgLocale').value=readPageMeta(doc,'og:locale',true);
+    $('pageOgLocaleAlternates').value=Array.prototype.slice.call(doc.head.querySelectorAll('meta[property="og:locale:alternate"]')).map(function(m){return m.getAttribute('content')||''}).filter(Boolean).join(', ');
     $('pageTwitterCard').value=readPageMeta(doc,'twitter:card',false)||'summary_large_image';
     $('pageTwitterTitle').value=readPageMeta(doc,'twitter:title',false);
     $('pageTwitterDescription').value=readPageMeta(doc,'twitter:description',false);
@@ -1382,7 +1388,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     h.canonical=$('pageCanonical').value.trim();
     h.robots=$('pageRobots').value.trim();
     h.ogTitle=$('pageOgTitle').value.trim();h.ogDescription=$('pageOgDescription').value.trim();h.ogType=$('pageOgType').value;
-    h.ogUrl=$('pageOgUrl').value.trim();h.ogImage=$('pageOgImage').value.trim();h.ogImageAlt=$('pageOgImageAlt').value.trim();h.ogLocale=$('pageOgLocale').value.trim();
+    h.ogUrl=$('pageOgUrl').value.trim();h.ogImage=$('pageOgImage').value.trim();h.ogImageAlt=$('pageOgImageAlt').value.trim();h.ogLocale=$('pageOgLocale').value.trim();h.ogLocaleAlternates=$('pageOgLocaleAlternates').value.split(',').map(function(x){return x.trim()}).filter(Boolean);
     h.twitterCard=$('pageTwitterCard').value;h.twitterTitle=$('pageTwitterTitle').value.trim();h.twitterDescription=$('pageTwitterDescription').value.trim();h.twitterImage=$('pageTwitterImage').value.trim();h.twitterImageAlt=$('pageTwitterImageAlt').value.trim();h.twitterSite=$('pageTwitterSite').value.trim();h.twitterCreator=$('pageTwitterCreator').value.trim();
     var info=doc.querySelector('.info-text');if(info)h.info=info.textContent.trim();
     if(doc.querySelector('.intro-text'))h.intro=doc.querySelector('.intro-text').textContent.trim();
@@ -1414,6 +1420,9 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     writeCanonical(doc,canonical);
     var og={title:$('pageOgTitle').value,description:$('pageOgDescription').value,type:$('pageOgType').value,url:$('pageOgUrl').value||canonical,image:$('pageOgImage').value,alt:$('pageOgImageAlt').value,site:$('pageOgSiteName').value,locale:$('pageOgLocale').value};
     [['og:title',og.title],['og:description',og.description],['og:type',og.type],['og:url',og.url],['og:image',og.image],['og:image:alt',og.alt],['og:site_name',og.site],['og:locale',og.locale]].forEach(function(item){var v=item[1];if(item[0]==='og:image'&&v)v=absolutePublicUrl(v,(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.baseUrl)||SITE_BASE);writePageMeta(doc,item[0],v,true,true)});
+    Array.prototype.slice.call(doc.head.querySelectorAll('meta[property="og:locale:alternate"]')).forEach(function(item){item.remove()});
+    var localeAlternateValues=$('pageOgLocaleAlternates').value.split(',').map(function(x){return x.trim()}).filter(Boolean),localeAlternateSeen={};
+    localeAlternateValues.forEach(function(locale){if(!/^[A-Za-z]{2,3}(?:[-_][A-Za-z0-9]{2,8})*$/.test(locale))throw new Error('og:locale:alternate value is invalid: '+locale);var lc=locale.toLowerCase();if(localeAlternateSeen[lc])return;localeAlternateSeen[lc]=true;var item=doc.createElement('meta');item.setAttribute('property','og:locale:alternate');item.setAttribute('content',locale);doc.head.appendChild(item)});
     var tw={card:$('pageTwitterCard').value,title:$('pageTwitterTitle').value,description:$('pageTwitterDescription').value,image:$('pageTwitterImage').value,alt:$('pageTwitterImageAlt').value,site:$('pageTwitterSite').value,creator:$('pageTwitterCreator').value};
     [['twitter:card',tw.card],['twitter:title',tw.title||og.title||title],['twitter:description',tw.description||og.description||$('pageDescription').value],['twitter:image',tw.image||og.image],['twitter:image:alt',tw.alt||og.alt],['twitter:site',tw.site],['twitter:creator',tw.creator]].forEach(function(item){var v=item[1];if(item[0]==='twitter:image'&&v)v=absolutePublicUrl(v,(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.baseUrl)||SITE_BASE);writePageMeta(doc,item[0],v,false,true)});
     pageCustomMetaOriginal.forEach(function(old){Array.prototype.slice.call(doc.head.querySelectorAll('meta['+old.type+'="'+String(old.name).replace(/"/g,'\\"')+'"]')).forEach(function(m){m.remove()})});
@@ -1585,10 +1594,10 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     $('defaultLanguage').value=['hy','ru','en'].indexOf(identity.defaultLanguage)>=0?identity.defaultLanguage:'ru';
     $('siteShareImage').value=identity.shareImage||defs.siteIdentity.shareImage;
     $('siteAuthor').value=identity.author||defs.siteIdentity.author;
-    var seoFieldMap={Canonical:'canonical',Robots:'robots',OgTitle:'ogTitle',OgDescription:'ogDescription',OgType:'ogType',OgUrl:'ogUrl',OgImage:'ogImage',OgImageAlt:'ogImageAlt',OgLocale:'ogLocale',TwitterCard:'twitterCard',TwitterTitle:'twitterTitle',TwitterDescription:'twitterDescription',TwitterImage:'twitterImage',TwitterImageAlt:'twitterImageAlt',TwitterSite:'twitterSite',TwitterCreator:'twitterCreator'};
+    var seoFieldMap={Canonical:'canonical',Robots:'robots',OgTitle:'ogTitle',OgDescription:'ogDescription',OgType:'ogType',OgUrl:'ogUrl',OgImage:'ogImage',OgImageAlt:'ogImageAlt',OgLocale:'ogLocale',OgLocaleAlternates:'ogLocaleAlternates',TwitterCard:'twitterCard',TwitterTitle:'twitterTitle',TwitterDescription:'twitterDescription',TwitterImage:'twitterImage',TwitterImageAlt:'twitterImageAlt',TwitterSite:'twitterSite',TwitterCreator:'twitterCreator'};
     ['hy','ru','en'].forEach(function(lang){
       var suffix=lang.charAt(0).toUpperCase()+lang.slice(1),h=siteSettings.home[lang]||{};
-      Object.keys(seoFieldMap).forEach(function(k){var el=$('home'+k+suffix);if(el)el.value=h[seoFieldMap[k]]==null?'':h[seoFieldMap[k]];});
+      Object.keys(seoFieldMap).forEach(function(k){var el=$('home'+k+suffix);if(el){var value=h[seoFieldMap[k]];if(k==='OgLocaleAlternates'){if(Array.isArray(value))value=value.join(', ');if(value==null)value=({hy:'ru_RU, en_US',ru:'hy_AM, en_US',en:'hy_AM, ru_RU'}[lang]);}el.value=value==null?'':value;}});
     });
 
     $('maintenanceTextHy').value=siteSettings.maintenance.message.hy||'';
@@ -1634,7 +1643,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
         intro:$('homeIntro'+suffix).value.trim(),
         info:$('homeInfo'+suffix).value.trim()
       });
-      Object.keys(seoFieldMap).forEach(function(k){var el=$('home'+k+suffix);if(el)homeData[seoFieldMap[k]]=el.value.trim();});
+      Object.keys(seoFieldMap).forEach(function(k){var el=$('home'+k+suffix);if(el){var value=el.value.trim();homeData[seoFieldMap[k]]=k==='OgLocaleAlternates'?value.split(',').map(function(x){return x.trim()}).filter(Boolean):value;}});
       settingData.home[lang]=homeData;
     });
     setBusy(true);
