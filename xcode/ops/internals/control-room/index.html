@@ -22,6 +22,25 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 @media(max-width:720px){.wrap{padding:10px}.layout{gap:13px}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;border-radius:17px;padding:10px}.sidebar .brand{grid-column:1/-1;margin:0;padding:3px 3px 12px}.sidebar .nav-label{display:none}.navbtn{min-width:0;width:100%;min-height:44px;padding:9px 10px;justify-content:flex-start;font-size:12px;text-align:left}.sidebar-bottom{grid-column:1/-1;display:block;flex:unset;margin-top:1px;padding-top:9px}.sidebar-bottom .hint{display:none!important}.sidebar-bottom .btn{width:100%!important;margin:0}.topbar{align-items:stretch;gap:14px;margin:17px 0}.topbar h2{font-size:23px}.actions,.actions .btn{width:100%}.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:13px}.stat{padding:10px 9px;min-height:0;border-radius:13px}.stat .label{font-size:10px;line-height:1.35}.stat .number{font-size:19px;margin:2px 0}.panel{border-radius:16px}.panel-head{padding:14px;gap:10px}.panel-tools,.search{width:100%;min-width:0}.form-shell{padding:13px}.form-grid,.settings-grid{grid-template-columns:minmax(0,1fr);gap:0}.settings-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:5px;margin-bottom:14px}.settings-tab{font-size:12px;min-height:43px;padding:8px 5px}.lang-tabs{gap:6px}.lang-tab{flex:1 1 auto;padding:9px 10px;font-size:12px}.lang-fields{padding:12px 12px 1px}.lang-head{padding:11px 12px}.asset-preview img{width:78px;height:66px}.form-actions{flex-direction:column;gap:9px}.form-actions>.btn,.form-actions-right,.form-actions-right .btn{width:100%}.form-actions-right{flex-direction:column}.row-actions{flex-wrap:wrap}.row-actions .btn{flex:1 1 auto}.table-scroll table{min-width:700px}.login-card{padding:23px;border-radius:20px}.login-card h2{font-size:24px}.connection-details{font-size:12px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
+
+/* CMS page editor and social metadata previews */
+.page-text-list{display:grid;gap:10px;margin-top:12px;max-height:560px;overflow:auto}
+.page-text-row{display:grid;grid-template-columns:minmax(130px,.8fr) minmax(220px,1.5fr);gap:12px;align-items:start;padding:12px;border:1px solid var(--line,#263449);border-radius:12px;background:rgba(255,255,255,.018)}
+.page-text-row label{font-size:12px;font-weight:700;color:var(--muted,#9aa9bb);word-break:break-word}
+.page-text-row textarea{min-height:44px}
+.page-custom-meta-row{display:grid;grid-template-columns:120px minmax(120px,.9fr) minmax(180px,1.3fr) auto;gap:8px;align-items:start;margin:10px 0}
+.page-custom-meta-row .field{margin:0}
+.seo-snippet{border:1px solid var(--line,#263449);border-radius:12px;padding:14px;background:#fff;color:#202124;max-width:760px;margin-top:12px}
+.seo-snippet-url{font-size:12px;color:#188038;overflow-wrap:anywhere}
+.seo-snippet-title{font-size:20px;line-height:1.35;color:#1a0dab;margin:4px 0;overflow-wrap:anywhere}
+.seo-snippet-description{font-size:13px;line-height:1.55;color:#4d5156;overflow-wrap:anywhere;white-space:pre-wrap}
+.social-snippet{background:#15202b;color:#e7e9ea;border-color:#38444d}
+.social-snippet .seo-snippet-title{color:#e7e9ea}
+.social-snippet .seo-snippet-description{color:#c2ccd4}
+.seo-preview-image{display:block;width:min(100%,560px);max-height:260px;object-fit:cover;border-radius:8px;margin-top:12px}
+#page-search,#page-text-search{width:100%;min-height:42px;padding:10px 12px;border:1px solid var(--line,#263449);border-radius:10px;background:var(--input,#0b1320);color:inherit}
+@media(max-width:760px){.page-text-row{grid-template-columns:1fr}.page-custom-meta-row{grid-template-columns:1fr}.seo-snippet-title{font-size:17px}}
+
 </style>
 <meta name="referrer" content="no-referrer-when-downgrade">
 </head>
@@ -52,6 +71,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       <button class="navbtn" data-view="ads"><span class="nav-icon">↗</span> Գովազդ</button>
       <button class="navbtn" data-view="branding"><span class="nav-icon">✦</span> Լոգո և favicon</button>
       <button class="navbtn" data-view="content"><span class="nav-icon">⌘</span> SEO և բովանդակություն</button>
+      <button class="navbtn" data-view="seo"><span class="nav-icon">⌕</span> SEO / Meta կարգավորումներ</button>
+      <button class="navbtn" data-view="pages"><span class="nav-icon">▤</span> Էջեր և metadata</button>
       <button class="navbtn" data-view="maintenance"><span class="nav-icon">⚙</span> Տեխնիկական կարգավորումներ</button>
       <button class="navbtn" data-view="security"><span class="nav-icon">◇</span> Անվտանգություն և մուտք</button>
       <div class="sidebar-bottom"><div class="hint" style="margin:0 0 10px">Փոփոխությունները ստեղծում են commit և հրապարակվում են կայքի deploy-ից հետո։</div><button id="logout-button" class="btn outline" style="width:100%">Դուրս գալ</button></div>
@@ -138,6 +159,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
         <button type="button" class="settings-tab" data-settings-tab="branding" role="tab" aria-selected="false">✦ Կայքի տեսք</button>
         <button type="button" class="settings-tab" data-settings-tab="maintenance" role="tab" aria-selected="false">⚙ Տեխնիկական</button>
         <button type="button" class="settings-tab" data-settings-tab="content" role="tab" aria-selected="false">⌘ SEO և տեքստեր</button>
+        <button type="button" class="settings-tab" data-settings-tab="seo" role="tab" aria-selected="false">⌕ SEO / Meta</button>
+        <button type="button" class="settings-tab" data-settings-tab="pages" role="tab" aria-selected="false">▤ Էջերի կառավարում</button>
       </div>
       <div class="settings-panel" data-settings-panel="ads">
         <div class="lang-card"><div class="lang-head"><span class="flag">ADS</span> Գովազդի կարգավորումներ</div><div class="lang-fields">
@@ -174,8 +197,146 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
         <div class="field"><label for="homeTitleEn">SEO title</label><input id="homeTitleEn"></div><div class="field"><label for="homeDescriptionEn">Meta description</label><textarea id="homeDescriptionEn" rows="2"></textarea></div><div class="field"><label for="homeKeywordsEn">Keywords</label><input id="homeKeywordsEn"></div><div class="field"><label for="homeIntroEn">Homepage headline</label><input id="homeIntroEn"></div><div class="field"><label for="homeInfoEn">Homepage description</label><textarea id="homeInfoEn" rows="3"></textarea></div>
       </div></div>
       </div>
+      
+      <div class="settings-panel hidden" data-settings-panel="seo">
+        <div class="lang-card">
+          <div class="lang-head"><span class="flag">SITE</span> Կայքի ինքնություն և գլոբալ SEO</div>
+          <div class="form-grid settings-grid">
+            <div class="field"><label for="siteName">Պաշտոնական կայքի անուն</label><input id="siteName" type="text" placeholder=""></div>
+            <div class="field"><label for="siteShortName">Կարճ անուն</label><input id="siteShortName" type="text" placeholder=""></div>
+            <div class="field"><label for="siteTagline">Tagline / կարգախոս</label><input id="siteTagline" type="text" placeholder=""></div>
+            <div class="field"><label for="siteBaseUrl">Կայքի հիմնական domain / URL</label><input id="siteBaseUrl" type="text" placeholder="https://example.com"></div>
+            <div class="field"><label for="defaultLanguage">Լռելյայն լեզու</label><select id="defaultLanguage"><option value="hy">Հայերեն</option><option value="ru">Русский</option><option value="en">English</option></select></div>
+            <div class="field"><label for="siteShareImage">Default Open Graph / X image</label><input id="siteShareImage" type="text" placeholder="Absolute URL or local path"></div>
+            <div class="field"><label for="siteAuthor">Default author</label><input id="siteAuthor" type="text" placeholder=""></div>
+          </div>
+          <div class="notice">H1-ը, HTML title-ը, SEO title-ը և սոցիալական նախադիտման վերնագրերը առանձին դաշտեր են։ Meta keywords դաշտը պահպանվում է, սակայն Google-ը այն չի օգտագործում վարկանիշավորման համար։</div>
+        </div>
+        <div class="lang-tabs" role="tablist" aria-label="Homepage metadata language">
+          <button type="button" class="lang-tab active" data-lang-scope="seo-home" data-lang-tab="hy" role="tab" aria-selected="true">Հայերեն</button><button type="button" class="lang-tab" data-lang-scope="seo-home" data-lang-tab="ru" role="tab" aria-selected="false">Русский</button><button type="button" class="lang-tab" data-lang-scope="seo-home" data-lang-tab="en" role="tab" aria-selected="false">English</button>
+        </div>
+        <div class="lang-card" data-lang-scope="seo-home" data-lang-panel="hy">
+    <div class="lang-head"><span class="flag">HY</span> Հայերեն — Homepage metadata</div>
+    <div class="form-grid settings-grid"><div class="field"><label for="homeCanonicalHy">Canonical URL</label><input id="homeCanonicalHy" type="text" placeholder="https://example.com/"></div>
+<div class="field"><label for="homeRobotsHy">Robots directives</label><select id="homeRobotsHy"><option value="index, follow, max-image-preview:large">index, follow, max-image-preview:large</option><option value="index, follow">index, follow</option><option value="noindex, nofollow">noindex, nofollow</option><option value="noindex, follow">noindex, follow</option><option value="index, nofollow">index, nofollow</option></select></div>
+<div class="field"><label for="homeOgTitleHy">og:title</label><input id="homeOgTitleHy" type="text" placeholder=""></div>
+<div class="field"><label for="homeOgDescriptionHy">og:description</label><textarea id="homeOgDescriptionHy" rows="2" placeholder=""></textarea></div>
+<div class="field"><label for="homeOgTypeHy">og:type</label><select id="homeOgTypeHy"><option value="website">website</option><option value="article">article</option><option value="profile">profile</option></select></div>
+<div class="field"><label for="homeOgUrlHy">og:url</label><input id="homeOgUrlHy" type="text" placeholder="Public absolute URL"></div>
+<div class="field"><label for="homeOgImageHy">og:image</label><input id="homeOgImageHy" type="text" placeholder="Absolute URL or local image path"></div>
+<div class="field"><label for="homeOgImageAltHy">og:image:alt</label><input id="homeOgImageAltHy" type="text" placeholder=""></div>
+<div class="field"><label for="homeOgLocaleHy">og:locale</label><input id="homeOgLocaleHy" type="text" placeholder="hy_AM"></div>
+<div class="field"><label for="homeTwitterCardHy">twitter:card</label><select id="homeTwitterCardHy"><option value="summary_large_image">summary_large_image</option><option value="summary">summary</option></select></div>
+<div class="field"><label for="homeTwitterTitleHy">twitter:title</label><input id="homeTwitterTitleHy" type="text" placeholder=""></div>
+<div class="field"><label for="homeTwitterDescriptionHy">twitter:description</label><textarea id="homeTwitterDescriptionHy" rows="2" placeholder=""></textarea></div>
+<div class="field"><label for="homeTwitterImageHy">twitter:image</label><input id="homeTwitterImageHy" type="text" placeholder="Absolute URL or local image path"></div>
+<div class="field"><label for="homeTwitterImageAltHy">twitter:image:alt</label><input id="homeTwitterImageAltHy" type="text" placeholder=""></div>
+<div class="field"><label for="homeTwitterSiteHy">twitter:site</label><input id="homeTwitterSiteHy" type="text" placeholder="@account"></div>
+<div class="field"><label for="homeTwitterCreatorHy">twitter:creator</label><input id="homeTwitterCreatorHy" type="text" placeholder="@account"></div></div>
+  </div>
+<div class="lang-card hidden" data-lang-scope="seo-home" data-lang-panel="ru">
+    <div class="lang-head"><span class="flag">RU</span> Русский — Homepage metadata</div>
+    <div class="form-grid settings-grid"><div class="field"><label for="homeCanonicalRu">Canonical URL</label><input id="homeCanonicalRu" type="text" placeholder="https://example.com/"></div>
+<div class="field"><label for="homeRobotsRu">Robots directives</label><select id="homeRobotsRu"><option value="index, follow, max-image-preview:large">index, follow, max-image-preview:large</option><option value="index, follow">index, follow</option><option value="noindex, nofollow">noindex, nofollow</option><option value="noindex, follow">noindex, follow</option><option value="index, nofollow">index, nofollow</option></select></div>
+<div class="field"><label for="homeOgTitleRu">og:title</label><input id="homeOgTitleRu" type="text" placeholder=""></div>
+<div class="field"><label for="homeOgDescriptionRu">og:description</label><textarea id="homeOgDescriptionRu" rows="2" placeholder=""></textarea></div>
+<div class="field"><label for="homeOgTypeRu">og:type</label><select id="homeOgTypeRu"><option value="website">website</option><option value="article">article</option><option value="profile">profile</option></select></div>
+<div class="field"><label for="homeOgUrlRu">og:url</label><input id="homeOgUrlRu" type="text" placeholder="Public absolute URL"></div>
+<div class="field"><label for="homeOgImageRu">og:image</label><input id="homeOgImageRu" type="text" placeholder="Absolute URL or local image path"></div>
+<div class="field"><label for="homeOgImageAltRu">og:image:alt</label><input id="homeOgImageAltRu" type="text" placeholder=""></div>
+<div class="field"><label for="homeOgLocaleRu">og:locale</label><input id="homeOgLocaleRu" type="text" placeholder="ru_RU"></div>
+<div class="field"><label for="homeTwitterCardRu">twitter:card</label><select id="homeTwitterCardRu"><option value="summary_large_image">summary_large_image</option><option value="summary">summary</option></select></div>
+<div class="field"><label for="homeTwitterTitleRu">twitter:title</label><input id="homeTwitterTitleRu" type="text" placeholder=""></div>
+<div class="field"><label for="homeTwitterDescriptionRu">twitter:description</label><textarea id="homeTwitterDescriptionRu" rows="2" placeholder=""></textarea></div>
+<div class="field"><label for="homeTwitterImageRu">twitter:image</label><input id="homeTwitterImageRu" type="text" placeholder="Absolute URL or local image path"></div>
+<div class="field"><label for="homeTwitterImageAltRu">twitter:image:alt</label><input id="homeTwitterImageAltRu" type="text" placeholder=""></div>
+<div class="field"><label for="homeTwitterSiteRu">twitter:site</label><input id="homeTwitterSiteRu" type="text" placeholder="@account"></div>
+<div class="field"><label for="homeTwitterCreatorRu">twitter:creator</label><input id="homeTwitterCreatorRu" type="text" placeholder="@account"></div></div>
+  </div>
+<div class="lang-card hidden" data-lang-scope="seo-home" data-lang-panel="en">
+    <div class="lang-head"><span class="flag">EN</span> English — Homepage metadata</div>
+    <div class="form-grid settings-grid"><div class="field"><label for="homeCanonicalEn">Canonical URL</label><input id="homeCanonicalEn" type="text" placeholder="https://example.com/"></div>
+<div class="field"><label for="homeRobotsEn">Robots directives</label><select id="homeRobotsEn"><option value="index, follow, max-image-preview:large">index, follow, max-image-preview:large</option><option value="index, follow">index, follow</option><option value="noindex, nofollow">noindex, nofollow</option><option value="noindex, follow">noindex, follow</option><option value="index, nofollow">index, nofollow</option></select></div>
+<div class="field"><label for="homeOgTitleEn">og:title</label><input id="homeOgTitleEn" type="text" placeholder=""></div>
+<div class="field"><label for="homeOgDescriptionEn">og:description</label><textarea id="homeOgDescriptionEn" rows="2" placeholder=""></textarea></div>
+<div class="field"><label for="homeOgTypeEn">og:type</label><select id="homeOgTypeEn"><option value="website">website</option><option value="article">article</option><option value="profile">profile</option></select></div>
+<div class="field"><label for="homeOgUrlEn">og:url</label><input id="homeOgUrlEn" type="text" placeholder="Public absolute URL"></div>
+<div class="field"><label for="homeOgImageEn">og:image</label><input id="homeOgImageEn" type="text" placeholder="Absolute URL or local image path"></div>
+<div class="field"><label for="homeOgImageAltEn">og:image:alt</label><input id="homeOgImageAltEn" type="text" placeholder=""></div>
+<div class="field"><label for="homeOgLocaleEn">og:locale</label><input id="homeOgLocaleEn" type="text" placeholder="en_US"></div>
+<div class="field"><label for="homeTwitterCardEn">twitter:card</label><select id="homeTwitterCardEn"><option value="summary_large_image">summary_large_image</option><option value="summary">summary</option></select></div>
+<div class="field"><label for="homeTwitterTitleEn">twitter:title</label><input id="homeTwitterTitleEn" type="text" placeholder=""></div>
+<div class="field"><label for="homeTwitterDescriptionEn">twitter:description</label><textarea id="homeTwitterDescriptionEn" rows="2" placeholder=""></textarea></div>
+<div class="field"><label for="homeTwitterImageEn">twitter:image</label><input id="homeTwitterImageEn" type="text" placeholder="Absolute URL or local image path"></div>
+<div class="field"><label for="homeTwitterImageAltEn">twitter:image:alt</label><input id="homeTwitterImageAltEn" type="text" placeholder=""></div>
+<div class="field"><label for="homeTwitterSiteEn">twitter:site</label><input id="homeTwitterSiteEn" type="text" placeholder="@account"></div>
+<div class="field"><label for="homeTwitterCreatorEn">twitter:creator</label><input id="homeTwitterCreatorEn" type="text" placeholder="@account"></div></div>
+  </div>
+        <div class="lang-card">
+          <div class="lang-head"><span class="flag">PREVIEW</span> Metadata preview</div>
+          <div class="seo-snippet"><div class="seo-snippet-url" id="home-seo-preview-url">https://example.com/</div><div class="seo-snippet-title" id="home-seo-preview-title">MatchPro</div><div class="seo-snippet-description" id="home-seo-preview-description">Page description preview</div></div>
+          <div class="seo-snippet social-snippet"><div class="seo-snippet-title" id="home-twitter-preview-title">MatchPro</div><div class="seo-snippet-description" id="home-twitter-preview-description">X/Twitter card preview</div><img id="home-twitter-preview-image" class="seo-preview-image hidden" alt="X/Twitter preview image"></div>
+        </div>
+      </div>
+
+      <div class="settings-panel hidden" data-settings-panel="pages">
+        <div class="lang-card">
+          <div class="lang-head"><span class="flag">PAGES</span> Էջերի կառավարում</div>
+          <p class="subtle-note">Այս բաժինը բեռնում է repository-ի առկա HTML էջերը։ Ընտրիր էջ, խմբագրիր տեքստերը և metadata-ն, ապա պահպանիր։ Iframe player-ները և admin/internal էջերը ցուցակից բացառված են։ Բարդ ինտերակտիվ բաղադրիչների կամ արտաքին iframe-ի ներսի բովանդակության համար կարող է պահանջվել առանձին խմբագրիչ։</p>
+          <div class="form-grid settings-grid">
+            <div class="field"><label for="page-search">Որոնել էջերի ցանկում</label><input id="page-search" type="search" placeholder="Filter by path"></div>
+            <div class="field"><label for="pagePath">Ընտրված էջ</label><select id="pagePath"><option value="">Սեղմիր «Բեռնել էջերը»</option></select></div>
+          </div>
+          <div class="actions"><button type="button" class="btn outline" id="refresh-pages-button">↻ Բեռնել էջերը</button><button type="button" class="btn outline" id="load-page-button">Բացել ընտրված էջը</button></div>
+          <div id="page-editor-error" class="error" role="alert"></div>
+        </div>
+        <div id="page-editor-fields" class="hidden">
+          <div class="lang-card"><div class="lang-head"><span class="flag">CONTENT</span> Էջի հիմնական տվյալներ</div><div class="form-grid settings-grid"><div class="field"><label for="pageTitle">HTML document title / browser tab</label><input id="pageTitle" type="text" placeholder=""></div>
+<div class="field"><label for="pageH1">Visible H1 heading</label><input id="pageH1" type="text" placeholder=""></div>
+<div class="field"><label for="pageDescription">meta name="description"</label><textarea id="pageDescription" rows="2" placeholder=""></textarea></div>
+<div class="field"><label for="pageKeywords">meta name="keywords"</label><input id="pageKeywords" type="text" placeholder=""></div>
+<div class="field"><label for="pageCanonical">Canonical URL</label><input id="pageCanonical" type="text" placeholder="Absolute canonical URL"></div>
+<div class="field"><label for="pageRobots">meta name="robots"</label><select id="pageRobots"><option value="index, follow, max-image-preview:large">index, follow, max-image-preview:large</option><option value="index, follow">index, follow</option><option value="noindex, nofollow">noindex, nofollow</option><option value="noindex, follow">noindex, follow</option><option value="index, nofollow">index, nofollow</option></select></div>
+<div class="field"><label for="pageGooglebot">meta name="googlebot"</label><input id="pageGooglebot" type="text" placeholder=""></div>
+<div class="field"><label for="pageAuthor">meta name="author"</label><input id="pageAuthor" type="text" placeholder=""></div>
+<div class="field"><label for="pageThemeColor">meta name="theme-color"</label><input id="pageThemeColor" type="text" placeholder="#000000"></div></div></div>
+          <div class="lang-card"><div class="lang-head"><span class="flag">OG</span> Open Graph metadata</div><div class="form-grid settings-grid"><div class="field"><label for="pageOgTitle">og:title</label><input id="pageOgTitle" type="text" placeholder=""></div>
+<div class="field"><label for="pageOgDescription">og:description</label><textarea id="pageOgDescription" rows="2" placeholder=""></textarea></div>
+<div class="field"><label for="pageOgType">og:type</label><select id="pageOgType"><option value="website">website</option><option value="article">article</option><option value="profile">profile</option></select></div>
+<div class="field"><label for="pageOgUrl">og:url</label><input id="pageOgUrl" type="text" placeholder="Absolute URL"></div>
+<div class="field"><label for="pageOgImage">og:image</label><input id="pageOgImage" type="text" placeholder="Absolute URL or local image path"></div>
+<div class="field"><label for="pageOgImageAlt">og:image:alt</label><input id="pageOgImageAlt" type="text" placeholder=""></div>
+<div class="field"><label for="pageOgSiteName">og:site_name</label><input id="pageOgSiteName" type="text" placeholder=""></div>
+<div class="field"><label for="pageOgLocale">og:locale</label><input id="pageOgLocale" type="text" placeholder="hy_AM / ru_RU / en_US"></div></div></div>
+          <div class="lang-card"><div class="lang-head"><span class="flag">X</span> X / Twitter Card metadata</div><div class="form-grid settings-grid"><div class="field"><label for="pageTwitterCard">twitter:card</label><select id="pageTwitterCard"><option value="summary_large_image">summary_large_image</option><option value="summary">summary</option></select></div>
+<div class="field"><label for="pageTwitterTitle">twitter:title</label><input id="pageTwitterTitle" type="text" placeholder=""></div>
+<div class="field"><label for="pageTwitterDescription">twitter:description</label><textarea id="pageTwitterDescription" rows="2" placeholder=""></textarea></div>
+<div class="field"><label for="pageTwitterImage">twitter:image</label><input id="pageTwitterImage" type="text" placeholder="Absolute URL or local image path"></div>
+<div class="field"><label for="pageTwitterImageAlt">twitter:image:alt</label><input id="pageTwitterImageAlt" type="text" placeholder=""></div>
+<div class="field"><label for="pageTwitterSite">twitter:site</label><input id="pageTwitterSite" type="text" placeholder="@account"></div>
+<div class="field"><label for="pageTwitterCreator">twitter:creator</label><input id="pageTwitterCreator" type="text" placeholder="@account"></div></div></div>
+          <div class="lang-card">
+            <div class="lang-head"><span class="flag">CUSTOM</span> Custom meta tags</div>
+            <p class="subtle-note">Only approved metadata tags are allowed. Arbitrary scripts and HTML injection are intentionally not supported.</p>
+            <div id="page-custom-meta-rows"></div>
+            <button type="button" id="add-page-custom-meta" class="btn outline">＋ Add custom meta tag</button>
+          </div>
+          <div class="lang-card">
+            <div class="lang-head"><span class="flag">TEXT</span> Էջի տեքստեր</div>
+            <p class="subtle-note">Ստորև հայտնաբերվում են պարզ տեքստային տարրերը։ Փոխված տեքստը պահպանվում է նույն HTML տարրի մեջ։</p>
+            <input id="page-text-search" type="search" placeholder="Փնտրել էջի տեքստերում">
+            <div id="page-text-list" class="page-text-list"></div>
+          </div>
+          <div class="lang-card">
+            <div class="lang-head"><span class="flag">PREVIEW</span> Social preview</div>
+            <div class="seo-snippet"><div class="seo-snippet-url" id="page-seo-preview-url"></div><div class="seo-snippet-title" id="page-seo-preview-title"></div><div class="seo-snippet-description" id="page-seo-preview-description"></div></div>
+            <div class="seo-snippet social-snippet"><div class="seo-snippet-title" id="page-twitter-preview-title"></div><div class="seo-snippet-description" id="page-twitter-preview-description"></div><img id="page-twitter-preview-image" class="seo-preview-image hidden" alt=""></div>
+          </div>
+          <div class="form-actions"><button type="button" id="save-page-button" class="btn primary">✓ Պահպանել էջի փոփոխությունները</button></div>
+        </div>
+      </div>
       <div id="settings-error" class="error"></div>
-      <div class="form-actions"><button type="button" id="back-list-button" class="btn outline">← Վերադառնալ ալիքներին</button><button type="submit" id="save-settings-button" class="btn primary">✓ Պահպանել կարգավորումները</button></div>
+      <div class="form-actions" id="settings-global-actions"><button type="button" id="back-list-button" class="btn outline">← Վերադառնալ ալիքներին</button><button type="submit" id="save-settings-button" class="btn primary">✓ Պահպանել կարգավորումները</button></div>
     </form>
     <div id="security-panel" class="hidden">
       <div class="lang-card"><div class="lang-head"><span class="flag">SEC</span> Անվտանգություն և մուտքի կառավարում</div>
