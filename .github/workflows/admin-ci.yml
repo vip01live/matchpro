@@ -1,0 +1,31 @@
+name: MatchPro CMS Validation
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check JavaScript syntax
+        run: |
+          node --check main/js/matchpro.js
+          node --check backend/cloudflare-worker.mjs
+          node --check backend/hash-admin-password.mjs
+      - name: Validate admin panel structure
+        run: node tools/validate-admin.mjs
+      - name: Test secure admin backend
+        run: node --test backend/cloudflare-worker.test.mjs
