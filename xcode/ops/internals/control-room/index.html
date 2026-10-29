@@ -59,6 +59,11 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 .page-element-moves .btn{padding:4px 10px;min-width:36px}
 .page-element-hidden-control{display:flex;gap:8px;align-items:center;font-size:13px;margin:8px 0 12px}
 
+
+.page-asset-card summary,.page-element-details summary{cursor:pointer;list-style-position:inside;padding:6px 0;font-weight:700}
+.page-asset-body{padding-top:10px}
+.page-element-details{border-top:1px solid var(--line,#263449);margin-top:8px;padding-top:8px}
+.page-asset-card[hidden],.page-element-row[hidden]{display:none!important}
 </style>
 <meta name="referrer" content="no-referrer-when-downgrade">
 </head>
@@ -385,11 +390,13 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
           <div class="lang-card">
             <div class="lang-head"><span class="flag">MEDIA</span> Նկարներ և հղումներ</div>
             <p class="subtle-note">Կառավարիր առկա HTML էջում նկարների հասցեներն ու alt տեքստերը, ինչպես նաև հղումների URL-ները, վերնագրերը և բացման եղանակը։ Նոր ֆայլ չի վերբեռնվում, եթե հասցեն պարզապես փոխում ես։</p>
+            <input id="page-assets-search" type="search" placeholder="Փնտրել նկար կամ հղում">
             <div id="page-assets-list" class="page-assets-list"></div>
           </div>
           <div class="lang-card">
             <div class="lang-head"><span class="flag">LAYOUT</span> Տարրերի տեսք և դասավորություն</div>
             <p class="subtle-note">Ընտրիր տարրի տեսանելիությունը, գույները, տառաչափը, բացատները և դիրքը հարակից տարրերի նկատմամբ։ Դատարկ դաշտերը պահպանում են stylesheet-ի գործող արժեքները։ Տեղափոխումն իրականացվում է միայն ընտրված տարրի համար՝ պահպանման պահին։</p>
+            <input id="page-elements-search" type="search" placeholder="Փնտրել տարր ըստ tag, ID, class կամ selector">
             <div id="page-elements-list" class="page-elements-list"></div>
           </div>
           <div class="lang-card">
@@ -1143,29 +1150,39 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   function renderPageAssetRows(){
     var list=$('page-assets-list');if(!list)return;list.textContent='';
     pageAssetRows.forEach(function(item,index){
-      var card=document.createElement('div');card.className='page-asset-card';
-      var header=document.createElement('div');header.className='page-asset-heading';header.textContent=(item.kind==='image'?'IMAGE':'LINK')+' · '+item.selector;card.appendChild(header);
-      if(item.kind==='image'){
-        var grid=document.createElement('div');grid.className='form-grid settings-grid';
-        appendAssetInput(grid,'Image URL / src',item.src,function(v){item.src=v});
-        appendAssetInput(grid,'Alternative text / alt',item.alt,function(v){item.alt=v});
-        appendAssetInput(grid,'Image title',item.title,function(v){item.title=v});
-        card.appendChild(grid);
-        if(item.src){var preview=document.createElement('img');preview.className='page-asset-preview';preview.alt=item.alt||'';try{preview.src=absolutePublicUrl(item.src,(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.baseUrl)||SITE_BASE)}catch(_){}card.appendChild(preview);}
-      } else {
-        var gridLink=document.createElement('div');gridLink.className='form-grid settings-grid';
-        appendAssetInput(gridLink,'Link URL / href',item.href,function(v){item.href=v});
-        appendAssetInput(gridLink,'Link title',item.title,function(v){item.title=v});
-        var targetField=document.createElement('div');targetField.className='field';var targetLabel=document.createElement('label');targetLabel.textContent='Open link';targetField.appendChild(targetLabel);
-        var target=document.createElement('select');[['','Default'],['_self','Same tab'],['_blank','New tab']].forEach(function(pair){var option=document.createElement('option');option.value=pair[0];option.textContent=pair[1];target.appendChild(option)});target.value=item.target||'';target.addEventListener('change',function(){item.target=target.value});targetField.appendChild(target);gridLink.appendChild(targetField);
-        appendAssetInput(gridLink,'rel attribute',item.rel,function(v){item.rel=v});
-        card.appendChild(gridLink);
-      }
+      var card=document.createElement('details');card.className='page-asset-card';card.dataset.assetIndex=String(index);card.dataset.search=(item.kind+' '+item.selector+' '+(item.src||item.href||'')+' '+(item.alt||item.title||'')).toLowerCase();
+      var summary=document.createElement('summary');summary.className='page-asset-heading';summary.textContent=(item.kind==='image'?'IMAGE':'LINK')+' · '+item.selector;card.appendChild(summary);
+      var body=document.createElement('div');body.className='page-asset-body';
+      card.addEventListener('toggle',function(){
+        if(!card.open||card.dataset.rendered==='1')return;
+        card.dataset.rendered='1';
+        if(item.kind==='image'){
+          var grid=document.createElement('div');grid.className='form-grid settings-grid';
+          appendAssetInput(grid,'Image URL / src',item.src,function(v){item.src=v;card.dataset.search=(item.kind+' '+item.selector+' '+v+' '+(item.alt||'')).toLowerCase()});
+          appendAssetInput(grid,'Alternative text / alt',item.alt,function(v){item.alt=v;summary.textContent='IMAGE · '+item.selector+(v?' · '+v:'');card.dataset.search=(item.kind+' '+item.selector+' '+(item.src||'')+' '+v).toLowerCase()});
+          appendAssetInput(grid,'Image title',item.title,function(v){item.title=v});
+          body.appendChild(grid);
+          if(item.src){var preview=document.createElement('img');preview.className='page-asset-preview';preview.alt=item.alt||'';try{preview.src=absolutePublicUrl(item.src,(siteSettings&&siteSettings.siteIdentity&&siteSettings.siteIdentity.baseUrl)||SITE_BASE)}catch(_){}body.appendChild(preview);}
+        }else{
+          var gridLink=document.createElement('div');gridLink.className='form-grid settings-grid';
+          appendAssetInput(gridLink,'Link URL / href',item.href,function(v){item.href=v;card.dataset.search=(item.kind+' '+item.selector+' '+v+' '+(item.title||'')).toLowerCase()});
+          appendAssetInput(gridLink,'Link title',item.title,function(v){item.title=v});
+          var targetField=document.createElement('div');targetField.className='field';var targetLabel=document.createElement('label');targetLabel.textContent='Open link';targetField.appendChild(targetLabel);
+          var target=document.createElement('select');[['','Default'],['_self','Same tab'],['_blank','New tab']].forEach(function(pair){var option=document.createElement('option');option.value=pair[0];option.textContent=pair[1];target.appendChild(option)});target.value=item.target||'';target.addEventListener('change',function(){item.target=target.value});targetField.appendChild(target);gridLink.appendChild(targetField);
+          appendAssetInput(gridLink,'rel attribute',item.rel,function(v){item.rel=v});
+          body.appendChild(gridLink);
+        }
+        card.appendChild(body);
+      });
       list.appendChild(card);
     });
+    filterPageAssetRows();
     if(!pageAssetRows.length){var empty=document.createElement('p');empty.className='subtle-note';empty.textContent='Այս էջում խմբագրելի նկարներ կամ հղումներ չեն գտնվել։';list.appendChild(empty)}
   }
-
+  function filterPageAssetRows(){
+    var term=String($('page-assets-search').value||'').toLowerCase();
+    Array.prototype.slice.call($('page-assets-list').children).forEach(function(card){card.hidden=!!term&&card.dataset.search.indexOf(term)<0});
+  }
 
   var pageStyleProperties=[
     {key:'color',label:'Text color',kind:'color'},
@@ -1203,29 +1220,44 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   function renderPageElementRows(){
     var list=$('page-elements-list');if(!list)return;list.textContent='';
     pageElementRows.forEach(function(item,index){
-      var card=document.createElement('div');card.className='page-element-row';
+      var card=document.createElement('div');card.className='page-element-row';card.dataset.elementIndex=String(index);
+      card.dataset.search=(item.tag+' '+item.selector+' '+item.id+' '+item.className).toLowerCase();
       var head=document.createElement('div');head.className='page-element-head';
       var title=document.createElement('div');title.className='page-element-title';title.textContent=item.tag.toUpperCase()+(item.id?' #'+item.id:'')+(item.className?' .'+item.className.split(/\s+/).join('.'): '');
       var move=document.createElement('div');move.className='page-element-moves';
       [['↑',-1],['↓',1]].forEach(function(pair){var b=document.createElement('button');b.type='button';b.className='btn outline';b.textContent=pair[0];b.title=pair[1]<0?'Move element up':'Move element down';b.addEventListener('click',function(){pageElementMove={selector:item.selector,direction:pair[1]};document.querySelectorAll('.page-element-row').forEach(function(x){x.classList.remove('move-selected')});card.classList.add('move-selected');$('page-editor-error').textContent='Ընտրված է '+item.tag+' տարրի տեղափոխումը։ Սեղմիր «Պահպանել էջի փոփոխությունները»՝ կիրառելու համար։'});move.appendChild(b)});
       head.append(title,move);card.appendChild(head);
-      var visibility=document.createElement('label');visibility.className='page-element-hidden-control';var check=document.createElement('input');check.type='checkbox';check.checked=item.hidden;check.addEventListener('change',function(){item.hidden=check.checked});visibility.append(check,document.createTextNode(' Hide this element'));card.appendChild(visibility);
-      var grid=document.createElement('div');grid.className='form-grid settings-grid';
-      pageStyleProperties.forEach(function(prop){
-        var field=document.createElement('div');field.className='field';var label=document.createElement('label');label.textContent=prop.label;field.appendChild(label);
-        var input;
-        if(prop.kind==='align'||prop.kind==='weight'||prop.kind==='display'){
-          input=document.createElement('select');
-          var values=prop.kind==='align'?['','left','center','right','justify','start','end','inherit']:prop.kind==='weight'?['','normal','400','500','600','700','800','bold']:['','none','block','inline','inline-block','flex','grid','inline-flex','inline-grid'];
-          values.forEach(function(v){var option=document.createElement('option');option.value=v;option.textContent=v||'Use stylesheet';input.appendChild(option)});
-        }else{input=document.createElement('input');input.type='text';input.placeholder='Use stylesheet';}
-        input.value=item.styles[prop.key]||'';input.dataset.styleKey=prop.key;
-        input.addEventListener('input',function(){item.styles[prop.key]=input.value});
-        field.appendChild(input);grid.appendChild(field);
+      var details=document.createElement('details');details.className='page-element-details';
+      var summary=document.createElement('summary');summary.textContent='Տեսք և տեսանելիություն';details.appendChild(summary);
+      details.addEventListener('toggle',function(){
+        if(!details.open||details.dataset.rendered==='1')return;
+        details.dataset.rendered='1';
+        var visibility=document.createElement('label');visibility.className='page-element-hidden-control';
+        var check=document.createElement('input');check.type='checkbox';check.checked=item.hidden;check.addEventListener('change',function(){item.hidden=check.checked});
+        visibility.append(check,document.createTextNode(' Hide this element'));details.appendChild(visibility);
+        var grid=document.createElement('div');grid.className='form-grid settings-grid';
+        pageStyleProperties.forEach(function(prop){
+          var field=document.createElement('div');field.className='field';var label=document.createElement('label');label.textContent=prop.label;field.appendChild(label);
+          var input;
+          if(prop.kind==='align'||prop.kind==='weight'||prop.kind==='display'){
+            input=document.createElement('select');
+            var values=prop.kind==='align'?['','left','center','right','justify','start','end','inherit']:prop.kind==='weight'?['','normal','400','500','600','700','800','bold']:['','none','block','inline','inline-block','flex','grid','inline-flex','inline-grid'];
+            values.forEach(function(v){var option=document.createElement('option');option.value=v;option.textContent=v||'Use stylesheet';input.appendChild(option)});
+          }else{input=document.createElement('input');input.type='text';input.placeholder='Use stylesheet';}
+          input.value=item.styles[prop.key]||'';input.dataset.styleKey=prop.key;
+          input.addEventListener('input',function(){item.styles[prop.key]=input.value});
+          field.appendChild(input);grid.appendChild(field);
+        });
+        details.appendChild(grid);
       });
-      card.appendChild(grid);list.appendChild(card);
+      card.appendChild(details);list.appendChild(card);
     });
+    filterPageElementRows();
     if(!pageElementRows.length){var empty=document.createElement('p');empty.className='subtle-note';empty.textContent='Այս էջում կառավարվող տարրեր չեն գտնվել։';list.appendChild(empty)}
+  }
+  function filterPageElementRows(){
+    var term=String($('page-elements-search').value||'').toLowerCase();
+    Array.prototype.slice.call($('page-elements-list').children).forEach(function(card){card.hidden=!!term&&card.dataset.search.indexOf(term)<0});
   }
 
   function filterPageOptions(){
@@ -1703,6 +1735,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   $('pagePath').addEventListener('change',function(){if(this.value)loadSelectedPage().catch(function(error){$('page-editor-error').textContent=error.message||'Չհաջողվեց բացել էջը։'})});
   $('page-search').addEventListener('input',filterPageOptions);
   $('page-text-search').addEventListener('input',filterPageTextRows);
+  $('page-assets-search').addEventListener('input',filterPageAssetRows);
+  $('page-elements-search').addEventListener('input',filterPageElementRows);
   $('site-settings-form').addEventListener('keydown',function(event){if(event.key==='Enter'&&event.target.closest('[data-settings-panel="pages"]')&&event.target.tagName!=='TEXTAREA'){event.preventDefault();}});
   ['pageTitle','pageDescription','pageOgTitle','pageOgDescription','pageTwitterTitle','pageTwitterDescription','pageTwitterImage','pageH1'].forEach(function(id){$(id).addEventListener('input',updatePageSeoPreview)});
   ['siteName','siteBaseUrl','homeTitleHy','homeTitleRu','homeTitleEn','homeDescriptionHy','homeDescriptionRu','homeDescriptionEn','homeTwitterTitleHy','homeTwitterTitleRu','homeTwitterTitleEn','homeTwitterDescriptionHy','homeTwitterDescriptionRu','homeTwitterDescriptionEn','homeTwitterImageHy','homeTwitterImageRu','homeTwitterImageEn'].forEach(function(id){var el=$(id);if(el)el.addEventListener('input',updateHomeSeoPreview)});
