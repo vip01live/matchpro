@@ -37,8 +37,8 @@ check(read('main/js/admin-backend-config.js').includes('MATCHPRO_ADMIN_API_BASE'
 const runtime=read('main/js/matchpro.js');
 try{new Function(runtime);}catch(e){errors.push('public runtime syntax: '+e.message);}
 check(runtime.includes("meta('twitter:card'"),'public X/Twitter card metadata handling missing');
-check(admin.includes('function createEditablePage'),'multilingual page creation is missing');
-check(admin.includes('function isSafeCssValue'),'safe layout controls are missing');
+check(html.includes('function createEditablePage'),'multilingual page creation is missing');
+check(html.includes('function isSafeCssValue'),'safe layout controls are missing');
 check(read('index.html').includes('<h1 class="intro-text">'),'homepage semantic H1 missing');
 check(read('index.html').includes('name="twitter:card"'),'homepage static Twitter card metadata missing');
 const channelSource=read('main/js/channels.js');
