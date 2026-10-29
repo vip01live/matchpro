@@ -7,7 +7,7 @@ const pageFile=(location.pathname.split('/').pop()||'index.html').toLowerCase();
 const origin=location.origin;
 function get(k){try{return localStorage.getItem(k)}catch(_){return null}}
 function set(k,v){try{localStorage.setItem(k,v)}catch(_) {}}
-function detectLanguage(){if(requestedLang==='hy'||requestedLang==='ru'||requestedLang==='en')return requestedLang;const saved=get('matchpro-language');if(saved==='hy'||saved==='ru'||saved==='en')return saved;const b=(navigator.language||'').toLowerCase();if(b.indexOf('hy')===0)return'hy';if(/^(ru|be|kk|ky|uz)(-|$)/.test(b))return'ru';return'en'}
+function detectLanguage(){if(requestedLang==='hy'||requestedLang==='ru'||requestedLang==='en')return requestedLang;const saved=get('matchpro-language');if(saved==='hy'||saved==='ru'||saved==='en')return saved;const b=(navigator.language||'').toLowerCase();if(b.indexOf('hy')===0)return'hy';if(/^(ru|be|kk|ky|uz)(-|$)/.test(b))return'ru';const identity=window.MATCHPRO_SITE_SETTINGS&&window.MATCHPRO_SITE_SETTINGS.siteIdentity;const fallback=identity&&identity.defaultLanguage;return['hy','ru','en'].includes(fallback)?fallback:'en'}
 const lang=detectLanguage();if(requestedLang||get('matchpro-language'))set('matchpro-language',lang);document.documentElement.lang=lang;
 const channel=requestedId?channels.find(x=>String(x.id)===String(requestedId)):channels.find(x=>String(x.file).toLowerCase()===pageFile);
 const dictionaries={
