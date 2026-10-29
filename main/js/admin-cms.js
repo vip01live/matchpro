@@ -62,7 +62,7 @@ function renderPageCards(){
  });
 }
 function showCMSView(view){
- if(api&&api.setView)api.setView(view);
+ if(api&&api.setView&&view!=='none')api.setView(view);
  var map={pages:'cms-pages-view',seo:'cms-seo-view',visual:'cms-visual-view'};
  Object.keys(map).forEach(function(k){$(map[k]).classList.toggle('hidden',k!==view)});
  document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b.dataset.view===view)});
@@ -209,6 +209,7 @@ async function saveVisual(){
  finally{loading=false;$('cms-visual-save').disabled=false}
 }
 function bindEvents(){
+ document.querySelectorAll('[data-view]').forEach(function(button){button.addEventListener('click',function(){if(['pages','seo','visual'].indexOf(button.dataset.view)<0)showCMSView('none')})});
  document.querySelectorAll('[data-view="pages"],[data-view="seo"],[data-view="visual"]').forEach(function(button){button.addEventListener('click',function(){var v=button.dataset.view;showCMSView(v);if(v==='pages')renderPageCards();if(v==='seo')loadSeoForm();if(v==='visual')loadVisualFrame()})});
  $('cms-refresh-pages').addEventListener('click',loadPages);$('cms-page-search').addEventListener('input',renderPageCards);
  $('cms-seo-page').addEventListener('change',loadSeoForm);$('cms-seo-lang').addEventListener('change',loadSeoForm);
