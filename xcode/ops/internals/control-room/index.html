@@ -979,7 +979,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     var lang=['hy','ru','en'].indexOf(identity.defaultLanguage)>=0?identity.defaultLanguage:'ru';
     var home=(settings.home&&settings.home[lang])||{};
     var base=String(identity.baseUrl||SITE_BASE).replace(/\/+$/,'');
-    var pageUrl=home.canonical||base+'/?lang='+lang;
+    var pageRoute=path==='app/index.html'?'/app/':'/';
+    var pageUrl=(path==='index.html'&&home.canonical)?home.canonical:base+pageRoute+'?lang='+lang;
     doc.documentElement.lang=lang;
     doc.title=home.title||identity.name||'MatchPro';
     writePageMeta(doc,'description',home.description,false,false);
@@ -1026,7 +1027,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     var logo=doc.querySelector('header img');if(logo&&settings.logo){logo.setAttribute('src',settings.logo);logo.setAttribute('alt',identity.name||'MatchPro')}
     var alternate=doc.head.querySelectorAll('link[rel="alternate"][hreflang]');
     Array.prototype.slice.call(alternate).forEach(function(item){if(['hy','ru','en','hy-AM','ru-RU','en-US'].includes(item.hreflang))item.remove()});
-    ['hy','ru','en'].forEach(function(l){var a=doc.createElement('link');a.rel='alternate';a.hreflang=l;a.href=base+'/?lang='+l;doc.head.appendChild(a)});
+    ['hy','ru','en'].forEach(function(l){var a=doc.createElement('link');a.rel='alternate';a.hreflang=l;a.href=base+pageRoute+'?lang='+l;doc.head.appendChild(a)});
     return '<!doctype html>\n'+doc.documentElement.outerHTML+'\n';
   }
   function absolutePublicUrl(value,base){
@@ -1267,6 +1268,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   async function saveSelectedPage(){
     var path=$('pagePath').value;
     if(!path||path!==pageEditorPath||!pageEditorSource)throw new Error('Նախ բացիր խմբագրելու էջը։');
+    var latestSource=await readTextFile(path);
+    if(latestSource!==pageEditorSource)throw new Error('Այս էջը GitHub-ում փոփոխվել է խմբագրիչը բացելուց հետո։ Կրկին բացիր էջը, որպեսզի չվերագրես ավելի նոր փոփոխությունները։');
     var doc=new DOMParser().parseFromString(pageEditorSource,'text/html');
     if(!doc.head)throw new Error('Ընտրված էջում HTML head-ը բացակայում է։');
     var title=$('pageTitle').value.trim();
@@ -1320,10 +1323,10 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 
     var pageTextControls=Array.prototype.slice.call($('page-text-list').querySelectorAll('[data-page-text-index]'));
     pageTextControls.forEach(function(control){var item=pageTextRows[Number(control.dataset.pageTextIndex)];if(!item)return;var target;try{target=doc.querySelector(item.selector)}catch(_){target=null}if(target&&target.children.length===0&&target.textContent!==control.value)target.textContent=control.value});
-    if(path==='index.html'||path==='app/index.html')updateSettingsFromHomepagePage(doc);
+    if(path==='index.html')updateSettingsFromHomepagePage(doc);
     var output='<!doctype html>\n'+doc.documentElement.outerHTML+'\n';
     var changes={};changes[path]=output;
-    if(path==='index.html'||path==='app/index.html')changes['main/js/site-settings.json']=JSON.stringify(siteSettings,null,2)+'\n';
+    if(path==='index.html')changes['main/js/site-settings.json']=JSON.stringify(siteSettings,null,2)+'\n';
     $('save-page-button').disabled=true;
     try{
       await commitChanges(changes,[],'Edit MatchPro page '+path);
