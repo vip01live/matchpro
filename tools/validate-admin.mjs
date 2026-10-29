@@ -4,7 +4,7 @@ const root=process.cwd(),errors=[];
 const read=(name)=>fs.readFileSync(path.join(root,name),'utf8');
 const check=(ok,message)=>{if(!ok)errors.push(message);};
 const html=read('xcode/ops/internals/control-room/index.html');
-const marker='<script>\n(function () {',start=html.indexOf(marker),end=html.lastIndexOf('</script>');
+const marker='<script>\n(function () {',start=html.indexOf(marker),end=html.indexOf('</script>',start);
 check(start>=0&&end>start,'admin inline script boundaries are invalid');
 if(start>=0&&end>start){
  const inline=html.slice(start+'<script>\n'.length,end),markup=html.slice(0,start);
@@ -22,6 +22,9 @@ if(start>=0&&end>start){
  check(!inline.includes('data-view="info"'),'old single Settings view remains');
  check(inline.includes('allowedMediaFile')&&inline.includes('assetUrl'),'media validation or project path helper missing');
  check(inline.includes('ADMIN_API_BASE')&&inline.includes('/api/github'),'server-side API bridge missing');
+  check(markup.includes('src="/main/js/admin-cms.js"'),'CMS extension script is not included');
+  check(fs.existsSync(path.join(root,'main/js/admin-cms.js')),'CMS extension script file missing');
+  check(fs.existsSync(path.join(root,'main/js/cms-runtime.js')),'public CMS runtime file missing');
 }
 const redirect=read('main/js/player-click-redirect.js');
 try{new Function(redirect);}catch(e){errors.push('player redirect syntax: '+e.message);}
