@@ -22,3 +22,46 @@ html.matchpro-channel-loading body>.matchpro-channel-loader{visibility:visible!i
 .matchpro-channel-error{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:30px 18px;text-align:center;color:#eaf1f8;font:15px/1.6 Arial,sans-serif}.matchpro-channel-error h1{margin:0;font-size:clamp(24px,5vw,36px)}.matchpro-channel-error p{margin:0;color:#aab7c4}.matchpro-channel-error-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px}.matchpro-channel-error-actions a{padding:10px 15px;border:1px solid rgba(255,255,255,.18);border-radius:10px;color:#eaf1f8;text-decoration:none}.matchpro-channel-error-actions a:first-child{border-color:#31ff91;background:rgba(49,255,145,.12);color:#a9ffd3}
 @keyframes matchpro-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.channel-grid .channel,.related-grid .channel,.player-container{animation:none!important}.channel-grid .channel,.related-grid .channel,.share-button,.matchpro-language-switcher button{transition:none!important}.matchpro-channel-loader::before{animation:none!important;border-right-color:#31ff91}}
+
+/* MatchPro motion system: restrained pitch-side energy, with layout-safe transforms. */
+:root{--matchpro-motion-ease:cubic-bezier(.2,.72,.24,1);--matchpro-motion-snap:cubic-bezier(.18,.78,.24,1)}
+header{position:relative;isolation:isolate}
+header::after{content:"";position:absolute;z-index:0;inset:auto 0 0;height:1px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(49,255,145,.38) 18%,rgba(49,255,145,.72) 50%,rgba(49,255,145,.38) 82%,transparent);opacity:.8;transform:scaleX(0);transform-origin:left center;animation:mp-header-rail .9s .12s var(--matchpro-motion-ease) both}
+header>a{position:relative;z-index:1;transform-origin:left center;transition:transform .22s var(--matchpro-motion-ease),filter .22s ease}
+header img,.header-logo{transform-origin:left center;animation:mp-logo-arrive .52s .04s var(--matchpro-motion-ease) both;transition:transform .22s var(--matchpro-motion-ease),filter .22s ease}
+header a:focus-visible{outline:2px solid #31ff91;outline-offset:5px;border-radius:4px}
+.intro-text{position:relative;animation:mp-copy-arrive .52s .1s var(--matchpro-motion-ease) both}
+.intro-text::after{content:"";position:absolute;left:50%;bottom:-6px;width:58px;height:2px;border-radius:2px;pointer-events:none;background:linear-gradient(90deg,rgba(49,255,145,.12),#31ff91,rgba(49,255,145,.12));transform:translateX(-50%) scaleX(0);transform-origin:center;animation:mp-heading-rail .7s .34s var(--matchpro-motion-ease) both}
+.channel-name{animation:mp-copy-arrive .48s .06s var(--matchpro-motion-ease) both}
+.player-container{animation:mp-player-arrive .5s .08s var(--matchpro-motion-ease) both}
+.channel-description,.info-text{animation:mp-copy-arrive .5s .15s var(--matchpro-motion-ease) both}
+.related-section{animation:mp-section-arrive .48s .12s var(--matchpro-motion-ease) both}
+.channel-grid{position:relative;isolation:isolate}
+.channel-grid::before{content:"";position:absolute;z-index:-1;inset:-3% 0;pointer-events:none;opacity:.5;background:radial-gradient(ellipse at 50% 0%,rgba(49,255,145,.075),transparent 66%),repeating-linear-gradient(128deg,transparent 0 42px,rgba(49,255,145,.022) 43px,transparent 44px 84px);transform:translate3d(-.5%,0,0);animation:mp-pitch-drift 28s ease-in-out infinite alternate}
+.channel-grid .channel,.related-grid .channel{animation:none;transform-origin:center;transition:transform .24s var(--matchpro-motion-ease),border-color .24s ease,box-shadow .24s ease,background-color .24s ease}
+.channel-grid .channel:nth-child(-n+12),.related-grid .channel:nth-child(-n+8){animation:mp-card-arrive .48s var(--matchpro-motion-snap) both}
+.channel-grid .channel:nth-child(4n+2):nth-child(-n+12),.related-grid .channel:nth-child(4n+2):nth-child(-n+8){animation-delay:38ms}
+.channel-grid .channel:nth-child(4n+3):nth-child(-n+12),.related-grid .channel:nth-child(4n+3):nth-child(-n+8){animation-delay:76ms}
+.channel-grid .channel:nth-child(4n+4):nth-child(-n+12),.related-grid .channel:nth-child(4n+4):nth-child(-n+8){animation-delay:114ms}
+.channel-grid .channel::before,.related-grid .channel::before{content:"";position:absolute;z-index:1;top:-45%;bottom:-45%;left:-42%;width:34%;pointer-events:none;opacity:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.16),transparent);transform:translate3d(-150%,0,0) skewX(-22deg)}
+.channel-grid .channel::after,.related-grid .channel::after{z-index:0;opacity:.48;transition:opacity .24s ease}
+.channel-grid .channel img,.related-grid .channel img{position:relative;z-index:1;transition:transform .24s var(--matchpro-motion-ease),filter .24s ease}
+.channel-grid .channel:focus-visible,.related-grid .channel:focus-visible{outline:2px solid #31ff91;outline-offset:3px}
+.share-button{position:relative;transition:transform .2s var(--matchpro-motion-ease),box-shadow .22s ease,border-color .22s ease,filter .22s ease}
+.share-button .circle-icon{transition:transform .24s var(--matchpro-motion-ease),box-shadow .24s ease}
+.matchpro-language-switcher{animation:mp-footer-arrive .42s .08s var(--matchpro-motion-ease) both}
+.matchpro-language-switcher button:focus-visible{outline:2px solid #31ff91;outline-offset:2px}
+.matchpro-footer-links a,footer .matchpro-copyright,footer .matchpro-powered a{background-image:linear-gradient(rgba(49,255,145,.75),rgba(49,255,145,.75));background-repeat:no-repeat;background-position:left 100%;background-size:0 1px;transition:color .2s ease,background-size .24s ease}
+.matchpro-error,.matchpro-channel-error{animation:mp-copy-arrive .42s var(--matchpro-motion-ease) both}
+@keyframes mp-header-rail{to{transform:scaleX(1)}}
+@keyframes mp-logo-arrive{from{opacity:0;transform:translate3d(-5px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes mp-copy-arrive{from{opacity:0;transform:translate3d(0,8px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes mp-heading-rail{to{transform:translateX(-50%) scaleX(1)}}
+@keyframes mp-player-arrive{from{opacity:.78;transform:translate3d(0,5px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes mp-section-arrive{from{opacity:0;transform:translate3d(0,7px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes mp-card-arrive{from{opacity:0;transform:translate3d(0,7px,0) scale(.99)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes mp-pitch-drift{from{transform:translate3d(-.5%,0,0)}to{transform:translate3d(.5%,0,0)}}
+@keyframes mp-card-glint{0%{opacity:0;transform:translate3d(-150%,0,0) skewX(-22deg)}18%{opacity:.72}78%{opacity:.16;transform:translate3d(430%,0,0) skewX(-22deg)}100%{opacity:0;transform:translate3d(430%,0,0) skewX(-22deg)}}
+@media(hover:hover) and (pointer:fine){header>a:hover .header-logo,header>a:hover img{transform:translate3d(0,-1px,0) scale(1.025);filter:drop-shadow(0 3px 9px rgba(49,255,145,.18))}.channel-grid .channel:hover,.related-grid .channel:hover{transform:translate3d(0,-3px,0) scale(1.025);border-color:rgba(49,255,145,.42);box-shadow:0 14px 30px rgba(0,0,0,.3),0 0 0 1px rgba(49,255,145,.08)}.channel-grid .channel:hover::before,.related-grid .channel:hover::before{animation:mp-card-glint .78s ease-out both}.channel-grid .channel:hover::after,.related-grid .channel:hover::after{opacity:.9}.channel-grid .channel:hover img,.related-grid .channel:hover img{transform:scale(1.035);filter:drop-shadow(0 3px 7px rgba(49,255,145,.14))}.share-button:hover{transform:translate3d(0,-2px,0);box-shadow:0 12px 30px rgba(0,0,0,.28),0 0 18px rgba(49,255,145,.08);filter:brightness(1.04)}.share-button:hover .circle-icon{transform:rotate(10deg) scale(1.06);box-shadow:0 0 12px rgba(49,255,145,.22)}.matchpro-language-switcher button:hover{transform:translateY(-1px)}.matchpro-footer-links a:hover,footer .matchpro-copyright:hover,footer .matchpro-powered a:hover{background-size:100% 1px}}
+@media(max-width:700px){.channel-grid::before{opacity:.24;animation-duration:36s}.channel-grid .channel:hover,.related-grid .channel:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}.header::after,header::after{transform:scaleX(1)}.intro-text::after{transform:translateX(-50%) scaleX(1)}.channel-grid .channel:hover,.related-grid .channel:hover,.share-button:hover,.matchpro-language-switcher button:hover{transform:none!important}.channel-grid .channel::before,.related-grid .channel::before{display:none}}
