@@ -1,58 +1,67 @@
-# MatchPro server-side admin backend
+# MatchPro server-side administration backend
 
-## Current deployment status
+## Current deployment state
 
-The Worker is implemented in this repository but **not deployed**. Cloudflare credentials and production secret values are not available through the current connection. Until deployment and until `main/js/admin-backend-config.js` contains the Worker base URL, the CMS stays in its legacy browser-token mode. That legacy mode is not server-side authentication.
+The Worker source and configuration are in this directory, but the Worker is not deployed and `main/js/admin-backend-config.js` has an empty URL. The admin panel now fails closed in this state: browser-side GitHub token login is disabled, and administrative changes are unavailable until the owner deploys and configures the Worker.
 
-## Security design
+## Authentication and permissions
 
-- Username/password verification runs on the Worker, using PBKDF2-HMAC-SHA-256 with 310,000 iterations.
-- Successful login returns a signed session with a 30-minute expiry. The admin page keeps it in memory rather than localStorage.
-- GitHub token is stored only as a Worker secret.
-- GitHub proxy is allowlisted to the CMS-required Contents and Git-data calls for `vip01live/matchpro` only.
-- Worker checks browser Origin and, when present, the specific admin-page Referer prefix.
-- Failed-login throttling is per Worker isolate and is best-effort. Add a Cloudflare rate-limit rule for `POST /api/login`; an in-memory map alone is not a distributed rate limiter.
+- The primary owner account is configured with Worker secrets. Password verification uses PBKDF2-HMAC-SHA-256 with 310,000 iterations.
+- The owner can create, edit, activate, disable, and reset moderator accounts in the admin panel. Moderator passwords are salted and hashed before they enter the account store.
+- Moderators receive the same CMS and site-editing GitHub proxy access as the owner. Only the owner can manage accounts or view the audit history.
+- Moderator status and session version are checked on each protected request. Disabling or resetting a moderator account revokes existing sessions immediately.
+- Sessions are signed, expire after 30 minutes, and remain in page memory only. Clearing an owner's copied session takes effect when it expires; owner session revocation is not backed by a server-side session registry.
+- The GitHub token is stored only as a Worker secret. The proxy is allowlisted to the `vip01live/matchpro` repository and required Git-data calls.
+- The Worker validates the browser Origin and checks the admin page Referer when the header is present. API responses are not cached and include restrictive security headers.
 
-The session is stateless. Logout clears the token in page memory, but a copied session remains valid until its 30-minute expiry. Immediate revocation requires a durable server-side session store.
+## Account and audit storage
+
+`AccountStore` is a SQLite-backed Cloudflare Durable Object. Wrangler provisions its namespace through the `v1` migration in `wrangler.toml`. A single named object stores the small moderator roster, account session versions, and the most recent 1,000 audit records in transactional storage. Account records and their create/update audit event are written atomically. Audit entries cover sign-ins, moderator account changes, GitHub content writes, and successful or failed publication of the `main` branch.
+
+The single account object is sized for this site's small administrative team. Keep Cloudflare account recovery access with the deployment owner. Do not put production passwords or GitHub tokens in this repository. GitHub content-write events record the API operation and, for tree updates, up to eight changed paths; request bodies and uploaded file contents are never written to the audit log. There is no application-level account-store export or restore procedure yet: losing the Durable Object would require recreating moderator accounts and would lose its audit history.
 
 ## Deployment
 
-1. Create a Cloudflare Worker from this directory or run `npx wrangler deploy` while in `backend/`.
-2. Create a fine-grained GitHub token restricted to `vip01live/matchpro`, with **Contents: Read and write** and **Metadata: Read-only** permissions. Do not commit it.
+1. From this directory, install/use Wrangler and run `npx wrangler deploy`. The SQLite Durable Object binding and initial migration are declared in `wrangler.toml`.
+2. Create a fine-grained GitHub token restricted to `vip01live/matchpro`, with **Contents: Read and write** and **Metadata: Read-only** permissions. Store it as the Worker secret `GITHUB_TOKEN`.
 3. Add Worker secrets:
+
    ```sh
    npx wrangler secret put GITHUB_TOKEN
    npx wrangler secret put ADMIN_USERNAME
    npx wrangler secret put SESSION_SECRET
    ```
-4. Run `node hash-admin-password.mjs` from an interactive terminal. The password is typed without echoing. Store its two output values as Worker secrets:
-   ```sh
-   npx wrangler secret put ADMIN_PASSWORD_SALT
-   npx wrangler secret put ADMIN_PASSWORD_HASH
-   ```
-5. Generate a fresh random session secret locally:
+
+4. Run `node hash-admin-password.mjs` in an interactive terminal. It prompts without echoing the password. Store its outputs as `ADMIN_PASSWORD_SALT` and `ADMIN_PASSWORD_HASH` Worker secrets.
+5. Generate a random session secret with at least 32 characters and do not commit it:
+
    ```sh
    node -e "console.log(require('node:crypto').randomBytes(48).toString('base64url'))"
    ```
-   Use at least 32 random characters and never commit it.
-6. `wrangler.toml` configures the expected origin as `https://vip01live.github.io` and the admin path. Adjust if the site is moved. The admin document's `no-referrer-when-downgrade` policy allows the Worker to validate that HTTPS requests originate from this app path.
-7. Deploy the Worker. Copy its public base URL to `window.MATCHPRO_ADMIN_API_BASE` in `main/js/admin-backend-config.js`, commit that URL (not credentials), and wait for the GitHub Pages deploy.
-8. Add a Cloudflare rate-limit rule for `POST /api/login` and verify all Worker secrets before regular use.
 
-## Tests
+6. Add a Cloudflare rate-limit rule for `POST /api/login`. The in-memory Worker throttle is best-effort and is not a distributed rate limiter.
+7. Set the deployed Worker base URL in `main/js/admin-backend-config.js`, commit that public URL, and wait for the GitHub Pages deployment. The URL is not a credential.
+8. Verify owner login, create a moderator, test their CMS access, disable the account, and confirm an existing moderator session is rejected on its next protected request.
 
-From `backend/`, run:
+The production Worker is not deployed from this workspace. Deployment requires the site owner's Cloudflare account and secrets; no production change was made.
+
+## Tests and local checks
+
+From the repository root:
 
 ```sh
-node --check cloudflare-worker.mjs
-node --check hash-admin-password.mjs
-node --test cloudflare-worker.test.mjs
+node --check backend/cloudflare-worker.mjs
+node --test backend/cloudflare-worker.test.mjs
+node tools/validate-admin.mjs
+node tools/validate-site.mjs
 ```
 
-Tests use mocked GitHub API responses; they do not contact production GitHub.
+The Worker tests use a local fake Durable Object namespace and mocked GitHub responses. They do not contact production GitHub or Cloudflare. The Pages workflow runs `tools/apply-cms-metadata.py` before `tools/validate-site-performance.py`; run that pair in a disposable build copy because the generator rewrites HTML and channel image URLs for the Pages artifact.
 
 ## Known limitations
 
-- The Worker is not deployed and the config URL remains empty until an operator configures it.
-- Static Pages maintenance mode is only a client-side overlay, not server-level access control.
-- A cross-origin player iframe does not expose its internal clicks to MatchPro. Reliable ad recurrence after five internal player clicks requires the provider's API or an approved `postMessage` bridge.
+- Admin access remains unavailable until the Worker is deployed, its secrets are set, and the Worker URL is configured in the static site.
+- Login throttling inside the Worker is isolate-local; the Cloudflare rate-limit rule in the deployment steps is required for shared edge protection.
+- Logout removes the current in-memory token. A copied owner token stays valid until its 30-minute expiry; moderator accounts can be revoked immediately by disabling or resetting them.
+- GitHub Pages maintenance mode is a client-side overlay, not server-side access control.
+- Cross-origin player frames do not expose their internal clicks to MatchPro. Reliable ad recurrence after internal player clicks requires a provider API or an approved `postMessage` bridge.

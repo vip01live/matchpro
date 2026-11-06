@@ -64,7 +64,40 @@ def set_html_attr(tag, name, value):
     return tag[:index] + " " + name + '="' + escaped + '"' + tag[index:]
 
 
-def apply_branding(source, logo, favicon):
+def brand_text(value, identity):
+    text = str(value or "")
+    name = str(identity.get("name") or "MatchPro").strip() or "MatchPro"
+    current = re.compile(r"(?<![A-Za-z0-9])" + re.escape(name) + r"(?![A-Za-z0-9])", re.I)
+    protected = []
+    def preserve_current(match):
+        index = len(protected)
+        protected.append(match.group(0))
+        return "\x00MPBRAND" + str(index) + "\x00"
+    text = current.sub(preserve_current, text)
+    previous_names = identity.get("previousNames") if isinstance(identity.get("previousNames"), list) else []
+    old_names = [identity.get("previousName"), *previous_names, "MatchPro"]
+    for old in dict.fromkeys(str(item or "").strip() for item in old_names):
+        if old and old.casefold() != name.casefold():
+            text = re.sub(r"(?<![A-Za-z0-9])" + re.escape(old) + r"(?![A-Za-z0-9])", lambda _: name, text, flags=re.I)
+    return re.sub(r"\x00MPBRAND(\d+)\x00", lambda match: protected[int(match.group(1))], text)
+
+
+def apply_document_branding(source, identity):
+    protected = re.compile(r"<!--.*?-->|<script\b[^>]*>.*?</script\s*>|<style\b[^>]*>.*?</style\s*>", re.I | re.S)
+    pieces = protected.split(source)
+    matches = list(protected.finditer(source))
+    rewritten = []
+    attribute = re.compile(r"(\b(?:alt|title|aria-label)\s*=\s*)([\"'])(.*?)\2", re.I | re.S)
+    for index, piece in enumerate(pieces):
+        piece = re.sub(r"(?<=>)([^<]+)(?=<)", lambda match: html.escape(brand_text(html.unescape(match.group(1)), identity), quote=False), piece)
+        piece = attribute.sub(lambda match: match.group(1) + match.group(2) + attr(brand_text(html.unescape(match.group(3)), identity)) + match.group(2), piece)
+        rewritten.append(piece)
+        if index < len(matches):
+            rewritten.append(matches[index].group(0))
+    return "".join(rewritten)
+
+
+def apply_branding(source, logo, favicon, identity):
     logo_url = versioned_asset(logo or "/media/logo.png")
     favicon_url = versioned_asset(favicon or "/media/fv/favicon-32x32.png")
     header_pattern = re.compile(r"(<header\b[^>]*>)(.*?)(</header\s*>)", re.I | re.S)
@@ -75,7 +108,7 @@ def apply_branding(source, logo, favicon):
         if not image:
             return match.group(0)
         tag = image.group(0)
-        for name, value in (("src", logo_url), ("alt", "MatchPro"), ("loading", "eager"),
+        for name, value in (("src", logo_url), ("alt", identity.get("name") or "MatchPro"), ("loading", "eager"),
                             ("decoding", "async"), ("fetchpriority", "high")):
             tag = set_html_attr(tag, name, value)
         inner = inner[:image.start()] + tag + inner[image.end():]
@@ -238,8 +271,8 @@ def set_jsonld(source, data, canonical, language, identity, image):
     schema = {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": data.get("title") or identity.get("name") or "MatchPro",
-        "description": data.get("description") or None,
+        "name": brand_text(data.get("title") or identity.get("name") or "MatchPro", identity),
+        "description": brand_text(data.get("description"), identity) or None,
         "url": canonical,
         "inLanguage": language,
         "isPartOf": {
@@ -250,7 +283,8 @@ def set_jsonld(source, data, canonical, language, identity, image):
     }
     if image:
         schema["primaryImageOfPage"] = {"@type": "ImageObject", "url": image}
-    tag = '<script id="matchpro-cms-schema" type="application/ld+json">' + json.dumps(schema, ensure_ascii=False, separators=(",", ":")) + "</script>"
+    schema_json = json.dumps(schema, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+    tag = '<script id="matchpro-cms-schema" type="application/ld+json">' + schema_json + "</script>"
     pattern = re.compile(
         r"<script\b(?=[^>]*\bid\s*=\s*([\"'])matchpro-cms-schema\1)[^>]*>.*?</script\s*>",
         re.I | re.S
@@ -261,17 +295,17 @@ def set_jsonld(source, data, canonical, language, identity, image):
     return re.sub(r"</head\s*>", lambda _: tag + "\n</head>", source, count=1, flags=re.I)
 
 def apply_metadata(source, data, identity, language, canonical):
-    title = data.get("title") or data.get("seoTitle")
-    description = data.get("description")
-    keywords = data.get("keywords")
+    title = brand_text(data.get("title") or data.get("seoTitle"), identity)
+    description = brand_text(data.get("description"), identity)
+    keywords = brand_text(data.get("keywords"), identity)
     robots = data.get("robots") or "index, follow"
-    og_title = data.get("ogTitle") or title
-    og_description = data.get("ogDescription") or description
+    og_title = brand_text(data.get("ogTitle") or title, identity)
+    og_description = brand_text(data.get("ogDescription") or description, identity)
     og_type = data.get("ogType") or "website"
     og_image = absolute_url(data.get("ogImage") or identity.get("defaultOgImage"), identity.get("domain"))
     twitter_card = data.get("twitterCard") or "summary_large_image"
-    twitter_title = data.get("twitterTitle") or og_title
-    twitter_description = data.get("twitterDescription") or og_description
+    twitter_title = brand_text(data.get("twitterTitle") or og_title, identity)
+    twitter_description = brand_text(data.get("twitterDescription") or og_description, identity)
     twitter_image = absolute_url(data.get("twitterImage") or og_image or identity.get("defaultOgImage"), identity.get("domain"))
     canonical_url = canonical
     if not re.match(r"^https?://", canonical_url, re.I):
@@ -286,7 +320,7 @@ def apply_metadata(source, data, identity, language, canonical):
     for name, value in [
         ("og:title", og_title), ("og:description", og_description), ("og:type", og_type),
         ("og:url", canonical_url), ("og:image", og_image),
-        ("og:image:alt", data.get("ogImageAlt") or data.get("twitterImageAlt")),
+        ("og:image:alt", brand_text(data.get("ogImageAlt") or data.get("twitterImageAlt"), identity)),
         ("og:site_name", identity.get("name") or "MatchPro"),
         ("og:locale", {"hy": "hy_AM", "ru": "ru_RU", "en": "en_US"}.get(language, "en_US"))
     ]:
@@ -294,7 +328,7 @@ def apply_metadata(source, data, identity, language, canonical):
     for name, value in [
         ("twitter:card", twitter_card), ("twitter:title", twitter_title),
         ("twitter:description", twitter_description), ("twitter:image", twitter_image),
-        ("twitter:image:alt", data.get("twitterImageAlt") or data.get("ogImageAlt")),
+        ("twitter:image:alt", brand_text(data.get("twitterImageAlt") or data.get("ogImageAlt"), identity)),
         ("twitter:site", data.get("twitterSite") or identity.get("twitterSite")),
         ("twitter:creator", data.get("twitterCreator"))
     ]:
@@ -331,7 +365,8 @@ def main():
     by_file = {str(c.get("file", "")).lower(): c for c in channels if c.get("file")}
     total = 0
 
-    for path in sorted(ROOT.glob("*.html")):
+    html_paths = list(ROOT.glob("*.html")) + list((ROOT / "app").glob("*.html"))
+    for path in sorted(html_paths):
         if not path.is_file():
             continue
         filename = path.name.lower()
@@ -339,7 +374,8 @@ def main():
             continue
         source = path.read_text(encoding="utf-8")
         original = source
-        source = apply_branding(source, settings.get("logo"), settings.get("favicon"))
+        source = apply_document_branding(source, identity)
+        source = apply_branding(source, settings.get("logo"), settings.get("favicon"), identity)
         source = ensure_navigation_transitions(source)
         if filename == "index.html":
             source = apply_home_channel_grid(source, channels, default_language)

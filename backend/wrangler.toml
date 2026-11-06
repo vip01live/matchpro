@@ -6,3 +6,11 @@ workers_dev = true
 [vars]
 ALLOWED_ORIGIN = "https://vip01live.github.io"
 ALLOWED_REFERER_PREFIX = "https://vip01live.github.io/matchpro/xcode/ops/internals/control-room/"
+
+[[durable_objects.bindings]]
+name = "ACCOUNT_STORE"
+class_name = "AccountStore"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["AccountStore"]
