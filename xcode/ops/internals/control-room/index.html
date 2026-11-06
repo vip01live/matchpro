@@ -22,6 +22,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
 @media(max-width:720px){.wrap{padding:10px}.layout{gap:13px}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;border-radius:17px;padding:10px}.sidebar .brand{grid-column:1/-1;margin:0;padding:3px 3px 12px}.sidebar .nav-label{display:none}.navbtn{min-width:0;width:100%;min-height:44px;padding:9px 10px;justify-content:flex-start;font-size:12px;text-align:left}.sidebar-bottom{grid-column:1/-1;display:block;flex:unset;margin-top:1px;padding-top:9px}.sidebar-bottom .hint{display:none!important}.sidebar-bottom .btn{width:100%!important;margin:0}.topbar{align-items:stretch;gap:14px;margin:17px 0}.topbar h2{font-size:23px}.actions,.actions .btn{width:100%}.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:13px}.stat{padding:10px 9px;min-height:0;border-radius:13px}.stat .label{font-size:10px;line-height:1.35}.stat .number{font-size:19px;margin:2px 0}.panel{border-radius:16px}.panel-head{padding:14px;gap:10px}.panel-tools,.search{width:100%;min-width:0}.form-shell{padding:13px}.form-grid,.settings-grid{grid-template-columns:minmax(0,1fr);gap:0}.settings-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:5px;margin-bottom:14px}.settings-tab{font-size:12px;min-height:43px;padding:8px 5px}.lang-tabs{gap:6px}.lang-tab{flex:1 1 auto;padding:9px 10px;font-size:12px}.lang-fields{padding:12px 12px 1px}.lang-head{padding:11px 12px}.asset-preview img{width:78px;height:66px}.form-actions{flex-direction:column;gap:9px}.form-actions>.btn,.form-actions-right,.form-actions-right .btn{width:100%}.form-actions-right{flex-direction:column}.row-actions{flex-wrap:wrap}.row-actions .btn{flex:1 1 auto}.table-scroll table{min-width:700px}.login-card{padding:23px;border-radius:20px}.login-card h2{font-size:24px}.connection-details{font-size:12px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
+.moderator-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px}.moderator-card{min-width:0;padding:14px;border:1px solid var(--line);border-radius:13px;background:#101a26}.moderator-card h4{margin:0 0 3px;overflow-wrap:anywhere}.moderator-card p{margin:0 0 5px;color:var(--muted);font-size:12px;overflow-wrap:anywhere}.moderator-card .row-actions{margin-top:12px;flex-wrap:wrap}.audit-list{max-height:440px;overflow:auto}.audit-row{display:grid;grid-template-columns:minmax(130px,1.2fr) minmax(110px,1fr) minmax(110px,1fr) minmax(120px,1.3fr);gap:10px;padding:11px 14px;border-bottom:1px solid #223142;font-size:12px}.audit-row:last-child{border-bottom:0}.audit-row span{overflow-wrap:anywhere}.audit-head{position:sticky;top:0;background:#111b27;color:#8fa3b8;font-size:10px;font-weight:800;letter-spacing:.5px}.status-disabled{color:#ff9aa9}.status-active{color:var(--green)}@media(max-width:760px){.audit-row{grid-template-columns:1fr 1fr}.audit-head{display:none}.moderator-list .row-actions{display:flex}}
+button:disabled{opacity:.52;cursor:not-allowed;filter:saturate(.55)}
 </style>
 <meta name="referrer" content="no-referrer-when-downgrade">
 </head>
@@ -32,12 +34,12 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     <h2>Մուտք գործել</h2>
     <p>Կառավարեք MatchPro-ի ալիքները, գովազդը, արտաքին տեսքը և SEO-ն մեկ տեղից։</p>
     <form id="login-form">
-      <div class="field"><label for="username">Ադմինի անունը</label><input id="username" name="username" value="admin" autocomplete="username" required></div>
-      <div class="field"><label for="adminPassword">Ադմինի գաղտնաբառը</label><input id="adminPassword" name="adminPassword" type="password" autocomplete="current-password" placeholder="Առնվազն 12 նիշ" minlength="12" required></div><details class="connection-details"><summary>GitHub-ի միացում՝ միայն առաջին կարգավորման համար</summary><p>Այս CMS-ը պահպանում է փոփոխությունները GitHub-ում։ Առաջին անգամ կամ նոր բրաուզերում պետք է հաստատել GitHub կապը։ Token-ը կոդավորվում է այս բրաուզերում՝ ձեր գաղտնաբառով։</p><div class="field"><label for="token">GitHub token</label><input id="token" name="token" type="password" autocomplete="off" placeholder="github_pat_…"><div class="subtle-note">Սովորական մուտքի ժամանակ այս դաշտը պետք չէ լրացնել։ <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Ստեղծել GitHub token</a>՝ միայն vip01live/matchpro ռեպոզիտորի համար, Contents: Read and write և Metadata: Read-only իրավունքներով։</div></div></details>
+      <div class="field"><label for="username">Օգտանուն</label><input id="username" name="username" autocomplete="username" required></div>
+      <div class="field"><label for="adminPassword">Գաղտնաբառ</label><input id="adminPassword" name="adminPassword" type="password" autocomplete="current-password" placeholder="Առնվազն 12 նիշ" minlength="12" required></div>
       <button class="btn primary" id="login-button" type="submit" style="width:100%">Մուտք գործել →</button>
       <div id="login-error" class="error"></div>
     </form>
-    <div class="hint"><strong>Կարևոր սահմանափակում</strong><br>GitHub Pages-ը ինքնուրույն չի ապահովում սերվերային login։ Backend-ը տեղակայելուց հետո մուտքը կատարվելու է օգտանունով և գաղտնաբառով՝ առանց GitHub token-ը բրաուզերում պահելու։</div>
+    <div class="hint" id="login-hint"><strong>Սերվերային մուտք</strong><br>Մուտքը կատարվում է Cloudflare Worker-ի միջոցով։ GitHub token-ը պահվում է միայն Worker-ի գաղտնի կարգավորումներում։</div>
   </div>
 </section>
 
@@ -51,6 +53,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       <button class="navbtn" data-view="pages"><span class="nav-icon">▤</span> Էջերի կառավարում</button>
       <button class="navbtn" data-view="seo"><span class="nav-icon">⌕</span> SEO և meta թեգեր</button>
       <button class="navbtn" data-view="visual"><span class="nav-icon">✎</span> Վիզուալ խմբագրիչ</button>
+      <button class="navbtn" data-view="text-manager"><span class="nav-icon">文</span> Էջերի տեքստեր</button>
       <div class="nav-label">ԿԱՅՔԻ ԿԱՐԳԱՎՈՐՈՒՄՆԵՐ</div>
       <button class="navbtn" data-view="ads"><span class="nav-icon">↗</span> Գովազդ</button>
       <button class="navbtn" data-view="branding"><span class="nav-icon">✦</span> Լոգո և favicon</button>
@@ -149,6 +152,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
         <div class="notice"><strong>Ալիքի անհատական գովազդ․</strong> «Ալիքներ → Խմբագրել» բաժնում ընտրեք՝ վերահղում, տեսանյութ կամ առանց գովազդի։ AdBlock-ի ավտոմատ ահազանգը անջատված է՝ սխալ դրական հայտնաբերմամբ կայքը չարգելափակելու համար։</div>
       </div>
       <div class="settings-panel hidden" data-settings-panel="branding">
+        <div class="lang-card"><div class="lang-head"><span class="flag">ID</span> Կայքի անուն և կարգախոս</div><div class="lang-fields"><div class="form-grid settings-grid"><div class="field"><label for="siteBrandName">Կայքի անունը</label><input id="siteBrandName" maxlength="80" required><div class="subtle-note">Այս անունը կառավարվում է մեկ ընդհանուր կարգավորումից և համաժամեցվում է կայքի էջերում ու metadata-ում։</div></div><div class="field"><label for="siteBrandTagline">Կայքի կարգախոսը</label><input id="siteBrandTagline" maxlength="160"></div></div></div></div>
         <div class="lang-card"><div class="lang-head"><span class="flag">BRD</span> Լոգո և favicon</div><div class="lang-fields">
           <div class="form-grid settings-grid">
             <div class="field"><label for="siteLogoPath">Կայքի լոգոյի ուղի</label><input id="siteLogoPath" placeholder="/media/logo.png կամ /uploads/UUID.webp"><input id="siteLogoFile" type="file" accept="image/png,image/jpeg,image/webp"><div class="asset-preview"><img id="site-logo-preview" alt="Կայքի լոգոյի նախադիտում" src="/media/logo.png"><span class="subtle-note">PNG, JPG կամ WEBP · մինչև 5 ՄԲ։ Վերբեռնված ֆայլը կստանա uploads/UUID.ext անուն։</span></div></div>
@@ -182,15 +186,38 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     </form>
     <div id="security-panel" class="hidden">
       <div class="lang-card"><div class="lang-head"><span class="flag">SEC</span> Անվտանգություն և մուտքի կառավարում</div>
-        <div id="security-auth-status" class="notice"><strong>Կարևոր սահմանափակում․</strong> GitHub Pages-ի legacy login-ը սերվերային authentication չէ։ Backend-ը տեղակայված չէ, քանի դեռ Cloudflare Worker-ի secrets-ը և API հասցեն չեն կարգավորվել։</div>
-        <p class="subtle-note">Մի օգտագործեք հանրային կամ ուրիշների հետ կիսվող սարք։ Logout-ը ջնջում է ընթացիկ էջի token-ը հիշողությունից, բայց տեղային կոդավորված token-ը մնում է այս բրաուզերում՝ մինչև բրաուզերի տվյալների մաքրումը։</p>
-        <button id="change-password-button" class="btn outline">Փոխել այս բրաուզերի գաղտնաբառը</button>
-        <div id="password-change-area" class="hidden" style="margin-top:16px"><div class="field"><label for="newAdminPassword">Նոր գաղտնաբառ՝ 12+ նիշ</label><input id="newAdminPassword" type="password" minlength="12" autocomplete="new-password"></div><button id="save-password-button" class="btn primary">Պահպանել նոր գաղտնաբառը</button></div>
+        <div id="security-auth-status" class="notice">Մուտքի և գործողությունների պաշտպանությունը հաստատվում է սերվերի կողմից։</div>
+        <p class="subtle-note">Session-ը պահվում է միայն ընթացիկ էջի հիշողության մեջ և ավարտվում է 30 րոպեից։ Մոդերատորի հասանելիությունն անջատելուց հետո հաջորդ պաշտպանված հարցումն անմիջապես մերժվում է։</p>
+      </div>
+      <div id="owner-tools" class="hidden">
+        <section class="lang-card">
+          <div class="lang-head"><span class="flag">TEAM</span> Մոդերատորների կառավարում</div>
+          <div class="lang-fields">
+            <p class="subtle-note">Մոդերատորները կարող են կառավարել կայքի ալիքները, բովանդակությունը, բրենդինգը և SEO-ն։ Միայն հիմնական սեփականատերը կարող է ստեղծել, անջատել կամ վերականգնել մոդերատորի հաշիվները։</p>
+            <form id="moderator-form">
+              <input id="moderator-id" type="hidden">
+              <div class="form-grid">
+                <div class="field"><label for="moderator-username">Օգտանուն</label><input id="moderator-username" autocomplete="off" minlength="3" maxlength="32" required></div>
+                <div class="field"><label for="moderator-display-name">Ցուցադրվող անուն</label><input id="moderator-display-name" maxlength="80" required></div>
+                <div class="field full"><label for="moderator-password">Գաղտնաբառ <span id="moderator-password-hint">(առնվազն 12 նիշ)</span></label><input id="moderator-password" type="password" minlength="12" maxlength="128" autocomplete="new-password"></div>
+              </div>
+              <label id="moderator-active-wrap" class="check-row hidden"><input id="moderator-active" type="checkbox" checked> Հաշիվն ակտիվ է</label>
+              <div class="actions"><button id="moderator-save" class="btn primary" type="submit">Ստեղծել մոդերատոր</button><button id="moderator-cancel" class="btn outline hidden" type="button">Չեղարկել</button></div>
+              <div id="moderator-error" class="error" role="alert"></div>
+            </form>
+            <div class="panel-tools" style="margin:18px 0 12px"><input id="moderator-search" class="search" type="search" placeholder="Փնտրել անունով կամ օգտանունով" aria-label="Փնտրել մոդերատորներին"><button id="moderator-refresh" type="button" class="btn outline small">Թարմացնել</button></div>
+            <div id="moderator-list" class="moderator-list" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lang-card">
+          <div class="lang-head"><span class="flag">LOG</span> Վերջին գործողությունները <button id="audit-refresh" type="button" class="btn outline small" style="margin-left:auto">Թարմացնել</button></div>
+          <div id="audit-list" class="audit-list" aria-live="polite"></div>
+        </section>
       </div>
     </div>
   </div>
 </section>
-      <div class="footnote">MatchPro Control Center · մուտքի token-ը պահվում է միայն այս browser-ում՝ կոդավորված ձևով</div>
+      <div class="footnote">MatchPro Control Center · session-ը պահվում է միայն ընթացիկ էջի հիշողության մեջ</div>
     </main>
   </div>
 </div>
@@ -203,16 +230,19 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   'use strict';
   var OWNER = 'vip01live';
   var REPO = 'matchpro';
-  var ADMIN_USERNAME = 'admin';
   var API_ROOT = 'https://api.github.com/repos/' + OWNER + '/' + REPO;
   var SITE_BASE = (function () {
     if (location.pathname.indexOf('/matchpro/') === 0) return location.origin + '/matchpro';
     return location.origin;
   })();
   var ADMIN_API_BASE = String(window.MATCHPRO_ADMIN_API_BASE || '').trim().replace(/\/+$/, '');
+  document.addEventListener('matchpro:settings-updated',function(event){var value=event.detail||{};applyAdminBranding(value.identity);applyAdminFavicon(value.favicon)});
+  fetch(SITE_BASE.replace(/\/+$/,'')+'/main/js/site-settings.json',{cache:'no-cache'}).then(function(response){if(!response.ok)throw new Error('settings');return response.json()}).then(function(value){applyAdminBranding(value.identity);applyAdminFavicon(value.favicon)}).catch(function(){});
   var serverSessionToken = '';
-  var token = '';
-  var githubUser = '';
+  try { localStorage.removeItem('matchpro-admin-token-v1'); } catch (_) {}
+  var currentUser = null;
+  var moderators = [];
+  var securityBusy = false;
   var channels = [];
   var selectedId = null;
   var editing = false;
@@ -226,6 +256,21 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
       return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]);
     });
+  }
+  function applyAdminBranding(identity) {
+    identity=identity||{};
+    var name=String(identity.name||'MatchPro').trim()||'MatchPro',oldNames=[identity.previousName].concat(identity.previousNames||[]).concat(['MatchPro']),escapedName=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    function replace(value){var text=String(value==null?'':value),protectedNames=[];text=text.replace(new RegExp('(^|[^A-Za-z0-9])('+escapedName+')($|[^A-Za-z0-9])','gi'),function(_,before,current,after){var token='\u0000MPBRAND'+protectedNames.length+'\u0000';protectedNames.push(current);return before+token+after});oldNames.forEach(function(old){old=String(old||'').trim();if(old&&old.toLowerCase()!==name.toLowerCase()){var escaped=old.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');text=text.replace(new RegExp('(^|[^A-Za-z0-9])'+escaped+'($|[^A-Za-z0-9])','gi'),function(_,before,after){return before+name+after})}});return text.replace(/\u0000MPBRAND(\d+)\u0000/g,function(_,index){return protectedNames[Number(index)]||''});}
+    document.title=replace(document.title)||name+' — կառավարման վահանակ';
+    document.querySelectorAll('.brand h1').forEach(function(el){el.textContent=replace(el.textContent)||name});
+    if(document.body){var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),node;while((node=walker.nextNode())){var next=replace(node.nodeValue);if(next!==node.nodeValue)node.nodeValue=next}}
+    document.querySelectorAll('[alt],[title],[aria-label]').forEach(function(el){['alt','title','aria-label'].forEach(function(attr){var value=el.getAttribute(attr);if(value){var next=replace(value);if(next!==value)el.setAttribute(attr,next)}})});
+  }
+  function applyAdminFavicon(path) {
+    if(!path)return;
+    var url=assetUrl(path),links=document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"]');
+    if(links.length)links.forEach(function(link){link.href=url});
+    else{var link=document.createElement('link');link.rel='icon';link.href=url;document.head.appendChild(link)}
   }
   function safeUrl(value, allowLocal) {
     var v = String(value || '').trim();
@@ -258,11 +303,6 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     for (var i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
     return btoa(binary);
   }
-  function bytesToBase64(value) { var bytes=new Uint8Array(value);var binary='';for(var i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));return btoa(binary); }
-  function base64ToBytes(value) { var binary=atob(value);var bytes=new Uint8Array(binary.length);for(var i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes; }
-  async function adminKey(password,salt) { var material=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:250000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']); }
-  async function storeEncryptedToken(value,password) { if(!crypto.subtle)throw new Error('Այս զննարկիչը չի աջակցում անվտանգ տեղային կոդավորմանը։');var salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await adminKey(password,salt);var encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(value));localStorage.setItem('matchpro-admin-token-v1',JSON.stringify({v:1,salt:bytesToBase64(salt),iv:bytesToBase64(iv),data:bytesToBase64(encrypted)})); }
-  async function readEncryptedToken(password) { var raw=localStorage.getItem('matchpro-admin-token-v1');if(!raw)return '';var saved=JSON.parse(raw),key=await adminKey(password,base64ToBytes(saved.salt));var clear=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64ToBytes(saved.iv)},key,base64ToBytes(saved.data));return new TextDecoder().decode(clear); }
   function fileBase64(file) { return new Promise(function(resolve,reject){var reader=new FileReader();reader.onerror=function(){reject(new Error('Ֆայլը կարդալ չհաջողվեց։'))};reader.onload=function(){resolve(String(reader.result).split(',')[1]||'')};reader.readAsDataURL(file);}); }
   function fileExtension(file,fallback) { var ext=(String(file.name||'').toLowerCase().match(/\.([a-z0-9]{2,5})$/)||[])[1];return /^(png|jpe?g|webp|gif|avif|ico|svg|mp4|webm|ogg)$/.test(ext||'')?(ext==='jpeg'?'jpg':ext):fallback; }
   function allowedMediaFile(file, kind) {
@@ -300,21 +340,16 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   function readIframeUrl(source) { var marker='var encodedSource="',at=source.indexOf(marker);if(at>=0){var begin=at+marker.length,end=source.indexOf('"',begin);if(end>begin){try{return base64ToUtf8(source.slice(begin,end));}catch(_){}}}var doc=new DOMParser().parseFromString(source,'text/html'),encoded=doc.querySelector('iframe[data-matchpro-encoded-url]');if(encoded){try{return base64ToUtf8(encoded.getAttribute('data-matchpro-encoded-url'));}catch(_){}}var frame=doc.querySelector('iframe[src]');return frame?(frame.getAttribute('src')||''):''; }
   function defaultSiteSettings() { return {maintenance:{enabled:false,message:{hy:'Կայքում իրականացվում են տեխնիկական աշխատանքներ։ Խնդրում ենք փորձել ավելի ուշ։',ru:'На сайте ведутся технические работы. Пожалуйста, зайдите позже.',en:'We are performing maintenance. Please come back later.'}},adblock:{enabled:false},defaultRedirectUrl:'https://lkhq.cc/60dc1304',favicon:'/media/fv/favicon-32x32.png',logo:'/media/logo.png',home:{hy:{title:'Մարզական ալիքներ՝ ուղիղ եթերում | MatchPro',description:'Դիտեք ֆուտբոլի, հոկեյի, բասկետբոլի և այլ մարզաձևերի ուղիղ հեռարձակումները MatchPro-ում։',keywords:'մարզական ալիքներ առցանց, ուղիղ եթեր, ֆուտբոլ, հոկեյ, բասկետբոլ, MatchPro',intro:'Լավագույն մարզական իրադարձությունները՝ ուղիղ եթերում',info:'Ընտրեք ձեր նախընտրած մարզական ալիքը և հետևեք ֆուտբոլի, հոկեյի, բասկետբոլի ու այլ մարզաձևերի հասանելի հեռարձակումներին մեկ վայրում։ MatchPro-ում կարող եք արագ գտնել հետաքրքրող ալիքը և դիտել ուղիղ եթերը.'},ru:{title:'Спортивные каналы онлайн в прямом эфире | MatchPro',description:'Смотрите доступные спортивные трансляции футбола, хоккея, баскетбола и других видов спорта на MatchPro.',keywords:'спортивные каналы онлайн, прямой эфир, футбол, хоккей, баскетбол, MatchPro',intro:'Лучшие матчи — в прямом эфире',info:'Выбирайте спортивные каналы и следите за доступными футбольными, хоккейными, баскетбольными и другими трансляциями в одном месте.'},en:{title:'Sports Channels Live Online | MatchPro',description:'Watch available live sports broadcasts, including football, hockey, basketball and more on MatchPro.',keywords:'sports channels online, live stream, football, hockey, basketball, MatchPro',intro:'The best matches — live',info:'Choose your preferred sports channel and follow available football, hockey, basketball and other live broadcasts in one place.'}}}; }
   async function request(url, method, body) {
-    var options = {method:method || 'GET',headers:{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}};
-    var requestUrl = url;
-    if (ADMIN_API_BASE) {
-      var target;
-      try { target = new URL(url); } catch (_) { throw new Error('GitHub API հասցեն անվավեր է։'); }
-      var repoPath = '/repos/' + OWNER + '/' + REPO;
-      if (target.origin !== 'https://api.github.com' || (target.pathname !== repoPath && target.pathname.indexOf(repoPath + '/') !== 0)) {
-        throw new Error('Backend-ը թույլատրում է միայն ' + OWNER + '/' + REPO + ' ռեպոզիտորիայի գործողությունները։');
-      }
-      if (!serverSessionToken) throw new Error('Backend session-ը բացակայում է կամ ժամկետանց է։ Կրկին մուտք գործեք։');
-      options.headers.Authorization = 'Bearer ' + serverSessionToken;
-      requestUrl = ADMIN_API_BASE + '/api/github' + target.pathname + target.search;
-    } else if (token) {
-      options.headers.Authorization = 'Bearer ' + token;
+    if (!ADMIN_API_BASE) throw new Error('Սերվերային admin backend-ը կարգավորված չէ։ Անվտանգության համար browser-ից GitHub ուղիղ մուտքը անջատված է։');
+    var target;
+    try { target = new URL(url); } catch (_) { throw new Error('GitHub API հասցեն անվավեր է։'); }
+    var repoPath = '/repos/' + OWNER + '/' + REPO;
+    if (target.origin !== 'https://api.github.com' || (target.pathname !== repoPath && target.pathname.indexOf(repoPath + '/') !== 0)) {
+      throw new Error('Backend-ը թույլատրում է միայն ' + OWNER + '/' + REPO + ' ռեպոզիտորիայի գործողությունները։');
     }
+    if (!serverSessionToken) throw new Error('Backend session-ը բացակայում է կամ ժամկետանց է։ Կրկին մուտք գործեք։');
+    var options = {method:method || 'GET',headers:{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Authorization':'Bearer '+serverSessionToken}};
+    var requestUrl = ADMIN_API_BASE + '/api/github' + target.pathname + target.search;
     if (body !== undefined) {
       options.headers['Content-Type'] = 'application/json';
       options.body = JSON.stringify(body);
@@ -323,7 +358,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     var data;
     try { data = await response.json(); } catch (_) { data = {}; }
     if (!response.ok) {
-      if (ADMIN_API_BASE && response.status === 401) serverSessionToken = '';
+      if (response.status === 401) { serverSessionToken = ''; logout(); }
       var detail = data && (data.message || data.errors && data.errors[0] && data.errors[0].message);
       var endpoint = (method || 'GET') + ' ' + new URL(url).pathname;
       var message = 'GitHub API (' + response.status + ') [' + endpoint + ']: ' + (detail || response.statusText || 'request failed');
@@ -384,65 +419,167 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     event.preventDefault();
     if (busy) return;
     showLoginError('');
+    if (!ADMIN_API_BASE) {
+      showLoginError('Սերվերային admin backend-ը կարգավորված չէ։ Մուտքը ժամանակավորապես անհասանելի է։');
+      return;
+    }
     var username = $('username').value.trim();
     var password = $('adminPassword').value;
-    var suppliedToken = ADMIN_API_BASE ? '' : $('token').value.trim();
     if (!username || !password || password.length < 12) {
       showLoginError('Լրացրեք օգտանունը և առնվազն 12 նիշանոց գաղտնաբառը։');
       return;
     }
-    if (!ADMIN_API_BASE && username.toLowerCase() !== ADMIN_USERNAME) {
-      showLoginError('Legacy ռեժիմում օգտանունը պետք է լինի admin։ Իրական username/password login-ի համար տեղակայեք backend-ը։');
-      return;
-    }
     setBusy(true);
     try {
-      if (ADMIN_API_BASE) {
-        var authResponse = await fetch(ADMIN_API_BASE + '/api/login', {
-          method:'POST',
-          headers:{'Accept':'application/json','Content-Type':'application/json'},
-          body:JSON.stringify({username:username,password:password})
-        });
-        var authData;
-        try { authData = await authResponse.json(); } catch (_) { authData = {}; }
-        if (!authResponse.ok) throw new Error(authData.message || 'Backend մուտքը չհաջողվեց (' + authResponse.status + ')։');
-        serverSessionToken = String(authData.token || '');
-        if (!serverSessionToken) throw new Error('Backend-ը session token չի վերադարձրել։');
-        token = '';
-        githubUser = username;
-      } else {
-        if (suppliedToken) token = suppliedToken;
-        else {
-          try { token = await readEncryptedToken(password); }
-          catch (_) { throw new Error('Գաղտնաբառը սխալ է կամ պահպանված token-ը հնարավոր չէ բացել։'); }
-          if (!token) throw new Error('GitHub token է պահանջվում, քանի դեռ backend-ը տեղակայված չէ։');
-        }
-        var repo;
-        try { repo = await repoRequest('', 'GET'); }
-        catch (error) {
-          if (/GitHub API \(403\)|GitHub API \(404\)/.test(String(error.message || ''))) {
-            throw new Error('Token-ը չի կարող մուտք գործել vip01live/matchpro։ Ստուգեք Repository access = matchpro, Contents = Read and write, Metadata = Read-only։\n\n' + error.message);
-          }
-          throw error;
-        }
-        if (!repo.permissions || repo.permissions.push !== true) throw new Error('GitHub token-ի սեփականատերը չունի vip01live/matchpro ռեպոզիտորիայում փոփոխություններ կատարելու իրավունք։');
-        githubUser = username;
-      }
+      var authResponse = await fetch(ADMIN_API_BASE + '/api/login', {
+        method:'POST',
+        headers:{'Accept':'application/json','Content-Type':'application/json'},
+        body:JSON.stringify({username:username,password:password})
+      });
+      var authData;
+      try { authData = await authResponse.json(); } catch (_) { authData = {}; }
+      if (!authResponse.ok) throw new Error(authData.message || 'Backend մուտքը չհաջողվեց (' + authResponse.status + ')։');
+      serverSessionToken = String(authData.token || '');
+      currentUser = authData.user || null;
+      if (!serverSessionToken || !currentUser || !['owner','moderator'].includes(currentUser.role)) throw new Error('Backend-ը վավեր session չի վերադարձրել։');
       await loadState();
       await loadSettings();
-      if (suppliedToken && !ADMIN_API_BASE) await storeEncryptedToken(token,password);
       $('login-screen').classList.add('hidden');
       $('app-screen').classList.remove('hidden');
       window.MATCHPRO_ADMIN_SESSION_READY = true;
       document.dispatchEvent(new CustomEvent('matchpro:admin-ready'));
-      $('token').value = '';
       setView('dashboard');
-      notify(ADMIN_API_BASE ? 'Մուտքը հաջողվեց։ CMS-ը միացված է սերվերային backend-ին։' : 'Մուտքը հաջողվեց։ Միացված է ' + OWNER + '/' + REPO + ' ռեպոզիտորիային։');
+      notify('Մուտքը հաջողվեց։ Դերը՝ ' + (currentUser.role === 'owner' ? 'հիմնական սեփականատեր' : 'մոդերատոր') + '։');
     } catch (error) {
-      token = '';
       serverSessionToken = '';
+      currentUser = null;
       showLoginError(error.message || 'Մուտքը չհաջողվեց։');
     } finally { setBusy(false); }
+  }
+
+  async function adminRequest(path, method, body) {
+    if (!ADMIN_API_BASE || !serverSessionToken) throw new Error('Սերվերային session-ը բացակայում է։ Կրկին մուտք գործեք։');
+    var options = { method: method || 'GET', headers: { Accept: 'application/json', Authorization: 'Bearer ' + serverSessionToken } };
+    if (body !== undefined) { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(body); }
+    var response = await fetch(ADMIN_API_BASE + path, options), data = {};
+    try { data = await response.json(); } catch (_) {}
+    if (!response.ok) {
+      if (response.status === 401) { serverSessionToken = ''; logout(); }
+      throw new Error(data.message || 'Admin հարցումը չհաջողվեց (' + response.status + ')։');
+    }
+    return data;
+  }
+  function displayDate(value) {
+    if (!value) return 'Երբեք';
+    var date = new Date(value);
+    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleString();
+  }
+  function renderModerators() {
+    var query = $('moderator-search').value.trim().toLowerCase();
+    var filtered = moderators.filter(function (account) {
+      return [account.username, account.displayName, account.active ? 'active' : 'disabled'].join(' ').toLowerCase().indexOf(query) >= 0;
+    });
+    var list = $('moderator-list');
+    if (!filtered.length) { list.innerHTML = '<div class="empty">' + (moderators.length ? 'Որոնմանը համապատասխան հաշիվ չկա։' : 'Մոդերատոր դեռ ավելացված չէ։') + '</div>'; return; }
+    list.innerHTML = filtered.map(function (account) {
+      var state = account.active ? '<span class="status-active">Ակտիվ</span>' : '<span class="status-disabled">Անջատված</span>';
+      return '<article class="moderator-card"><h4>' + escapeHtml(account.displayName) + '</h4><p>@' + escapeHtml(account.username) + ' · ' + state + '</p>' +
+        '<p>Ստեղծվել է՝ ' + escapeHtml(displayDate(account.createdAt)) + '</p><p>Վերջին մուտք՝ ' + escapeHtml(displayDate(account.lastLoginAt)) + '</p>' +
+        '<div class="row-actions"><button type="button" class="btn small outline" data-edit-moderator="' + escapeHtml(account.id) + '">Խմբագրել</button>' +
+        '<button type="button" class="btn small ' + (account.active ? 'danger' : 'outline') + '" data-toggle-moderator="' + escapeHtml(account.id) + '" data-active="' + String(!!account.active) + '">' + (account.active ? 'Անջատել' : 'Ակտիվացնել') + '</button></div></article>';
+    }).join('');
+  }
+  function renderAudit(events) {
+    var list = $('audit-list');
+    if (!events || !events.length) { list.innerHTML = '<div class="empty">Գործողությունների գրառում դեռ չկա։</div>'; return; }
+    var rows = events.map(function (event) {
+      return '<div class="audit-row"><span>' + escapeHtml(displayDate(event.timestamp)) + '</span><span>' + escapeHtml(event.actor) + ' · ' + escapeHtml(event.role) + '</span><span>' + escapeHtml(event.action) + '</span><span>' + escapeHtml(event.resource) + ' · ' + escapeHtml(event.result) + '</span></div>';
+    }).join('');
+    list.innerHTML = '<div class="audit-row audit-head"><span>Ժամանակ</span><span>Օգտվող</span><span>Գործողություն</span><span>Ռեսուրս / արդյունք</span></div>' + rows;
+  }
+  async function loadSecurityData() {
+    $('owner-tools').classList.toggle('hidden', !currentUser || currentUser.role !== 'owner');
+    $('security-auth-status').textContent = currentUser ? 'Մուտք՝ ' + currentUser.displayName + ' (@' + currentUser.username + ') · դեր՝ ' + (currentUser.role === 'owner' ? 'հիմնական սեփականատեր' : 'մոդերատոր') + ' · backend session-ը ակտիվ է։' : 'Սերվերային session-ը հասանելի չէ։ Կրկին մուտք գործեք։';
+    if (!currentUser || currentUser.role !== 'owner' || securityBusy) return;
+    securityBusy = true;
+    $('moderator-list').innerHTML = '<div class="empty">Բեռնվում է…</div>';
+    $('audit-list').innerHTML = '<div class="empty">Բեռնվում է…</div>';
+    try {
+      var results = await Promise.all([adminRequest('/api/moderators'), adminRequest('/api/audit?limit=100')]);
+      moderators = Array.isArray(results[0].moderators) ? results[0].moderators : [];
+      renderModerators();
+      renderAudit(results[1].events || []);
+    } catch (error) {
+      $('moderator-list').innerHTML = '<div class="error">' + escapeHtml(error.message) + '</div>';
+      $('audit-list').innerHTML = '<div class="error">Գործողությունների ցանկը հասանելի չէ։</div>';
+    } finally { securityBusy = false; }
+  }
+  function resetModeratorForm() {
+    $('moderator-form').reset();
+    $('moderator-id').value = '';
+    $('moderator-username').disabled = false;
+    $('moderator-password').required = true;
+    $('moderator-password-hint').textContent = '(առնվազն 12 նիշ)';
+    $('moderator-active-wrap').classList.add('hidden');
+    $('moderator-save').textContent = 'Ստեղծել մոդերատոր';
+    $('moderator-cancel').classList.add('hidden');
+    $('moderator-error').textContent = '';
+  }
+  function editModerator(id) {
+    var account = moderators.find(function (item) { return item.id === id; });
+    if (!account) return;
+    $('moderator-id').value = account.id;
+    $('moderator-username').value = account.username;
+    $('moderator-username').disabled = true;
+    $('moderator-display-name').value = account.displayName;
+    $('moderator-password').value = '';
+    $('moderator-password').required = false;
+    $('moderator-password-hint').textContent = '(դատարկ թողեք՝ չփոխելու համար)';
+    $('moderator-active').checked = account.active;
+    $('moderator-active-wrap').classList.remove('hidden');
+    $('moderator-save').textContent = 'Պահպանել փոփոխությունները';
+    $('moderator-cancel').classList.remove('hidden');
+    $('moderator-error').textContent = '';
+    $('moderator-display-name').focus();
+  }
+  async function saveModerator(event) {
+    event.preventDefault();
+    if (securityBusy) return;
+    var id = $('moderator-id').value, displayName = $('moderator-display-name').value.trim(), password = $('moderator-password').value;
+    var payload = { displayName: displayName };
+    if (id) {
+      payload.active = $('moderator-active').checked;
+      if (password) payload.password = password;
+    } else {
+      payload.username = $('moderator-username').value.trim();
+      payload.password = password;
+    }
+    securityBusy = true;
+    $('moderator-save').disabled = true;
+    $('moderator-error').textContent = '';
+    try {
+      if (id) await adminRequest('/api/moderators/' + encodeURIComponent(id), 'PATCH', payload);
+      else await adminRequest('/api/moderators', 'POST', payload);
+      resetModeratorForm();
+      notify(id ? 'Մոդերատորի տվյալները պահպանվեցին։' : 'Մոդերատորի հաշիվը ստեղծվեց։');
+      securityBusy = false;
+      await loadSecurityData();
+    } catch (error) { $('moderator-error').textContent = error.message || 'Փոփոխությունը չպահպանվեց։'; }
+    finally { securityBusy = false; $('moderator-save').disabled = false; }
+  }
+  async function toggleModerator(id, active) {
+    var account = moderators.find(function (item) { return item.id === id; });
+    if (!account || securityBusy) return;
+    var action = active ? 'անջատել' : 'ակտիվացնել';
+    if (!window.confirm('Վստա՞հ եք, որ ցանկանում եք ' + action + ' @' + account.username + ' հաշիվը։')) return;
+    securityBusy = true;
+    try {
+      await adminRequest('/api/moderators/' + encodeURIComponent(id), 'PATCH', { active: !active });
+      notify(active ? 'Մոդերատորի հասանելիությունն անմիջապես անջատվեց։' : 'Մոդերատորի հաշիվը ակտիվացվեց։');
+      securityBusy = false;
+      await loadSecurityData();
+    } catch (error) { notify(error.message || 'Հաշվի վիճակը չփոխվեց։', true); }
+    finally { securityBusy = false; }
   }
 
   function renderList() {
@@ -513,6 +650,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     $('security-panel').classList.toggle('hidden', !isSecurity);
     if (isSettings) activateSettingsTab(view);
     if (view === 'channels') showForm(false);
+    if (isSecurity) loadSecurityData();
   }
 
   function activateLanguageTab(lang,scope) {
@@ -756,6 +894,8 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     siteSettings.adblock={enabled:false};
     siteSettings.home=Object.assign({},defs.home,siteSettings.home||{});
     ['hy','ru','en'].forEach(function(lang){siteSettings.home[lang]=Object.assign({},defs.home[lang],siteSettings.home[lang]||{})});
+    applyAdminBranding(siteSettings.identity);applyAdminFavicon(siteSettings.favicon);
+    $('siteBrandName').value=siteSettings.identity&&siteSettings.identity.name||'MatchPro';$('siteBrandTagline').value=siteSettings.identity&&siteSettings.identity.tagline||'';
     $('maintenanceEnabled').checked=!!siteSettings.maintenance.enabled;
     $('defaultRedirectUrl').value=siteSettings.defaultRedirectUrl||'';
     $('siteLogoPath').value=siteSettings.logo||defs.logo;
@@ -773,14 +913,17 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
     var defs=defaultSiteSettings(),base=siteSettings||defs,redirect=$('defaultRedirectUrl').value.trim();
     var logoPath=safeUrl($('siteLogoPath').value.trim()||base.logo||defs.logo,true);
     var iconPath=safeUrl($('faviconPath').value.trim()||base.favicon||defs.favicon,true);
+    var brandName=$('siteBrandName').value.trim(),brandTagline=$('siteBrandTagline').value.trim();
     var logoFile=$('siteLogoFile').files&&$('siteLogoFile').files[0],iconFile=$('faviconFile').files&&$('faviconFile').files[0];
     if(redirect&&!safeUrl(redirect,false)){$('settings-error').textContent='Ընդհանուր վերահղման URL-ը սխալ է։';activateSettingsTab('ads');return}
     if(!logoPath){$('settings-error').textContent='Կայքի լոգոյի ուղին սխալ է։';activateSettingsTab('branding');return}
     if(!iconPath){$('settings-error').textContent='Favicon-ի ուղին սխալ է։';activateSettingsTab('branding');return}
+    if(!brandName||brandName.length>80||/[\u0000-\u001f<>]/.test(brandName)){$('settings-error').textContent='Կայքի անունը պարտադիր է, պետք է լինի մինչև 80 նիշ և չպարունակի HTML նշաններ։';activateSettingsTab('branding');return}
     if(logoFile&&(logoFile.size>5*1024*1024||!allowedMediaFile(logoFile,'image')||!(await mediaSignatureValid(logoFile,'image')))){$('settings-error').textContent='Լոգոյի համար ընտրեք վավեր PNG, JPG կամ WEBP պատկեր՝ մինչև 5 ՄԲ։';activateSettingsTab('branding');return}
     if(iconFile&&(iconFile.size>2*1024*1024||!allowedMediaFile(iconFile,'favicon')||!(await mediaSignatureValid(iconFile,'favicon')))){$('settings-error').textContent='Favicon-ի համար ընտրեք վավեր PNG, JPG, WEBP, ICO կամ SVG՝ մինչև 2 ՄԲ։';activateSettingsTab('branding');return}
     var settingData=Object.assign({},base);
     settingData.maintenance={enabled:$('maintenanceEnabled').checked,message:{hy:$('maintenanceTextHy').value.trim(),ru:$('maintenanceTextRu').value.trim(),en:$('maintenanceTextEn').value.trim()}};
+    var oldIdentity=base.identity||{},oldName=String(oldIdentity.name||'MatchPro').trim()||'MatchPro',previousNames=Array.isArray(oldIdentity.previousNames)?oldIdentity.previousNames.slice():[];if(brandName!==oldName&&!previousNames.includes(oldName))previousNames.push(oldName);if(brandName!=='MatchPro'&&!previousNames.includes('MatchPro'))previousNames.push('MatchPro');settingData.identity=Object.assign({},oldIdentity,{name:brandName,tagline:brandTagline,previousName:brandName!==oldName?oldName:(oldIdentity.previousName||'MatchPro'),previousNames:previousNames.slice(-20)});
     settingData.adblock={enabled:false};settingData.defaultRedirectUrl=redirect;settingData.logo=logoPath;settingData.favicon=iconPath;settingData.home={};
     ['hy','ru','en'].forEach(function(lang){var s=lang.charAt(0).toUpperCase()+lang.slice(1);settingData.home[lang]={title:$('homeTitle'+s).value.trim(),description:$('homeDescription'+s).value.trim(),keywords:$('homeKeywords'+s).value.trim(),intro:$('homeIntro'+s).value.trim(),info:$('homeInfo'+s).value.trim()}});
     setBusy(true);
@@ -790,42 +933,45 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
       if(iconFile){var iconExt=fileExtension(iconFile,'png'),iconAsset='uploads/'+uploadUuid()+'.'+iconExt;settingData.favicon='/'+iconAsset;changes[iconAsset]={content:await fileBase64(iconFile),encoding:'base64'}}
       changes['main/js/site-settings.json']=JSON.stringify(settingData,null,2)+'\n';
       await commitChanges(changes,[],'Update MatchPro site settings and branding');
-      siteSettings=settingData;$('siteLogoPath').value=settingData.logo;$('faviconPath').value=settingData.favicon;
+      siteSettings=settingData;applyAdminBranding(settingData.identity);applyAdminFavicon(settingData.favicon);$('siteBrandName').value=settingData.identity.name;$('siteLogoPath').value=settingData.logo;$('faviconPath').value=settingData.favicon;
       $('site-logo-preview').src=assetUrl(settingData.logo)||assetUrl('/media/logo.png');$('favicon-preview').src=assetUrl(settingData.favicon)||assetUrl('/media/fv/favicon-32x32.png');
       $('siteLogoFile').value='';$('faviconFile').value='';notify('Կարգավորումները և բրենդային նկարները պահպանվեցին։ Փոփոխությունները կհրապարակվեն deploy-ից հետո։');
     }catch(error){$('settings-error').textContent=error.message||'Կարգավորումները չպահպանվեցին։'}finally{setBusy(false)}
   }
-  async function changeAdminPassword(){var p=$('newAdminPassword').value;if(p.length<12){notify('Նոր գաղտնաբառը պետք է ունենա առնվազն 12 նիշ։',true);return}try{await storeEncryptedToken(token,p);$('adminPassword').value=p;$('newAdminPassword').value='';$('password-change-area').classList.add('hidden');notify('Այս բրաուզերի գաղտնաբառը փոխվեց։')}catch(error){notify(error.message||'Չհաջողվեց փոխել գաղտնաբառը։',true)}}
   function logout() {
-    token = '';
     serverSessionToken = '';
-    githubUser = '';
+    currentUser = null;
     channels = [];
+    moderators = [];
     selectedId = null;
     editing = false;
     $('app-screen').classList.add('hidden');
     $('login-screen').classList.remove('hidden');
-    $('token').value = '';
     $('adminPassword').value = '';
     $('channel-rows').innerHTML = '';
     showForm(false);
     showLoginError('');
   }
 
-  if (ADMIN_API_BASE) {
-    var connectionDetails = document.querySelector('.connection-details');
-    if (connectionDetails) connectionDetails.classList.add('hidden');
-    var loginHint = document.querySelector('.login-card .hint');
-    if (loginHint) loginHint.textContent = 'Սերվերային login-ը ակտիվ կլինի, երբ Cloudflare Worker-ը տեղակայվի և API հասցեն կարգավորվի։';
-    $('security-auth-status').textContent = 'Backend URL-ը կարգավորված է։ Մուտքի իրական վիճակը հաստատվում է միայն սերվերի հաջող login-ից հետո։';
-    $('change-password-button').classList.add('hidden');
-    $('password-change-area').classList.add('hidden');
+  if (!ADMIN_API_BASE) {
+    $('login-hint').textContent = 'Սերվերային admin backend-ը դեռ չի տեղակայվել կամ API հասցեն չի կարգավորվել։ Մինչև դա մուտքն անջատված է։';
+    $('login-button').disabled = true;
+  } else {
+    $('login-hint').textContent = 'Մուտքը կատարվում է սերվերի կողմից։ GitHub token-ը մնում է միայն Worker-ի գաղտնի կարգավորումներում։';
   }
   document.querySelectorAll('[data-lang-tab]').forEach(function(button){button.addEventListener('click',function(){activateLanguageTab(button.dataset.langTab,button.dataset.langScope)})});
   $('login-form').addEventListener('submit', login);
   $('site-settings-form').addEventListener('submit',saveSettings);
-  $('change-password-button').addEventListener('click',function(){$('password-change-area').classList.toggle('hidden')});
-  $('save-password-button').addEventListener('click',changeAdminPassword);
+  $('moderator-form').addEventListener('submit',saveModerator);
+  $('moderator-cancel').addEventListener('click',resetModeratorForm);
+  $('moderator-search').addEventListener('input',renderModerators);
+  $('moderator-refresh').addEventListener('click',loadSecurityData);
+  $('audit-refresh').addEventListener('click',loadSecurityData);
+  $('moderator-list').addEventListener('click',function(event){
+    var edit=event.target.closest('[data-edit-moderator]'),toggle=event.target.closest('[data-toggle-moderator]');
+    if(edit)editModerator(edit.dataset.editModerator);
+    if(toggle)toggleModerator(toggle.dataset.toggleModerator,toggle.dataset.active==='true');
+  });
   document.querySelectorAll('[data-settings-tab]').forEach(function(button){button.addEventListener('click',function(){activateSettingsTab(button.dataset.settingsTab)})});
   $('siteLogoFile').addEventListener('change',async function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>5*1024*1024||!allowedMediaFile(f,'image')||!(await mediaSignatureValid(f,'image'))){notify('Ընտրեք վավեր PNG, JPG կամ WEBP լոգո՝ մինչև 5 ՄԲ։',true);this.value='';return}$('site-logo-preview').src=URL.createObjectURL(f)});
   $('faviconFile').addEventListener('change',async function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>2*1024*1024||!allowedMediaFile(f,'favicon')||!(await mediaSignatureValid(f,'favicon'))){notify('Ընտրեք վավեր PNG, JPG, WEBP, ICO կամ SVG favicon՝ մինչև 2 ՄԲ։',true);this.value='';return}$('favicon-preview').src=URL.createObjectURL(f)});
@@ -856,7 +1002,7 @@ html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 12% -10%,
   window.MATCHPRO_ADMIN_API = {
     getChannels:function(){return channels.slice()},
     getSettings:function(){return siteSettings},
-    setSettings:function(value){siteSettings=value},
+    setSettings:function(value){siteSettings=value;document.dispatchEvent(new CustomEvent('matchpro:settings-updated',{detail:value}))},
     readTextFile:readTextFile,
     listRoot:function(){return repoRequest('/contents/?ref=main&per_page=100','GET')},
     commitChanges:function(changes,message){return commitChanges(changes,[],message||'Update MatchPro CMS content')},
